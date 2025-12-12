@@ -1,8 +1,7 @@
-﻿################################################################################
+################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
-
-/.vs/Ten25/v17
+/vs/Ten25/v17
 
 # Visual Studio / VB.NET / C# Builds
 bin/
@@ -13,30 +12,43 @@ obj/
 *.pdb
 *.dll
 *.config
+*.aps
 
 # User-specific files
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
+.vs/
+!.vs/{config}
 
-# NuGet Packages (if you add any later)
+# NuGet Packages (if you add dependencies later)
 packages/
-packages.lock.json
+*.nupkg
 !packages/build/
 
 # Logs and temps
 *.log
 *.tmp
 *.cache
+_ReSharper*/
 
-# Windows junk
+# Windows/OS junk
 Thumbs.db
 Desktop.ini
 .DS_Store
 
-# STM32 CubeIDE (prep for your Firmware folder)
-# (Add these when you create /Firmware/)
+# Output directories
+[Dd]ebug*/
+[Rr]elease*/
+[Bb]uild*/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa]rm/
+[Aa]rm64/
+
+# STM32 CubeIDE Prep (for when you add /Firmware/)
 /Firmware/.mxproject
 /Firmware/.cproject
 /Firmware/.project
@@ -49,4 +61,3 @@ Desktop.ini
 /Firmware/*.launch
 /Firmware/*.uvguix.*
 /Firmware/*.ioc.bak
-
