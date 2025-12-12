@@ -1,46 +1,10 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "S:\\Source\\Tens\\Windows\\Tens25\\",
+  "WorkspaceRootPath": "C:\\Users\\Alex.ST-EL\\source\\repos\\Ten25\\Win64\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|s:\\source\\tens\\windows\\tens25\\usercontrolprogline2.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}|Form",
-      "RelativeMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|solutionrelative:usercontrolprogline2.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|S:\\Source\\Tens\\Windows\\Tens25\\usercontrolprogline2.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
-      "RelativeMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|solutionrelative:usercontrolprogline2.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|S:\\Source\\Tens\\Windows\\Tens25\\comdef.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
-      "RelativeMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|solutionrelative:comdef.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|S:\\Source\\Tens\\Windows\\Tens25\\usercontrolprograms.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}|Form",
-      "RelativeMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|solutionrelative:usercontrolprograms.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|S:\\Source\\Tens\\Windows\\Tens25\\form1.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
-      "RelativeMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|solutionrelative:form1.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|S:\\Source\\Tens\\Windows\\Tens25\\usercontrolprograms.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
-      "RelativeMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|solutionrelative:usercontrolprograms.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|S:\\Source\\Tens\\Windows\\Tens25\\usercontrolprogline1.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
-      "RelativeMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|solutionrelative:usercontrolprogline1.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|S:\\Source\\Tens\\Windows\\Tens25\\usercontrolprogline1.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}|Form",
-      "RelativeMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|solutionrelative:usercontrolprogline1.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|S:\\Source\\Tens\\Windows\\Tens25\\form1.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}|Form",
+      "AbsoluteMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|C:\\Users\\Alex.ST-EL\\source\\repos\\Ten25\\Win64\\form1.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}|Form",
       "RelativeMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|solutionrelative:form1.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|s:\\source\\tens\\windows\\tens25\\channelusercontrol.designer.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}",
-      "RelativeMoniker": "D:0:0:{69EAFDDA-20DC-41A1-98AE-5CC1A1411058}|Tens25.vbproj|solutionrelative:channelusercontrol.designer.vb||{2C015C70-C72C-11D0-88C3-00A0C9110049}"
     }
   ],
   "DocumentGroupContainers": [
@@ -50,137 +14,37 @@
       "DocumentGroups": [
         {
           "DockedHeight": 379,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 1,
           "Children": [
             {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Form1.vb",
-              "DocumentMoniker": "S:\\Source\\Tens\\Windows\\Tens25\\Form1.vb",
-              "RelativeDocumentMoniker": "Form1.vb",
-              "ToolTip": "S:\\Source\\Tens\\Windows\\Tens25\\Form1.vb",
-              "RelativeToolTip": "Form1.vb",
-              "ViewState": "AgIAAMwDAAAAAAAAAAASwN0DAAAIAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
-              "WhenOpened": "2025-01-10T05:53:37.633Z",
-              "IsPinned": true
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "UserControlPrograms.vb [Design]",
-              "DocumentMoniker": "S:\\Source\\Tens\\Windows\\Tens25\\UserControlPrograms.vb",
-              "RelativeDocumentMoniker": "UserControlPrograms.vb",
-              "ToolTip": "S:\\Source\\Tens\\Windows\\Tens25\\UserControlPrograms.vb [Design]",
-              "RelativeToolTip": "UserControlPrograms.vb [Design]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
-              "WhenOpened": "2025-01-22T19:11:51.729Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "UserControlProgLine2.vb",
-              "DocumentMoniker": "S:\\Source\\Tens\\Windows\\Tens25\\UserControlProgLine2.vb",
-              "RelativeDocumentMoniker": "UserControlProgLine2.vb",
-              "ToolTip": "S:\\Source\\Tens\\Windows\\Tens25\\UserControlProgLine2.vb",
-              "RelativeToolTip": "UserControlProgLine2.vb",
-              "ViewState": "AgIAAG4DAAAAAAAAAAAWwIADAAAIAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
-              "WhenOpened": "2025-01-22T18:08:22.794Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "UserControlProgLine2.vb [Design]",
-              "DocumentMoniker": "S:\\Source\\Tens\\Windows\\Tens25\\UserControlProgLine2.vb",
-              "RelativeDocumentMoniker": "UserControlProgLine2.vb",
-              "ToolTip": "S:\\Source\\Tens\\Windows\\Tens25\\UserControlProgLine2.vb [Design]",
-              "RelativeToolTip": "UserControlProgLine2.vb [Design]",
+              "Title": "Form1.vb [Design]",
+              "DocumentMoniker": "C:\\Users\\Alex.ST-EL\\source\\repos\\Ten25\\Win64\\Form1.vb",
+              "RelativeDocumentMoniker": "Form1.vb",
+              "ToolTip": "C:\\Users\\Alex.ST-EL\\source\\repos\\Ten25\\Win64\\Form1.vb [Design]",
+              "RelativeToolTip": "Form1.vb [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
-              "WhenOpened": "2025-01-22T16:20:56.516Z",
+              "WhenOpened": "2025-01-10T05:53:22.401Z",
               "EditorCaption": " [Design]"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "UserControlPrograms.vb",
-              "DocumentMoniker": "S:\\Source\\Tens\\Windows\\Tens25\\UserControlPrograms.vb",
-              "RelativeDocumentMoniker": "UserControlPrograms.vb",
-              "ToolTip": "S:\\Source\\Tens\\Windows\\Tens25\\UserControlPrograms.vb",
-              "RelativeToolTip": "UserControlPrograms.vb",
-              "ViewState": "AgIAAGAAAAAAAAAAAADwv3QAAAAQAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
-              "WhenOpened": "2025-01-22T15:02:40.455Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "UserControlProgLine1.vb [Design]",
-              "DocumentMoniker": "S:\\Source\\Tens\\Windows\\Tens25\\UserControlProgLine1.vb",
-              "RelativeDocumentMoniker": "UserControlProgLine1.vb",
-              "ToolTip": "S:\\Source\\Tens\\Windows\\Tens25\\UserControlProgLine1.vb [Design]",
-              "RelativeToolTip": "UserControlProgLine1.vb [Design]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
-              "WhenOpened": "2025-01-14T05:03:30.532Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "UserControlProgLine1.vb",
-              "DocumentMoniker": "S:\\Source\\Tens\\Windows\\Tens25\\UserControlProgLine1.vb",
-              "RelativeDocumentMoniker": "UserControlProgLine1.vb",
-              "ToolTip": "S:\\Source\\Tens\\Windows\\Tens25\\UserControlProgLine1.vb",
-              "RelativeToolTip": "UserControlProgLine1.vb",
-              "ViewState": "AgIAAHQDAAAAAAAAAAAAwJcDAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
-              "WhenOpened": "2025-01-14T04:25:30.717Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "comDef.vb",
-              "DocumentMoniker": "S:\\Source\\Tens\\Windows\\Tens25\\comDef.vb",
-              "RelativeDocumentMoniker": "comDef.vb",
-              "ToolTip": "S:\\Source\\Tens\\Windows\\Tens25\\comDef.vb",
-              "RelativeToolTip": "comDef.vb",
-              "ViewState": "AgIAAGcAAAAAAAAAAAAYwH0AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
-              "WhenOpened": "2025-01-10T19:04:29.959Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "Form1.vb [Design]",
-              "DocumentMoniker": "S:\\Source\\Tens\\Windows\\Tens25\\Form1.vb",
-              "RelativeDocumentMoniker": "Form1.vb",
-              "ToolTip": "S:\\Source\\Tens\\Windows\\Tens25\\Form1.vb [Design]",
-              "RelativeToolTip": "Form1.vb [Design]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
-              "WhenOpened": "2025-01-10T05:53:22.401Z"
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             }
           ]
         },
         {
           "DockedHeight": 21,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "ChannelUserControl.Designer.vb",
-              "DocumentMoniker": "S:\\Source\\Tens\\Windows\\Tens25\\ChannelUserControl.Designer.vb",
-              "RelativeDocumentMoniker": "ChannelUserControl.Designer.vb",
-              "ToolTip": "S:\\Source\\Tens\\Windows\\Tens25\\ChannelUserControl.Designer.vb",
-              "RelativeToolTip": "ChannelUserControl.Designer.vb",
-              "ViewState": "AgIAAC8BAAAAAAAAAAAswBsBAAAXAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003361|",
-              "WhenOpened": "2025-01-10T08:31:22.236Z",
-              "EditorCaption": ""
             }
           ]
         }
