@@ -3,3 +3,50 @@
 ################################################################################
 
 /.vs/Ten25/v17
+
+# Visual Studio / VB.NET / C# Builds
+bin/
+obj/
+[Bb]in/
+[Oo]bj/
+*.exe
+*.pdb
+*.dll
+*.config
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# NuGet Packages (if you add any later)
+packages/
+packages.lock.json
+!packages/build/
+
+# Logs and temps
+*.log
+*.tmp
+*.cache
+
+# Windows junk
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# STM32 CubeIDE (prep for your Firmware folder)
+# (Add these when you create /Firmware/)
+/Firmware/.mxproject
+/Firmware/.cproject
+/Firmware/.project
+/Firmware/.settings/
+/Firmware/Debug/
+/Firmware/Release/
+/Firmware/EWARM/
+/Firmware/STM32CubeIDE/
+/Firmware/Drivers/CMSIS/
+/Firmware/*.launch
+/Firmware/*.uvguix.*
+/Firmware/*.ioc.bak
+
