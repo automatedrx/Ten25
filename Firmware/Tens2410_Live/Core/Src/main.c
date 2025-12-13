@@ -27,8 +27,8 @@
 #include <stdlib.h>
 #include <rfm69.h>
 #include "tens.h"
-#include <pushButton.h>
-#include <encoder.h>
+#include "pushButton.h"
+#include "encoder.h"
 #include "comDef.h"
 /* USER CODE END Includes */
 
