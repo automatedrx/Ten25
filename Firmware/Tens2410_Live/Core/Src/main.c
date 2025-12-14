@@ -30,6 +30,7 @@
 #include "pushButton.h"
 #include "encoder.h"
 #include "comDef.h"
+#include "audio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -60,6 +61,7 @@ DAC_HandleTypeDef hdac1;
 
 DFSDM_Filter_HandleTypeDef hdfsdm1_filter0;
 DFSDM_Channel_HandleTypeDef hdfsdm1_channel1;
+DFSDM_Channel_HandleTypeDef hdfsdm1_channel2;
 DMA_HandleTypeDef hdma_dfsdm1_flt0;
 
 UART_HandleTypeDef hlpuart1;
@@ -86,35 +88,38 @@ TIM_HandleTypeDef htim17;
 /* USER CODE BEGIN PV */
 
 //=== AUDIO ===//
-#include "arm_math.h"  // CMSIS DSP library for FFT
-#define AUDIO_BUFFER_SIZE 1024 //1024  // Samples for FFT
-#define FFT_SIZE (AUDIO_BUFFER_SIZE/2)
-#define SAMPLE_RATE 16000       // 16kHz sampling rate
+Audio_HandleTypeDef haud;
 
-int32_t audio_buffer_left[AUDIO_BUFFER_SIZE];
-//int32_t audio_buffer_right[AUDIO_BUFFER_SIZE];
-float_t fft_input[AUDIO_BUFFER_SIZE];
-float_t fft_output[FFT_SIZE];
-float_t fft_magnitude[FFT_SIZE];
 
-// Frequency band results (0-100 scale)
-#define NUM_FREQ_BANDS 5//38
-uint8_t frequency_bands[NUM_FREQ_BANDS];
-float32_t smoothed_bands[NUM_FREQ_BANDS] = {0};  // Holds the smoothed values (float for precision)
-
-// AGC parameters
-#define SMOOTHING_ALPHA 1.0f //0.2f      // Smoothing factor for bands (0 < alpha <= 1)
-#define AGC_ALPHA 0.02f //0.05f           // Smoothing factor for AGC gain (slower response)
-#define TARGET_LEVEL 50.0f //25.0f //50.0f        // Target average band level (0-100 scale)
-#define MAX_GAIN 30.0f            // Maximum gain to prevent noise amplification
-float32_t agc_gain = 1.0f;        // Initial AGC gain
-
-// CMSIS DSP FFT instance
-arm_rfft_fast_instance_f32 fft_handler;
+//#include "arm_math.h"  // CMSIS DSP library for FFT
+//#define AUDIO_BUFFER_SIZE 1024 //1024  // Samples for FFT
+//#define FFT_SIZE (AUDIO_BUFFER_SIZE/2)
+//#define SAMPLE_RATE 16000       // 16kHz sampling rate
+//
+//int32_t audio_buffer_left[AUDIO_BUFFER_SIZE];
+////int32_t audio_buffer_right[AUDIO_BUFFER_SIZE];
+//float_t fft_input[AUDIO_BUFFER_SIZE];
+//float_t fft_output[FFT_SIZE];
+//float_t fft_magnitude[FFT_SIZE];
+//
+//// Frequency band results (0-100 scale)
+//#define NUM_FREQ_BANDS 8//5//38
+//uint8_t frequency_bands[NUM_FREQ_BANDS];
+//float32_t smoothed_bands[NUM_FREQ_BANDS] = {0};  // Holds the smoothed values (float for precision)
+//
+//// AGC parameters
+//#define SMOOTHING_ALPHA 1.0f //0.2f      // Smoothing factor for bands (0 < alpha <= 1)
+//#define AGC_ALPHA 0.02f //0.05f           // Smoothing factor for AGC gain (slower response)
+//#define TARGET_LEVEL 50.0f //25.0f //50.0f        // Target average band level (0-100 scale)
+//#define MAX_GAIN 30.0f            // Maximum gain to prevent noise amplification
+//float32_t agc_gain = 1.0f;        // Initial AGC gain
+//
+//// CMSIS DSP FFT instance
+//arm_rfft_fast_instance_f32 fft_handler;
 
 // Flags
-volatile uint8_t audioBufferFull = 0;
-volatile bool audioEnabled = true;
+//volatile uint8_t audioBufferFull = 0;
+//volatile bool audioEnabled = true;
 
 
 
@@ -568,109 +573,109 @@ void checkImu(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void initAudio(void){
-	//Start audio filtering system
-	// Initialize CMSIS FFT
-	arm_rfft_fast_init_f32(&fft_handler, FFT_SIZE);
+//void initAudio(void){
+//	//Start audio filtering system
+//	// Initialize CMSIS FFT
+//	arm_rfft_fast_init_f32(&fft_handler, FFT_SIZE);
+//
+//	// Start DFSDM with DMA for both filters
+//	HAL_DFSDM_FilterRegularStart_DMA(&hdfsdm1_filter0, audio_buffer_left, AUDIO_BUFFER_SIZE);
+//	//2nd channel is disabled because the LCD SPI is using the DMA channel that is needed by the 2nd DFSDM channel.
+//	//HAL_DFSDM_FilterRegularStart_DMA(&hdfsdm1_filter1, audio_buffer_right, AUDIO_BUFFER_SIZE);
+//
+//	audioEnabled = true;
+//}
 
-	// Start DFSDM with DMA for both filters
-	HAL_DFSDM_FilterRegularStart_DMA(&hdfsdm1_filter0, audio_buffer_left, AUDIO_BUFFER_SIZE);
-	//2nd channel is disabled because the LCD SPI is using the DMA channel that is needed by the 2nd DFSDM channel.
-	//HAL_DFSDM_FilterRegularStart_DMA(&hdfsdm1_filter1, audio_buffer_right, AUDIO_BUFFER_SIZE);
+//void enableAudio(bool Enabled){
+//	audioEnabled = Enabled;
+//	if(Enabled == true){
+//		initAudio();
+//	}else{
+//		HAL_DFSDM_FilterRegularStop_DMA(&hdfsdm1_filter0);
+//		audioBufferFull = 0;
+//	}
+//}
+//
+//void checkAudio(void){
+//	if(audioBufferFull){
+//		processAudioData();
+//		analyzeFrequencyBands();
+//		audioBufferFull = 0;
+//	}
+//}
 
-	audioEnabled = true;
-}
-
-void enableAudio(bool Enabled){
-	audioEnabled = Enabled;
-	if(Enabled == true){
-		initAudio();
-	}else{
-		HAL_DFSDM_FilterRegularStop_DMA(&hdfsdm1_filter0);
-		audioBufferFull = 0;
-	}
-}
-
-void checkAudio(void){
-	if(audioBufferFull){
-		processAudioData();
-		analyzeFrequencyBands();
-		audioBufferFull = 0;
-	}
-}
-
-void processAudioData(void)
-{
-  // Process left channel (modify to combine channels if needed)
-  for (uint32_t i = 0; i < AUDIO_BUFFER_SIZE; i++)
-  {
-    fft_input[i] = (float32_t)audio_buffer_left[i] * 0.00003051757f; // Scale to [-1,1]
-    fft_input[i] *= (0.54f - 0.46f * arm_cos_f32(2 * PI * i / (AUDIO_BUFFER_SIZE - 1)));
-  }
-
-  arm_rfft_fast_f32(&fft_handler, fft_input, fft_output, 0);
-  arm_cmplx_mag_f32(fft_output, fft_magnitude, FFT_SIZE);
-}
-
-void analyzeFrequencyBands(void){
-	float32_t band_sums[NUM_FREQ_BANDS] = {0};
-	uint32_t bins_per_band = FFT_SIZE / NUM_FREQ_BANDS;
-	float32_t max_magnitude = 0;
-	float32_t avg_magnitude = 0;
-
-	// Calculate band sums and find max/avg magnitude
-	for (uint32_t i = 1; i < FFT_SIZE; i++){  // Skip DC component
-		uint32_t band = i / bins_per_band;
-	    if (band < NUM_FREQ_BANDS){
-	    	band_sums[band] += fft_magnitude[i];
-	    	avg_magnitude += fft_magnitude[i];
-	    	if (fft_magnitude[i] > max_magnitude)
-	    		max_magnitude = fft_magnitude[i];
-	    }
-	}
-	avg_magnitude /= (FFT_SIZE - 1);  // Average over non-DC bins
-
-	if (max_magnitude > 0){
-		// Calculate desired gain based on target level
-		float32_t current_level = 0;
-		for (uint8_t i = 0; i < NUM_FREQ_BANDS; i++){
-			float32_t normalized = band_sums[i] / (max_magnitude * bins_per_band) * 100.0f;
-			current_level += normalized;
-		}
-	    //current_level /= 5.0f;  // Average band level
-		current_level /= (NUM_FREQ_BANDS * 1.0f);  // Average band level
-
-	    // Update AGC gain with smoothing
-	    float32_t target_gain = (current_level > 0.1f) ? (TARGET_LEVEL / current_level) : MAX_GAIN;
-	    if (target_gain > MAX_GAIN) target_gain = MAX_GAIN;
-	    if (target_gain < 1.0f) target_gain = 1.0f;  // Don't attenuate below unity
-	    agc_gain = (AGC_ALPHA * target_gain) + ((1.0f - AGC_ALPHA) * agc_gain);
-
-	    // Apply gain and smoothing to bands
-	    for (uint8_t i = 0; i < NUM_FREQ_BANDS; i++){
-	    	float32_t normalized = band_sums[i] / (max_magnitude * bins_per_band);
-	    	float32_t current_value = normalized * 100.0f * agc_gain;
-
-	    	// Apply exponential moving average
-	    	smoothed_bands[i] = (SMOOTHING_ALPHA * current_value) + ((1.0f - SMOOTHING_ALPHA) * smoothed_bands[i]);
-
-	    	// Convert to uint8_t and clamp to 0-100
-	    	frequency_bands[i] = (uint8_t)smoothed_bands[i];
-	    	if (frequency_bands[i] > 100) frequency_bands[i] = 100;
-	    }
-
-	    tens.audioValLow = frequency_bands[0] + frequency_bands[1];
-	    if(tens.audioValLow > 100){
-	    	tens.audioValLow = 100;
-	    }
-	    tens.audioValMid = frequency_bands[2];
-	    tens.audioValHigh = frequency_bands[3];
-	    tens.audioValTotal = tens.audioValLow + tens.audioValMid + tens.audioValHigh;
-	    if(tens.audioValTotal > 100){
-	    	tens.audioValTotal = 100;
-	    }
-	}
-}
+//void processAudioData(void)
+//{
+//  // Process left channel (modify to combine channels if needed)
+//  for (uint32_t i = 0; i < AUDIO_BUFFER_SIZE; i++)
+//  {
+//    fft_input[i] = (float32_t)audio_buffer_left[i] * 0.00003051757f; // Scale to [-1,1]
+//    fft_input[i] *= (0.54f - 0.46f * arm_cos_f32(2 * PI * i / (AUDIO_BUFFER_SIZE - 1)));
+//  }
+//
+//  arm_rfft_fast_f32(&fft_handler, fft_input, fft_output, 0);
+//  arm_cmplx_mag_f32(fft_output, fft_magnitude, FFT_SIZE);
+//}
+//
+//void analyzeFrequencyBands(void){
+//	float32_t band_sums[NUM_FREQ_BANDS] = {0};
+//	uint32_t bins_per_band = FFT_SIZE / NUM_FREQ_BANDS;
+//	float32_t max_magnitude = 0;
+//	float32_t avg_magnitude = 0;
+//
+//	// Calculate band sums and find max/avg magnitude
+//	for (uint32_t i = 1; i < FFT_SIZE; i++){  // Skip DC component
+//		uint32_t band = i / bins_per_band;
+//	    if (band < NUM_FREQ_BANDS){
+//	    	band_sums[band] += fft_magnitude[i];
+//	    	avg_magnitude += fft_magnitude[i];
+//	    	if (fft_magnitude[i] > max_magnitude)
+//	    		max_magnitude = fft_magnitude[i];
+//	    }
+//	}
+//	avg_magnitude /= (FFT_SIZE - 1);  // Average over non-DC bins
+//
+//	if (max_magnitude > 0){
+//		// Calculate desired gain based on target level
+//		float32_t current_level = 0;
+//		for (uint8_t i = 0; i < NUM_FREQ_BANDS; i++){
+//			float32_t normalized = band_sums[i] / (max_magnitude * bins_per_band) * 100.0f;
+//			current_level += normalized;
+//		}
+//	    //current_level /= 5.0f;  // Average band level
+//		current_level /= (NUM_FREQ_BANDS * 1.0f);  // Average band level
+//
+//	    // Update AGC gain with smoothing
+//	    float32_t target_gain = (current_level > 0.1f) ? (TARGET_LEVEL / current_level) : MAX_GAIN;
+//	    if (target_gain > MAX_GAIN) target_gain = MAX_GAIN;
+//	    if (target_gain < 1.0f) target_gain = 1.0f;  // Don't attenuate below unity
+//	    agc_gain = (AGC_ALPHA * target_gain) + ((1.0f - AGC_ALPHA) * agc_gain);
+//
+//	    // Apply gain and smoothing to bands
+//	    for (uint8_t i = 0; i < NUM_FREQ_BANDS; i++){
+//	    	float32_t normalized = band_sums[i] / (max_magnitude * bins_per_band);
+//	    	float32_t current_value = normalized * 100.0f * agc_gain;
+//
+//	    	// Apply exponential moving average
+//	    	smoothed_bands[i] = (SMOOTHING_ALPHA * current_value) + ((1.0f - SMOOTHING_ALPHA) * smoothed_bands[i]);
+//
+//	    	// Convert to uint8_t and clamp to 0-100
+//	    	frequency_bands[i] = (uint8_t)smoothed_bands[i];
+//	    	if (frequency_bands[i] > 100) frequency_bands[i] = 100;
+//	    }
+//
+//	    tens.audioValLow = frequency_bands[0] + frequency_bands[1];
+//	    if(tens.audioValLow > 100){
+//	    	tens.audioValLow = 100;
+//	    }
+//	    tens.audioValMid = frequency_bands[2];
+//	    tens.audioValHigh = frequency_bands[3];
+//	    tens.audioValTotal = tens.audioValLow + tens.audioValMid + tens.audioValHigh;
+//	    if(tens.audioValTotal > 100){
+//	    	tens.audioValTotal = 100;
+//	    }
+//	}
+//}
 
 
 
@@ -3564,68 +3569,44 @@ bool displayAudioEqNeedsUpdated(void){
 		return false;
 	}
 
-//	for(uint8_t n=0; n<NUM_AUX_CHANNELS; n++){
-//		if( (smoothed_bands[n] / 5) != _lastDisplayedAudioEq[n])
-//			return true;
-//	}
-	if( (_lastDisplayedAudioEq[0] != tens.audioValTotal) ||
-			(_lastDisplayedAudioEq[1] != tens.audioValLow) ||
-			(_lastDisplayedAudioEq[2] != tens.audioValMid) ||
-			(_lastDisplayedAudioEq[3] != tens.audioValHigh) ){
-		return true;
-	}else{
-		return false;
+	for(uint8_t n=0; n<NUM_FREQ_BANDS; n++){
+		if(_lastDisplayedAudioEq[n] != tens.audioRef->freqBandVal[n])
+			return true;
 	}
+	return false;
 }
 
 void updateDisplayAudioEq(void){
-//	if(_displayEqEnabled == false){
-//		return;
-//	}
-//
-//	uint16_t tmpBarH=20, tmpY=79-tmpBarH, tmpBarW=(160 / (NUM_FREQ_BANDS-1) );
-//	uint16_t colorInactive=GRAY;
-//	uint16_t colorActive = GREEN;
-//
-//	uint16_t curX = 0;
-//	uint16_t activeH = 0;
-//	uint16_t inActiveH = 0;
-//	for(uint8_t n=0; n<(NUM_FREQ_BANDS-1); n++){
-//		curX = n * tmpBarW;
-//		activeH = frequency_bands[n] / 5;
-//		inActiveH = 20 - activeH;
-//		ST7735_FillRectCanvas(&canScreen, curX, tmpY, tmpBarW, inActiveH, colorInactive);
-//		ST7735_FillRectCanvas(&canScreen, curX, tmpY + inActiveH, tmpBarW, activeH, colorActive);
-//
-//	}
-
 	if(_displayEqEnabled == false){
 		return;
 	}
 
-	uint16_t tmpBarH=20, tmpY=79-tmpBarH, tmpBarW=(160 / 4 ); //4 = low + mid + high + total
+	uint16_t tmpBarH=20, tmpY=79-tmpBarH, tmpBarW=(160 / (NUM_FREQ_BANDS+2) ); //Add 1 spot for total and a blank spacer.
 	uint16_t colorInactive=GRAY;
 	uint16_t colorActive = GREEN;
 
-	uint8_t scaler = 100 / tmpBarH;
 	uint16_t curX = 0;
 	uint16_t activeH = 0;
 	uint16_t inActiveH = 0;
-	uint8_t tmpVals[] = {tens.audioValLow, tens.audioValMid, tens.audioValHigh, tens.audioValTotal};
-
-	for(uint8_t n=0; n<4; n++){
+	for(uint8_t n=0; n<(NUM_FREQ_BANDS+2); n++){
 		curX = n * tmpBarW;
-		if(n==3){
-			//Total bar.
-			tmpBarW /= 4;
-			curX = 159 - tmpBarW;
+		if(n<NUM_FREQ_BANDS){
+			//EQ display for freq band
+			activeH = tens.audioRef->freqBandVal[n] / (100 / tmpBarH);
+			_lastDisplayedAudioEq[n] = tens.audioRef->freqBandVal[n];
+		}else if(n == NUM_FREQ_BANDS){
+			//Empty space
+			activeH = 0;
+		}else{
+			//Total audio level
+			activeH = tens.audioRef->audioValTotal / (100 / tmpBarH);
 		}
-		activeH = tmpVals[n] / scaler; // frequency_bands[n] / 5;
+		activeH = (activeH <= 20 ? activeH : 20);
 		inActiveH = 20 - activeH;
+		inActiveH = (inActiveH <= 20 ? inActiveH : 20);
 		ST7735_FillRectCanvas(&canScreen, curX, tmpY, tmpBarW, inActiveH, colorInactive);
 		ST7735_FillRectCanvas(&canScreen, curX, tmpY + inActiveH, tmpBarW, activeH, colorActive);
 	}
-
 }
 
 void initTens(){
@@ -4221,7 +4202,10 @@ int main(void)
 
 
   //init audio
-  initAudio();
+  //initAudio();
+  AudioInit(&haud, &hdfsdm1_filter0);
+  tens.audioRef = &haud;
+
 
   //phtimLed = &htim2;
   phspiRadio = &hspi2;
@@ -4278,7 +4262,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  checkAudio();
+	  AudioCheck(&haud);
 
 	  checkAnalog();
 	  checkPower();
@@ -4298,6 +4282,27 @@ int main(void)
 	  TensLoop(&tens);
 	  tensMutex = 0;
 
+
+//	  //=====
+//	  static uint32_t debugTimer = 0;
+//	  if (HAL_GetTick() - debugTimer > 1000) {  // Every second
+//	      debugTimer = HAL_GetTick();
+//
+//	      bool anyNonZero = false;
+//	      for (uint32_t i = 0; i < 32; i++) {  // Check first 32 samples
+//	          if (haud.audio_buffer_interleaved[i] != 0) {
+//	              anyNonZero = true;
+//	              break;
+//	          }
+//	      }
+//
+//	      // Send via USB CDC (or UART if you have one)
+//	      char dbg[128];
+//	      sprintf(dbg, "Audio buffer non-zero: %d | First sample: %ld | Total: %d\r\n",
+//	              anyNonZero, haud.audio_buffer_interleaved[0], haud.audioValTotal);
+//	      //CDC_Transmit_FS((uint8_t*)dbg, strlen(dbg));
+//	  }
+//	  //=====
 
   }
   /* USER CODE END 3 */
@@ -4570,7 +4575,7 @@ static void MX_DFSDM1_Init(void)
   hdfsdm1_filter0.Init.RegularParam.Trigger = DFSDM_FILTER_SW_TRIGGER;
   hdfsdm1_filter0.Init.RegularParam.FastMode = ENABLE;
   hdfsdm1_filter0.Init.RegularParam.DmaMode = ENABLE;
-  hdfsdm1_filter0.Init.FilterParam.SincOrder = DFSDM_FILTER_SINC3_ORDER;
+  hdfsdm1_filter0.Init.FilterParam.SincOrder = DFSDM_FILTER_SINC4_ORDER;
   hdfsdm1_filter0.Init.FilterParam.Oversampling = 64;
   hdfsdm1_filter0.Init.FilterParam.IntOversampling = 1;
   if (HAL_DFSDM_FilterInit(&hdfsdm1_filter0) != HAL_OK)
@@ -4587,10 +4592,27 @@ static void MX_DFSDM1_Init(void)
   hdfsdm1_channel1.Init.SerialInterface.Type = DFSDM_CHANNEL_SPI_FALLING;
   hdfsdm1_channel1.Init.SerialInterface.SpiClock = DFSDM_CHANNEL_SPI_CLOCK_INTERNAL;
   hdfsdm1_channel1.Init.Awd.FilterOrder = DFSDM_CHANNEL_FASTSINC_ORDER;
-  hdfsdm1_channel1.Init.Awd.Oversampling = 10;
+  hdfsdm1_channel1.Init.Awd.Oversampling = 1;
   hdfsdm1_channel1.Init.Offset = 0;
-  hdfsdm1_channel1.Init.RightBitShift = 0x02;
+  hdfsdm1_channel1.Init.RightBitShift = 0x08;
   if (HAL_DFSDM_ChannelInit(&hdfsdm1_channel1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  hdfsdm1_channel2.Instance = DFSDM1_Channel2;
+  hdfsdm1_channel2.Init.OutputClock.Activation = ENABLE;
+  hdfsdm1_channel2.Init.OutputClock.Selection = DFSDM_CHANNEL_OUTPUT_CLOCK_AUDIO;
+  hdfsdm1_channel2.Init.OutputClock.Divider = 5;
+  hdfsdm1_channel2.Init.Input.Multiplexer = DFSDM_CHANNEL_EXTERNAL_INPUTS;
+  hdfsdm1_channel2.Init.Input.DataPacking = DFSDM_CHANNEL_STANDARD_MODE;
+  hdfsdm1_channel2.Init.Input.Pins = DFSDM_CHANNEL_SAME_CHANNEL_PINS;
+  hdfsdm1_channel2.Init.SerialInterface.Type = DFSDM_CHANNEL_SPI_RISING;
+  hdfsdm1_channel2.Init.SerialInterface.SpiClock = DFSDM_CHANNEL_SPI_CLOCK_INTERNAL;
+  hdfsdm1_channel2.Init.Awd.FilterOrder = DFSDM_CHANNEL_FASTSINC_ORDER;
+  hdfsdm1_channel2.Init.Awd.Oversampling = 1;
+  hdfsdm1_channel2.Init.Offset = 1;
+  hdfsdm1_channel2.Init.RightBitShift = 0x08;
+  if (HAL_DFSDM_ChannelInit(&hdfsdm1_channel2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -5336,8 +5358,8 @@ static void MX_DMA_Init(void)
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
+  /* USER CODE BEGIN MX_GPIO_Init_1 */
+  /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOE_CLK_ENABLE();
@@ -5469,16 +5491,21 @@ static void MX_GPIO_Init(void)
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
+  /* USER CODE BEGIN MX_GPIO_Init_2 */
+  /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
 
-void HAL_DFSDM_FilterRegConvCpltCallback(DFSDM_Filter_HandleTypeDef *hdfsdm_filter){
-	if (hdfsdm_filter == &hdfsdm1_filter0){  // Trigger on left channel complete
-		audioBufferFull = 1;
-	}
+//void HAL_DFSDM_FilterRegConvCpltCallback(DFSDM_Filter_HandleTypeDef *hdfsdm_filter){
+//	if (hdfsdm_filter == &hdfsdm1_filter0){  // Trigger on left channel complete
+//		audioBufferFull = 1;
+//	}
+//}
+void HAL_DFSDM_FilterRegConvCpltCallback(DFSDM_Filter_HandleTypeDef *hdfsdm_filter) {
+    if (hdfsdm_filter == &hdfsdm1_filter0) {
+        haud.bufferFull = true;  // haud is your global Audio_HandleTypeDef in main.c
+    }
 }
 
 
@@ -5533,8 +5560,7 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
-
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.

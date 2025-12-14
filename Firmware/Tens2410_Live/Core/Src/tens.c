@@ -1856,16 +1856,19 @@ uint32_t TensGetValue(Tens_HandleTypeDef* dev, enumDataSource dataSource, uint32
 			retVal = dev->imuRef->stepCount;
 			break;
 		case dssSetting_AudioTotal:
-			retVal = dev->audioValTotal;
+			//retVal = dev->audioValTotal;
+			retVal = dev->audioRef->audioValTotal;
 			break;
 		case dssSetting_AudioLow:
-			retVal = dev->audioValLow;
+			retVal = dev->audioRef->freqBandVal[0];
 			break;
 		case dssSetting_AudioMid:
-			retVal = dev->audioValMid;
+			//retVal = dev->audioValMid;
+			retVal = dev->audioRef->freqBandVal[3];
 			break;
 		case dssSetting_AudioHigh:
-			retVal = dev->audioValHigh;
+			//retVal = dev->audioValHigh;
+			retVal = dev->audioRef->freqBandVal[7];
 			break;
 
 

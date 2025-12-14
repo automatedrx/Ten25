@@ -3,17 +3,96 @@
 #include "math.h"
 
 
+//HAL_StatusTypeDef ImuInit(IMU_HandleTypeDef* dev, SPI_HandleTypeDef* Spi, GPIO_TypeDef* CS_Port, uint16_t CS_Pin, uint16_t Int1Pin, uint16_t Int2Pin){
+//    HAL_StatusTypeDef status;
+//    uint8_t regValue;
+//
+//    dev->imuSpi = Spi;
+//    dev->CSPort = CS_Port;
+//    dev->CSPin = CS_Pin;
+//
+//    dev->int1Pin = Int1Pin;
+//    dev->int2Pin = Int2Pin;
+//
+//    dev->stepIntPin = 0;	//This will need to be set after the init if using this function.
+//    dev->gyroIntPin = 0;	//This will need to be set after the init if using this function.
+//
+//    dev->gyroDataReady = false;
+//    dev->stepDataReady = false;
+//
+//    dev->stepCountEnabled = false;
+//    dev->stepCount = 0;
+//    dev->stepCountLastDisplayed = 0;
+//
+//    dev->accelData.x = 0;
+//    dev->accelData.y = 0;
+//    dev->accelData.z = 0;
+//    dev->gyroData.x = 0;
+//    dev->gyroData.y = 0;
+//    dev->gyroData.z = 0;
+//
+//    ImuResetOrientation(dev);
+//    //dev->curOrientation.roll = 0;
+//    //dev->curOrientation.pitch = 0;
+//    //dev->curOrientation.yaw = 0;
+//
+//    dev->upDirection = UP_Z_POS;  //picked random direction for starting out.
+//    dev->upDirectionLastDisplayed = UP_Z_POS;
+//
+//    ImuResetGlobalZRotation(dev);
+//    dev->globalZRotationLastDisplayed = 0;
+//
+//    // Step 1: Verify device ID
+//    status = ImuReadReg(dev, WHO_AM_I, &regValue, 1);
+//    if (status != HAL_OK || regValue != 0x6C) {
+//        return HAL_ERROR; // Failed to communicate or wrong device ID
+//    }
+//
+//    // Step 2: Configure Accelerometer (ODR 104 Hz, ±2g full scale)
+//    status = ImuWriteReg(dev, CTRL1_XL, 0x48); // 104 Hz (0b0100), ±2g (0b00), enable				//orig 0x40
+//    if (status != HAL_OK) return HAL_ERROR;
+//
+//    // Step 3: Configure Gyroscope (ODR 104 Hz, ±2000 dps full scale)
+//    status = ImuWriteReg(dev, CTRL2_G, 0x44); // 104 Hz (0b0100), ±2000 dps (0b11), enable			//orig 0x4C
+//    //status = ImuWriteReg(dev, CTRL2_G, 0x40); // 104 Hz (0b0100), ±2000 dps (0b11), enable
+//    if (status != HAL_OK) return HAL_ERROR;
+//
+//    // Step 4: Enable block data update and data-ready interrupt
+//    status = ImuWriteReg(dev, CTRL3_C, 0x44); // BDU (block data update) + IF_INC (auto increment)
+//    if (status != HAL_OK) return HAL_ERROR;
+//
+//    // Step 5: Configure Step Counter
+//    // Enable access to embedded functions
+//    status = ImuWriteReg(dev, FUNC_CFG_ACCESS, 0x80); // Enable embedded functions access
+//    if (status != HAL_OK) return HAL_ERROR;
+//
+//    // Set step counter threshold and debounce (example values)
+//    status = ImuWriteReg(dev, PEDO_THS_REG, 0x10); // Threshold for step detection //original val: 0x20
+//    if (status != HAL_OK) return HAL_ERROR;
+//    status = ImuWriteReg(dev, PEDO_DEB_REG, 0x01); // Debounce time  //original val: 0x03
+//    if (status != HAL_OK) return HAL_ERROR;
+//
+//    // Disable access to embedded functions
+//    status = ImuWriteReg(dev, FUNC_CFG_ACCESS, 0x00);
+//    if (status != HAL_OK) return HAL_ERROR;
+//
+//    // Enable step counter in CTRL10_C
+//    status = ImuWriteReg(dev, CTRL10_C, 0x00); // Enable step counter (bit 2)
+//    if (status != HAL_OK) return HAL_ERROR;
+//
+//    // Step 6: Configure Interrupts
+//    // INT1 for data-ready (accelerometer and gyroscope)
+//    status = ImuWriteReg(dev, INT1_CTRL, 0x03); // Enable INT1 for accelerometer (bit 1) and gyroscope (bit 0)
+//    if (status != HAL_OK) return HAL_ERROR;
+//
+//    // INT2 for step detection
+//    status = ImuWriteReg(dev, INT2_CTRL, 0x40); // Enable INT2 for step detection (bit 6)
+//    if (status != HAL_OK) return HAL_ERROR;
+//
+//    return HAL_OK; // Initialization successful
+//}
 
-
-
-
-
-
-
-
-
-
-
+//Grok edits:
 HAL_StatusTypeDef ImuInit(IMU_HandleTypeDef* dev, SPI_HandleTypeDef* Spi, GPIO_TypeDef* CS_Port, uint16_t CS_Pin, uint16_t Int1Pin, uint16_t Int2Pin){
     HAL_StatusTypeDef status;
     uint8_t regValue;
@@ -25,13 +104,13 @@ HAL_StatusTypeDef ImuInit(IMU_HandleTypeDef* dev, SPI_HandleTypeDef* Spi, GPIO_T
     dev->int1Pin = Int1Pin;
     dev->int2Pin = Int2Pin;
 
-    dev->stepIntPin = 0;	//This will need to be set after the init if using this function.
-    dev->gyroIntPin = 0;	//This will need to be set after the init if using this function.
+    dev->stepIntPin = Int2Pin;   // Using INT2 for step detection interrupt
+    dev->gyroIntPin = 0;         // Not using gyro interrupt for now
 
     dev->gyroDataReady = false;
     dev->stepDataReady = false;
 
-    dev->stepCountEnabled = false;
+    dev->stepCountEnabled = true;  // Now properly enabled
     dev->stepCount = 0;
     dev->stepCountLastDisplayed = 0;
 
@@ -43,11 +122,8 @@ HAL_StatusTypeDef ImuInit(IMU_HandleTypeDef* dev, SPI_HandleTypeDef* Spi, GPIO_T
     dev->gyroData.z = 0;
 
     ImuResetOrientation(dev);
-    //dev->curOrientation.roll = 0;
-    //dev->curOrientation.pitch = 0;
-    //dev->curOrientation.yaw = 0;
 
-    dev->upDirection = UP_Z_POS;  //picked random direction for starting out.
+    dev->upDirection = UP_Z_POS;  // Arbitrary starting point
     dev->upDirectionLastDisplayed = UP_Z_POS;
 
     ImuResetGlobalZRotation(dev);
@@ -56,51 +132,57 @@ HAL_StatusTypeDef ImuInit(IMU_HandleTypeDef* dev, SPI_HandleTypeDef* Spi, GPIO_T
     // Step 1: Verify device ID
     status = ImuReadReg(dev, WHO_AM_I, &regValue, 1);
     if (status != HAL_OK || regValue != 0x6C) {
-        return HAL_ERROR; // Failed to communicate or wrong device ID
+        return HAL_ERROR; // Failed to communicate or wrong device
     }
 
-    // Step 2: Configure Accelerometer (ODR 104 Hz, ±2g full scale)
-    status = ImuWriteReg(dev, CTRL1_XL, 0x48); // 104 Hz (0b0100), ±2g (0b00), enable				//orig 0x40
+    // Step 2: Configure Accelerometer (26 Hz low-power, ±2g — best for pedometer)
+    status = ImuWriteReg(dev, CTRL1_XL, 0x30);  // ODR=26Hz (0011), FS=±2g (00)
     if (status != HAL_OK) return HAL_ERROR;
 
-    // Step 3: Configure Gyroscope (ODR 104 Hz, ±2000 dps full scale)
-    status = ImuWriteReg(dev, CTRL2_G, 0x44); // 104 Hz (0b0100), ±2000 dps (0b11), enable			//orig 0x4C
-    //status = ImuWriteReg(dev, CTRL2_G, 0x40); // 104 Hz (0b0100), ±2000 dps (0b11), enable
+    // Step 3: Configure Gyroscope (104 Hz, ±2000 dps — keep your existing if needed)
+    status = ImuWriteReg(dev, CTRL2_G, 0x44);  // 104 Hz, ±2000 dps
     if (status != HAL_OK) return HAL_ERROR;
 
-    // Step 4: Enable block data update and data-ready interrupt
-    status = ImuWriteReg(dev, CTRL3_C, 0x44); // BDU (block data update) + IF_INC (auto increment)
+    // Step 4: Enable block data update + auto increment
+    status = ImuWriteReg(dev, CTRL3_C, 0x44);
     if (status != HAL_OK) return HAL_ERROR;
 
-    // Step 5: Configure Step Counter
-    // Enable access to embedded functions
-    status = ImuWriteReg(dev, FUNC_CFG_ACCESS, 0x80); // Enable embedded functions access
+    // Step 5: Enable embedded functions for pedometer
+    status = ImuWriteReg(dev, FUNC_CFG_ACCESS, 0x80);  // Enable embedded access
     if (status != HAL_OK) return HAL_ERROR;
 
-    // Set step counter threshold and debounce (example values)
-    status = ImuWriteReg(dev, PEDO_THS_REG, 0x10); // Threshold for step detection //original val: 0x20
-    if (status != HAL_OK) return HAL_ERROR;
-    status = ImuWriteReg(dev, PEDO_DEB_REG, 0x01); // Debounce time  //original val: 0x03
+    // Enable pedometer algorithm (bit 4 in EMB_FUNC_EN_B)
+    status = ImuWriteReg(dev, 0x05, 0x10);  // EMB_FUNC_EN_B |= 0x10
     if (status != HAL_OK) return HAL_ERROR;
 
-    // Disable access to embedded functions
+    // Optional: Enable false-positive rejection for better reliability
+    status = ImuWriteReg(dev, 0x15, 0x04);  // PEDO_CMD_REG: enable advanced rejection
+    if (status != HAL_OK) return HAL_ERROR;
+
+    // Optional tuning: threshold/debounce (start here, adjust based on testing)
+    status = ImuWriteReg(dev, 0x0F, 0x15);  // PEDO_THS_REG: higher = fewer false positives
+    if (status != HAL_OK) return HAL_ERROR;
+    status = ImuWriteReg(dev, 0x14, 0x09);  // PEDO_DEB_REG: more debounce
+    if (status != HAL_OK) return HAL_ERROR;
+
+    // Reset step counter (any write to PEDO_CMD_REG resets)
+    status = ImuWriteReg(dev, 0x15, 0x01);
+    if (status != HAL_OK) return HAL_ERROR;
+
+    // Disable embedded access
     status = ImuWriteReg(dev, FUNC_CFG_ACCESS, 0x00);
     if (status != HAL_OK) return HAL_ERROR;
 
-    // Enable step counter in CTRL10_C
-    status = ImuWriteReg(dev, CTRL10_C, 0x00); // Enable step counter (bit 2)
-    if (status != HAL_OK) return HAL_ERROR;
-
     // Step 6: Configure Interrupts
-    // INT1 for data-ready (accelerometer and gyroscope)
-    status = ImuWriteReg(dev, INT1_CTRL, 0x03); // Enable INT1 for accelerometer (bit 1) and gyroscope (bit 0)
+    // INT1 for accel/gyro data-ready
+    status = ImuWriteReg(dev, INT1_CTRL, 0x03);  // Accel + Gyro DRDY on INT1
     if (status != HAL_OK) return HAL_ERROR;
 
     // INT2 for step detection
-    status = ImuWriteReg(dev, INT2_CTRL, 0x40); // Enable INT2 for step detection (bit 6)
+    status = ImuWriteReg(dev, INT2_CTRL, 0x40);  // Step detector on INT2 (bit 6)
     if (status != HAL_OK) return HAL_ERROR;
 
-    return HAL_OK; // Initialization successful
+    return HAL_OK; // Success
 }
 
 
@@ -136,25 +218,48 @@ HAL_StatusTypeDef ImuReadReg(IMU_HandleTypeDef* dev, uint8_t reg, uint8_t *data,
 }
 
 
+//HAL_StatusTypeDef ImuReadStepCounter(IMU_HandleTypeDef* dev){
+//	uint8_t rxData[2];
+//	HAL_StatusTypeDef status;
+//
+//	// Read low byte
+//	status = ImuReadReg(dev, 0x42, &rxData[0], 1); // STEP_COUNTER_L
+//	if (status != HAL_OK) return status;
+//
+//	// Read high byte
+//	status = ImuReadReg(dev, 0x43, &rxData[1], 1); // STEP_COUNTER_H
+//	if (status != HAL_OK) return status;
+//
+//	// Combine low and high bytes into 16-bit step count
+//	dev->stepCount += (uint16_t)(rxData[1] << 8) | rxData[0];
+//
+//	// Clear the local interrupt flag indicating new data is ready to be read
+//	dev->stepDataReady = false;
+//
+//	return HAL_OK;
+//}
+
+//Grok edits:
 HAL_StatusTypeDef ImuReadStepCounter(IMU_HandleTypeDef* dev){
-	uint8_t rxData[2];
-	HAL_StatusTypeDef status;
+    uint8_t buf[2];
+    HAL_StatusTypeDef status;
 
-	// Read low byte
-	status = ImuReadReg(dev, 0x42, &rxData[0], 1); // STEP_COUNTER_L
-	if (status != HAL_OK) return status;
+    // Switch to embedded page
+    status = ImuWriteReg(dev, FUNC_CFG_ACCESS, 0x80);
+    if (status != HAL_OK) return status;
 
-	// Read high byte
-	status = ImuReadReg(dev, 0x43, &rxData[1], 1); // STEP_COUNTER_H
-	if (status != HAL_OK) return status;
+    // Read STEP_COUNTER_L/H (0x4B/0x4C)
+    status = ImuReadReg(dev, 0x4B, buf, 2);
+    if (status != HAL_OK) { ImuWriteReg(dev, FUNC_CFG_ACCESS, 0x00); return status; }
 
-	// Combine low and high bytes into 16-bit step count
-	dev->stepCount += (uint16_t)(rxData[1] << 8) | rxData[0];
+    // Back to normal page
+    ImuWriteReg(dev, FUNC_CFG_ACCESS, 0x00);
 
-	// Clear the local interrupt flag indicating new data is ready to be read
-	dev->stepDataReady = false;
+    uint16_t steps = (buf[1] << 8) | buf[0];
+    dev->stepCount += steps;  // Or set dev->stepCount = steps if you want absolute (resets on overflow)
 
-	return HAL_OK;
+    dev->stepDataReady = false;
+    return HAL_OK;
 }
 
 // Function to reset the step counter

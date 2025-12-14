@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include "comDef.h"
 #include "imu.h"
+#include "audio.h"
 
 #define		NUM_MOTOR_CHANNELS	2
 #ifdef DEVICE_BOARD_B
@@ -326,12 +327,13 @@ typedef struct {
 	char				displayReqCharsLast[DISPLAY_REQ_MAXLEN];
 	uint8_t				displayReqLen;
 
+//	uint8_t				audioSpectrumLevel[NUM_FREQ]
+//	uint8_t				audioValLow;	//Allows tens programs to access the audio level values
+//	uint8_t				audioValMid;
+//	uint8_t				audioValHigh;
+//	uint8_t				audioValTotal;
 
-	uint8_t				audioValLow;	//Allows tens programs to access the audio level values
-	uint8_t				audioValMid;
-	uint8_t				audioValHigh;
-	uint8_t				audioValTotal;
-
+	Audio_HandleTypeDef* audioRef;	//Allows tens programs to access the audio data
 	IMU_HandleTypeDef*	imuRef;		//Allows tens programs to access the imu data
 	TIM_HandleTypeDef* 	loopTimer;	//Reference to the timer that calls tensLoop.
 
