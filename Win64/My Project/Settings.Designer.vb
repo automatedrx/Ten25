@@ -57,6 +57,18 @@ Namespace My
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property projectPath() As String
+            Get
+                Return CType(Me("projectPath"),String)
+            End Get
+            Set
+                Me("projectPath") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
         Public Property lastComPort() As String
             Get
                 Return CType(Me("lastComPort"),String)
@@ -105,12 +117,36 @@ Namespace My
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("100")>  _
-        Public Property TensMaxOutputHigh() As String
+        Public Property TensMaxOutputHigh() As Integer
             Get
-                Return CType(Me("TensMaxOutputHigh"),String)
+                Return CType(Me("TensMaxOutputHigh"),Integer)
             End Get
             Set
                 Me("TensMaxOutputHigh") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("-1")>  _
+        Public Property DefaultNewDeviceType() As Integer
+            Get
+                Return CType(Me("DefaultNewDeviceType"),Integer)
+            End Get
+            Set
+                Me("DefaultNewDeviceType") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("-1")>  _
+        Public Property LastNewDeviceType() As Integer
+            Get
+                Return CType(Me("LastNewDeviceType"),Integer)
+            End Get
+            Set
+                Me("LastNewDeviceType") = value
             End Set
         End Property
     End Class
@@ -124,9 +160,9 @@ Namespace My
     Friend Module MySettingsProperty
         
         <Global.System.ComponentModel.Design.HelpKeywordAttribute("My.Settings")>  _
-        Friend ReadOnly Property Settings() As Global.Tens25.My.MySettings
+        Friend ReadOnly Property Settings() As Global.Tens2502.My.MySettings
             Get
-                Return Global.Tens25.My.MySettings.Default
+                Return Global.Tens2502.My.MySettings.Default
             End Get
         End Property
     End Module

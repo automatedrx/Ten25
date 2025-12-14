@@ -4,7 +4,7 @@ Partial Class Form1
 
     'Form overrides dispose to clean up the component list.
     <System.Diagnostics.DebuggerNonUserCode()>
-    Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+    Protected Overrides Sub Dispose(disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
                 components.Dispose()
@@ -22,638 +22,1440 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Me.components = New System.ComponentModel.Container()
+        components = New ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
-        Me.SerialPort1 = New System.IO.Ports.SerialPort(Me.components)
-        Me.TabControlMain = New System.Windows.Forms.TabControl()
-        Me.tabChannelMonitor = New System.Windows.Forms.TabPage()
-        Me.tsTabChanMon = New System.Windows.Forms.ToolStrip()
-        Me.ToolStripLabelAutoStatus = New System.Windows.Forms.ToolStripLabel()
-        Me.cmdtsChanMonAutoStatusOff = New System.Windows.Forms.ToolStripButton()
-        Me.cmdtsChanMon_AutoStatusFast = New System.Windows.Forms.ToolStripButton()
-        Me.cmdtsChanMon_AutoStatusSlow = New System.Windows.Forms.ToolStripButton()
-        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
-        Me.ToolStripLabel1 = New System.Windows.Forms.ToolStripLabel()
-        Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator()
-        Me.tsChanMonDDCmdTensMaxV = New System.Windows.Forms.ToolStripDropDownButton()
-        Me.tsCMTensMax_Low = New System.Windows.Forms.ToolStripMenuItem()
-        Me.tsCMTensMax_Med = New System.Windows.Forms.ToolStripMenuItem()
-        Me.tsCMTensMax_High = New System.Windows.Forms.ToolStripMenuItem()
-        Me.tabPrograms = New System.Windows.Forms.TabPage()
-        Me.splitConProgramsTab = New System.Windows.Forms.SplitContainer()
-        Me.Label3 = New System.Windows.Forms.Label()
-        Me.lblProgsTotalNumProgs = New System.Windows.Forms.Label()
-        Me.Label2 = New System.Windows.Forms.Label()
-        Me.Label1 = New System.Windows.Forms.Label()
-        Me.txtProgName = New System.Windows.Forms.TextBox()
-        Me.cboProgNumSelect = New System.Windows.Forms.ComboBox()
-        Me.msTabPrograms = New System.Windows.Forms.MenuStrip()
-        Me.FileToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.CreateNewProjectToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.OpenProjectFromComputerToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.GetProjectFromDeviceToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.SaveProjectToDeviceToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.SaveProjectToComputerToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ProgramToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.AddNewProgramToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ImportProgramFromFileToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ExportCurrentProgramToFileToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator()
-        Me.MoveCurrentProgramTowardsBeginningToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MoveCurrentProgramTowardsEndToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ToolStripSeparator5 = New System.Windows.Forms.ToolStripSeparator()
-        Me.DeleteCurrentProgramToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.EditToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.AddNewRowToEndToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.InsertNewRowToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MoveActiveRowUpToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MoveActiveRowDownToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ToolStripSeparator4 = New System.Windows.Forms.ToolStripSeparator()
-        Me.DeleteActiveRowToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ucProg = New Tens25.UserControlPrograms()
-        Me.tabSettings = New System.Windows.Forms.TabPage()
-        Me.tmrNewMessages = New System.Windows.Forms.Timer(Me.components)
-        Me.tmrStatusUpdates = New System.Windows.Forms.Timer(Me.components)
-        Me.SplitContainerMain = New System.Windows.Forms.SplitContainer()
-        Me.cmdStop = New System.Windows.Forms.Button()
-        Me.lblDevStatus = New System.Windows.Forms.Label()
-        Me.cmdConnect = New System.Windows.Forms.Button()
-        Me.cmdRefreshComportList = New System.Windows.Forms.Button()
-        Me.cboComPorts = New System.Windows.Forms.ComboBox()
-        Me.OpenFileDialogProject = New System.Windows.Forms.OpenFileDialog()
-        Me.SaveFileDialogProject = New System.Windows.Forms.SaveFileDialog()
-        Me.chkOffline = New System.Windows.Forms.CheckBox()
-        Me.TabControlMain.SuspendLayout()
-        Me.tabChannelMonitor.SuspendLayout()
-        Me.tsTabChanMon.SuspendLayout()
-        Me.tabPrograms.SuspendLayout()
-        CType(Me.splitConProgramsTab, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.splitConProgramsTab.Panel1.SuspendLayout()
-        Me.splitConProgramsTab.Panel2.SuspendLayout()
-        Me.splitConProgramsTab.SuspendLayout()
-        Me.msTabPrograms.SuspendLayout()
-        CType(Me.SplitContainerMain, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.SplitContainerMain.Panel1.SuspendLayout()
-        Me.SplitContainerMain.Panel2.SuspendLayout()
-        Me.SplitContainerMain.SuspendLayout()
-        Me.SuspendLayout()
-        '
-        'TabControlMain
-        '
-        Me.TabControlMain.Controls.Add(Me.tabChannelMonitor)
-        Me.TabControlMain.Controls.Add(Me.tabPrograms)
-        Me.TabControlMain.Controls.Add(Me.tabSettings)
-        Me.TabControlMain.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TabControlMain.Location = New System.Drawing.Point(0, 0)
-        Me.TabControlMain.Name = "TabControlMain"
-        Me.TabControlMain.SelectedIndex = 0
-        Me.TabControlMain.Size = New System.Drawing.Size(952, 508)
-        Me.TabControlMain.TabIndex = 9
-        '
-        'tabChannelMonitor
-        '
-        Me.tabChannelMonitor.AutoScroll = True
-        Me.tabChannelMonitor.BackColor = System.Drawing.SystemColors.Control
-        Me.tabChannelMonitor.Controls.Add(Me.tsTabChanMon)
-        Me.tabChannelMonitor.Location = New System.Drawing.Point(4, 22)
-        Me.tabChannelMonitor.Name = "tabChannelMonitor"
-        Me.tabChannelMonitor.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabChannelMonitor.Size = New System.Drawing.Size(1070, 482)
-        Me.tabChannelMonitor.TabIndex = 0
-        Me.tabChannelMonitor.Text = "Channel Monitor"
-        '
-        'tsTabChanMon
-        '
-        Me.tsTabChanMon.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripLabelAutoStatus, Me.cmdtsChanMonAutoStatusOff, Me.cmdtsChanMon_AutoStatusFast, Me.cmdtsChanMon_AutoStatusSlow, Me.ToolStripSeparator1, Me.ToolStripLabel1, Me.ToolStripSeparator2, Me.tsChanMonDDCmdTensMaxV})
-        Me.tsTabChanMon.Location = New System.Drawing.Point(3, 3)
-        Me.tsTabChanMon.Name = "tsTabChanMon"
-        Me.tsTabChanMon.Size = New System.Drawing.Size(1064, 25)
-        Me.tsTabChanMon.TabIndex = 0
-        Me.tsTabChanMon.Text = "ToolStrip1"
-        '
-        'ToolStripLabelAutoStatus
-        '
-        Me.ToolStripLabelAutoStatus.Name = "ToolStripLabelAutoStatus"
-        Me.ToolStripLabelAutoStatus.Size = New System.Drawing.Size(68, 22)
-        Me.ToolStripLabelAutoStatus.Text = "AutoStatus:"
-        '
-        'cmdtsChanMonAutoStatusOff
-        '
-        Me.cmdtsChanMonAutoStatusOff.Checked = True
-        Me.cmdtsChanMonAutoStatusOff.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.cmdtsChanMonAutoStatusOff.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.cmdtsChanMonAutoStatusOff.Image = CType(resources.GetObject("cmdtsChanMonAutoStatusOff.Image"), System.Drawing.Image)
-        Me.cmdtsChanMonAutoStatusOff.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.cmdtsChanMonAutoStatusOff.Name = "cmdtsChanMonAutoStatusOff"
-        Me.cmdtsChanMonAutoStatusOff.Size = New System.Drawing.Size(28, 22)
-        Me.cmdtsChanMonAutoStatusOff.Text = "Off"
-        Me.cmdtsChanMonAutoStatusOff.ToolTipText = "Turn  Autostatus Off"
-        '
-        'cmdtsChanMon_AutoStatusFast
-        '
-        Me.cmdtsChanMon_AutoStatusFast.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.cmdtsChanMon_AutoStatusFast.ImageTransparentColor = System.Drawing.Color.Transparent
-        Me.cmdtsChanMon_AutoStatusFast.Name = "cmdtsChanMon_AutoStatusFast"
-        Me.cmdtsChanMon_AutoStatusFast.Size = New System.Drawing.Size(32, 22)
-        Me.cmdtsChanMon_AutoStatusFast.Text = "Fast"
-        Me.cmdtsChanMon_AutoStatusFast.ToolTipText = "Turn AutoStatus on, FAST mode"
-        '
-        'cmdtsChanMon_AutoStatusSlow
-        '
-        Me.cmdtsChanMon_AutoStatusSlow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.cmdtsChanMon_AutoStatusSlow.ImageTransparentColor = System.Drawing.Color.Transparent
-        Me.cmdtsChanMon_AutoStatusSlow.Name = "cmdtsChanMon_AutoStatusSlow"
-        Me.cmdtsChanMon_AutoStatusSlow.Size = New System.Drawing.Size(36, 22)
-        Me.cmdtsChanMon_AutoStatusSlow.Text = "Slow"
-        Me.cmdtsChanMon_AutoStatusSlow.ToolTipText = "Turn Autostatus on, SLOW mode"
-        '
-        'ToolStripSeparator1
-        '
-        Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        Me.ToolStripSeparator1.Size = New System.Drawing.Size(6, 25)
-        '
-        'ToolStripLabel1
-        '
-        Me.ToolStripLabel1.Name = "ToolStripLabel1"
-        Me.ToolStripLabel1.Size = New System.Drawing.Size(19, 22)
-        Me.ToolStripLabel1.Text = "    "
-        '
-        'ToolStripSeparator2
-        '
-        Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
-        Me.ToolStripSeparator2.Size = New System.Drawing.Size(6, 25)
-        '
-        'tsChanMonDDCmdTensMaxV
-        '
-        Me.tsChanMonDDCmdTensMaxV.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
-        Me.tsChanMonDDCmdTensMaxV.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsCMTensMax_Low, Me.tsCMTensMax_Med, Me.tsCMTensMax_High})
-        Me.tsChanMonDDCmdTensMaxV.Image = CType(resources.GetObject("tsChanMonDDCmdTensMaxV.Image"), System.Drawing.Image)
-        Me.tsChanMonDDCmdTensMaxV.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tsChanMonDDCmdTensMaxV.Name = "tsChanMonDDCmdTensMaxV"
-        Me.tsChanMonDDCmdTensMaxV.Size = New System.Drawing.Size(135, 22)
-        Me.tsChanMonDDCmdTensMaxV.Text = "Max Tens Output:  0%"
-        '
-        'tsCMTensMax_Low
-        '
-        Me.tsCMTensMax_Low.Name = "tsCMTensMax_Low"
-        Me.tsCMTensMax_Low.Size = New System.Drawing.Size(181, 22)
-        Me.tsCMTensMax_Low.Text = "ToolStripMenuItem1"
-        '
-        'tsCMTensMax_Med
-        '
-        Me.tsCMTensMax_Med.Name = "tsCMTensMax_Med"
-        Me.tsCMTensMax_Med.Size = New System.Drawing.Size(181, 22)
-        Me.tsCMTensMax_Med.Text = "ToolStripMenuItem2"
-        '
-        'tsCMTensMax_High
-        '
-        Me.tsCMTensMax_High.Name = "tsCMTensMax_High"
-        Me.tsCMTensMax_High.Size = New System.Drawing.Size(181, 22)
-        Me.tsCMTensMax_High.Text = "ToolStripMenuItem3"
-        '
-        'tabPrograms
-        '
-        Me.tabPrograms.BackColor = System.Drawing.SystemColors.Control
-        Me.tabPrograms.Controls.Add(Me.splitConProgramsTab)
-        Me.tabPrograms.Location = New System.Drawing.Point(4, 22)
-        Me.tabPrograms.Name = "tabPrograms"
-        Me.tabPrograms.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabPrograms.Size = New System.Drawing.Size(944, 482)
-        Me.tabPrograms.TabIndex = 1
-        Me.tabPrograms.Text = "Programs"
-        '
-        'splitConProgramsTab
-        '
-        Me.splitConProgramsTab.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.splitConProgramsTab.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
-        Me.splitConProgramsTab.Location = New System.Drawing.Point(3, 3)
-        Me.splitConProgramsTab.Name = "splitConProgramsTab"
-        Me.splitConProgramsTab.Orientation = System.Windows.Forms.Orientation.Horizontal
-        '
-        'splitConProgramsTab.Panel1
-        '
-        Me.splitConProgramsTab.Panel1.Controls.Add(Me.Label3)
-        Me.splitConProgramsTab.Panel1.Controls.Add(Me.lblProgsTotalNumProgs)
-        Me.splitConProgramsTab.Panel1.Controls.Add(Me.Label2)
-        Me.splitConProgramsTab.Panel1.Controls.Add(Me.Label1)
-        Me.splitConProgramsTab.Panel1.Controls.Add(Me.txtProgName)
-        Me.splitConProgramsTab.Panel1.Controls.Add(Me.cboProgNumSelect)
-        Me.splitConProgramsTab.Panel1.Controls.Add(Me.msTabPrograms)
-        '
-        'splitConProgramsTab.Panel2
-        '
-        Me.splitConProgramsTab.Panel2.Controls.Add(Me.ucProg)
-        Me.splitConProgramsTab.Size = New System.Drawing.Size(938, 476)
-        Me.splitConProgramsTab.SplitterDistance = 63
-        Me.splitConProgramsTab.TabIndex = 4
-        '
-        'Label3
-        '
-        Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(200, 40)
-        Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(38, 13)
-        Me.Label3.TabIndex = 9
-        Me.Label3.Text = "Name:"
-        '
-        'lblProgsTotalNumProgs
-        '
-        Me.lblProgsTotalNumProgs.Location = New System.Drawing.Point(154, 40)
-        Me.lblProgsTotalNumProgs.Name = "lblProgsTotalNumProgs"
-        Me.lblProgsTotalNumProgs.Size = New System.Drawing.Size(34, 13)
-        Me.lblProgsTotalNumProgs.TabIndex = 8
-        Me.lblProgsTotalNumProgs.Text = "0"
-        '
-        'Label2
-        '
-        Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(129, 40)
-        Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(19, 13)
-        Me.Label2.TabIndex = 7
-        Me.Label2.Text = "of:"
-        '
-        'Label1
-        '
-        Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(13, 40)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(49, 13)
-        Me.Label1.TabIndex = 6
-        Me.Label1.Text = "Program:"
-        '
-        'txtProgName
-        '
-        Me.txtProgName.Location = New System.Drawing.Point(244, 37)
-        Me.txtProgName.MaxLength = 10
-        Me.txtProgName.Name = "txtProgName"
-        Me.txtProgName.Size = New System.Drawing.Size(122, 20)
-        Me.txtProgName.TabIndex = 5
-        '
-        'cboProgNumSelect
-        '
-        Me.cboProgNumSelect.FormattingEnabled = True
-        Me.cboProgNumSelect.Location = New System.Drawing.Point(68, 37)
-        Me.cboProgNumSelect.Name = "cboProgNumSelect"
-        Me.cboProgNumSelect.Size = New System.Drawing.Size(55, 21)
-        Me.cboProgNumSelect.TabIndex = 2
-        '
-        'msTabPrograms
-        '
-        Me.msTabPrograms.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileToolStripMenuItem, Me.ProgramToolStripMenuItem, Me.EditToolStripMenuItem})
-        Me.msTabPrograms.Location = New System.Drawing.Point(0, 0)
-        Me.msTabPrograms.Name = "msTabPrograms"
-        Me.msTabPrograms.Size = New System.Drawing.Size(938, 24)
-        Me.msTabPrograms.TabIndex = 15
-        Me.msTabPrograms.Text = "MenuStrip1"
-        '
-        'FileToolStripMenuItem
-        '
-        Me.FileToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CreateNewProjectToolStripMenuItem, Me.OpenProjectFromComputerToolStripMenuItem, Me.GetProjectFromDeviceToolStripMenuItem, Me.SaveProjectToDeviceToolStripMenuItem, Me.SaveProjectToComputerToolStripMenuItem})
-        Me.FileToolStripMenuItem.Name = "FileToolStripMenuItem"
-        Me.FileToolStripMenuItem.Size = New System.Drawing.Size(37, 20)
-        Me.FileToolStripMenuItem.Text = "File"
-        '
-        'CreateNewProjectToolStripMenuItem
-        '
-        Me.CreateNewProjectToolStripMenuItem.Name = "CreateNewProjectToolStripMenuItem"
-        Me.CreateNewProjectToolStripMenuItem.Size = New System.Drawing.Size(231, 22)
-        Me.CreateNewProjectToolStripMenuItem.Text = "Create New Project"
-        '
-        'OpenProjectFromComputerToolStripMenuItem
-        '
-        Me.OpenProjectFromComputerToolStripMenuItem.Name = "OpenProjectFromComputerToolStripMenuItem"
-        Me.OpenProjectFromComputerToolStripMenuItem.Size = New System.Drawing.Size(231, 22)
-        Me.OpenProjectFromComputerToolStripMenuItem.Text = "Open Project From Computer"
-        '
-        'GetProjectFromDeviceToolStripMenuItem
-        '
-        Me.GetProjectFromDeviceToolStripMenuItem.Name = "GetProjectFromDeviceToolStripMenuItem"
-        Me.GetProjectFromDeviceToolStripMenuItem.Size = New System.Drawing.Size(231, 22)
-        Me.GetProjectFromDeviceToolStripMenuItem.Text = "Get Project From Device"
-        '
-        'SaveProjectToDeviceToolStripMenuItem
-        '
-        Me.SaveProjectToDeviceToolStripMenuItem.Name = "SaveProjectToDeviceToolStripMenuItem"
-        Me.SaveProjectToDeviceToolStripMenuItem.Size = New System.Drawing.Size(231, 22)
-        Me.SaveProjectToDeviceToolStripMenuItem.Text = "Save Project To Device"
-        '
-        'SaveProjectToComputerToolStripMenuItem
-        '
-        Me.SaveProjectToComputerToolStripMenuItem.Name = "SaveProjectToComputerToolStripMenuItem"
-        Me.SaveProjectToComputerToolStripMenuItem.Size = New System.Drawing.Size(231, 22)
-        Me.SaveProjectToComputerToolStripMenuItem.Text = "Save Project To Computer"
-        '
-        'ProgramToolStripMenuItem
-        '
-        Me.ProgramToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddNewProgramToolStripMenuItem, Me.ImportProgramFromFileToolStripMenuItem, Me.ExportCurrentProgramToFileToolStripMenuItem, Me.ToolStripSeparator3, Me.MoveCurrentProgramTowardsBeginningToolStripMenuItem, Me.MoveCurrentProgramTowardsEndToolStripMenuItem, Me.ToolStripSeparator5, Me.DeleteCurrentProgramToolStripMenuItem})
-        Me.ProgramToolStripMenuItem.Name = "ProgramToolStripMenuItem"
-        Me.ProgramToolStripMenuItem.Size = New System.Drawing.Size(65, 20)
-        Me.ProgramToolStripMenuItem.Text = "Program"
-        '
-        'AddNewProgramToolStripMenuItem
-        '
-        Me.AddNewProgramToolStripMenuItem.Name = "AddNewProgramToolStripMenuItem"
-        Me.AddNewProgramToolStripMenuItem.Size = New System.Drawing.Size(299, 22)
-        Me.AddNewProgramToolStripMenuItem.Text = "Add New (Blank) Program"
-        '
-        'ImportProgramFromFileToolStripMenuItem
-        '
-        Me.ImportProgramFromFileToolStripMenuItem.Name = "ImportProgramFromFileToolStripMenuItem"
-        Me.ImportProgramFromFileToolStripMenuItem.Size = New System.Drawing.Size(299, 22)
-        Me.ImportProgramFromFileToolStripMenuItem.Text = "Import Program from File"
-        '
-        'ExportCurrentProgramToFileToolStripMenuItem
-        '
-        Me.ExportCurrentProgramToFileToolStripMenuItem.Name = "ExportCurrentProgramToFileToolStripMenuItem"
-        Me.ExportCurrentProgramToFileToolStripMenuItem.Size = New System.Drawing.Size(299, 22)
-        Me.ExportCurrentProgramToFileToolStripMenuItem.Text = "Export Current Program to File"
-        '
-        'ToolStripSeparator3
-        '
-        Me.ToolStripSeparator3.Name = "ToolStripSeparator3"
-        Me.ToolStripSeparator3.Size = New System.Drawing.Size(296, 6)
-        '
-        'MoveCurrentProgramTowardsBeginningToolStripMenuItem
-        '
-        Me.MoveCurrentProgramTowardsBeginningToolStripMenuItem.Name = "MoveCurrentProgramTowardsBeginningToolStripMenuItem"
-        Me.MoveCurrentProgramTowardsBeginningToolStripMenuItem.Size = New System.Drawing.Size(299, 22)
-        Me.MoveCurrentProgramTowardsBeginningToolStripMenuItem.Text = "Move Current Program Towards Beginning"
-        '
-        'MoveCurrentProgramTowardsEndToolStripMenuItem
-        '
-        Me.MoveCurrentProgramTowardsEndToolStripMenuItem.Name = "MoveCurrentProgramTowardsEndToolStripMenuItem"
-        Me.MoveCurrentProgramTowardsEndToolStripMenuItem.Size = New System.Drawing.Size(299, 22)
-        Me.MoveCurrentProgramTowardsEndToolStripMenuItem.Text = "Move Current Program Towards End"
-        '
-        'ToolStripSeparator5
-        '
-        Me.ToolStripSeparator5.Name = "ToolStripSeparator5"
-        Me.ToolStripSeparator5.Size = New System.Drawing.Size(296, 6)
-        '
-        'DeleteCurrentProgramToolStripMenuItem
-        '
-        Me.DeleteCurrentProgramToolStripMenuItem.Name = "DeleteCurrentProgramToolStripMenuItem"
-        Me.DeleteCurrentProgramToolStripMenuItem.Size = New System.Drawing.Size(299, 22)
-        Me.DeleteCurrentProgramToolStripMenuItem.Text = "Delete Current Program"
-        '
-        'EditToolStripMenuItem
-        '
-        Me.EditToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.AddNewRowToEndToolStripMenuItem, Me.InsertNewRowToolStripMenuItem, Me.MoveActiveRowUpToolStripMenuItem, Me.MoveActiveRowDownToolStripMenuItem, Me.ToolStripSeparator4, Me.DeleteActiveRowToolStripMenuItem})
-        Me.EditToolStripMenuItem.Name = "EditToolStripMenuItem"
-        Me.EditToolStripMenuItem.Size = New System.Drawing.Size(39, 20)
-        Me.EditToolStripMenuItem.Text = "Edit"
-        '
-        'AddNewRowToEndToolStripMenuItem
-        '
-        Me.AddNewRowToEndToolStripMenuItem.Name = "AddNewRowToEndToolStripMenuItem"
-        Me.AddNewRowToEndToolStripMenuItem.Size = New System.Drawing.Size(200, 22)
-        Me.AddNewRowToEndToolStripMenuItem.Text = "Add New Row to End"
-        '
-        'InsertNewRowToolStripMenuItem
-        '
-        Me.InsertNewRowToolStripMenuItem.Name = "InsertNewRowToolStripMenuItem"
-        Me.InsertNewRowToolStripMenuItem.Size = New System.Drawing.Size(200, 22)
-        Me.InsertNewRowToolStripMenuItem.Text = "Insert New Row"
-        '
-        'MoveActiveRowUpToolStripMenuItem
-        '
-        Me.MoveActiveRowUpToolStripMenuItem.Name = "MoveActiveRowUpToolStripMenuItem"
-        Me.MoveActiveRowUpToolStripMenuItem.Size = New System.Drawing.Size(200, 22)
-        Me.MoveActiveRowUpToolStripMenuItem.Text = "Move Active Row Up"
-        '
-        'MoveActiveRowDownToolStripMenuItem
-        '
-        Me.MoveActiveRowDownToolStripMenuItem.Name = "MoveActiveRowDownToolStripMenuItem"
-        Me.MoveActiveRowDownToolStripMenuItem.Size = New System.Drawing.Size(200, 22)
-        Me.MoveActiveRowDownToolStripMenuItem.Text = "Move Active Row Down"
-        '
-        'ToolStripSeparator4
-        '
-        Me.ToolStripSeparator4.Name = "ToolStripSeparator4"
-        Me.ToolStripSeparator4.Size = New System.Drawing.Size(197, 6)
-        '
-        'DeleteActiveRowToolStripMenuItem
-        '
-        Me.DeleteActiveRowToolStripMenuItem.Name = "DeleteActiveRowToolStripMenuItem"
-        Me.DeleteActiveRowToolStripMenuItem.Size = New System.Drawing.Size(200, 22)
-        Me.DeleteActiveRowToolStripMenuItem.Text = "Delete Active Row"
-        '
-        'ucProg
-        '
-        Me.ucProg.ActiveRow = -1
-        Me.ucProg.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.ucProg.Dock = System.Windows.Forms.DockStyle.Left
-        Me.ucProg.Location = New System.Drawing.Point(0, 0)
-        Me.ucProg.MinimumSize = New System.Drawing.Size(689, 30)
-        Me.ucProg.Name = "ucProg"
-        Me.ucProg.NumMotorChannels = 2
-        Me.ucProg.NumSysChannels = 1
-        Me.ucProg.NumTensChannels = 2
-        Me.ucProg.Size = New System.Drawing.Size(689, 409)
-        Me.ucProg.TabIndex = 4
-        '
-        'tabSettings
-        '
-        Me.tabSettings.BackColor = System.Drawing.SystemColors.Control
-        Me.tabSettings.Location = New System.Drawing.Point(4, 22)
-        Me.tabSettings.Name = "tabSettings"
-        Me.tabSettings.Size = New System.Drawing.Size(1070, 482)
-        Me.tabSettings.TabIndex = 2
-        Me.tabSettings.Text = "Settings"
-        '
-        'tmrNewMessages
-        '
-        Me.tmrNewMessages.Enabled = True
-        Me.tmrNewMessages.Interval = 1
-        '
-        'tmrStatusUpdates
-        '
-        Me.tmrStatusUpdates.Interval = 50
-        '
-        'SplitContainerMain
-        '
-        Me.SplitContainerMain.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.SplitContainerMain.FixedPanel = System.Windows.Forms.FixedPanel.Panel1
-        Me.SplitContainerMain.Location = New System.Drawing.Point(0, 0)
-        Me.SplitContainerMain.Name = "SplitContainerMain"
-        Me.SplitContainerMain.Orientation = System.Windows.Forms.Orientation.Horizontal
-        '
-        'SplitContainerMain.Panel1
-        '
-        Me.SplitContainerMain.Panel1.Controls.Add(Me.chkOffline)
-        Me.SplitContainerMain.Panel1.Controls.Add(Me.cmdStop)
-        Me.SplitContainerMain.Panel1.Controls.Add(Me.lblDevStatus)
-        Me.SplitContainerMain.Panel1.Controls.Add(Me.cmdConnect)
-        Me.SplitContainerMain.Panel1.Controls.Add(Me.cmdRefreshComportList)
-        Me.SplitContainerMain.Panel1.Controls.Add(Me.cboComPorts)
-        '
-        'SplitContainerMain.Panel2
-        '
-        Me.SplitContainerMain.Panel2.Controls.Add(Me.TabControlMain)
-        Me.SplitContainerMain.Size = New System.Drawing.Size(952, 537)
-        Me.SplitContainerMain.SplitterDistance = 25
-        Me.SplitContainerMain.TabIndex = 11
-        '
-        'cmdStop
-        '
-        Me.cmdStop.BackColor = System.Drawing.Color.Red
-        Me.cmdStop.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.cmdStop.ForeColor = System.Drawing.Color.White
-        Me.cmdStop.Location = New System.Drawing.Point(546, 2)
-        Me.cmdStop.Name = "cmdStop"
-        Me.cmdStop.Size = New System.Drawing.Size(75, 20)
-        Me.cmdStop.TabIndex = 4
-        Me.cmdStop.Text = "STOP"
-        Me.cmdStop.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
-        Me.cmdStop.UseVisualStyleBackColor = False
-        '
-        'lblDevStatus
-        '
-        Me.lblDevStatus.AutoSize = True
-        Me.lblDevStatus.Location = New System.Drawing.Point(248, 6)
-        Me.lblDevStatus.Name = "lblDevStatus"
-        Me.lblDevStatus.Size = New System.Drawing.Size(122, 13)
-        Me.lblDevStatus.TabIndex = 3
-        Me.lblDevStatus.Text = "No Device Connected..."
-        '
-        'cmdConnect
-        '
-        Me.cmdConnect.Location = New System.Drawing.Point(154, 2)
-        Me.cmdConnect.Name = "cmdConnect"
-        Me.cmdConnect.Size = New System.Drawing.Size(75, 20)
-        Me.cmdConnect.TabIndex = 2
-        Me.cmdConnect.Text = "Connect"
-        Me.cmdConnect.UseVisualStyleBackColor = True
-        '
-        'cmdRefreshComportList
-        '
-        Me.cmdRefreshComportList.BackgroundImage = Global.Tens25.My.Resources.Resources._159061
-        Me.cmdRefreshComportList.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch
-        Me.cmdRefreshComportList.FlatAppearance.BorderSize = 0
-        Me.cmdRefreshComportList.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.cmdRefreshComportList.Location = New System.Drawing.Point(130, 3)
-        Me.cmdRefreshComportList.Name = "cmdRefreshComportList"
-        Me.cmdRefreshComportList.Size = New System.Drawing.Size(18, 18)
-        Me.cmdRefreshComportList.TabIndex = 1
-        Me.cmdRefreshComportList.UseVisualStyleBackColor = True
-        '
-        'cboComPorts
-        '
-        Me.cboComPorts.FormattingEnabled = True
-        Me.cboComPorts.Location = New System.Drawing.Point(3, 3)
-        Me.cboComPorts.Name = "cboComPorts"
-        Me.cboComPorts.Size = New System.Drawing.Size(121, 21)
-        Me.cboComPorts.TabIndex = 0
-        '
-        'OpenFileDialogProject
-        '
-        Me.OpenFileDialogProject.DefaultExt = "tp"
-        Me.OpenFileDialogProject.FileName = "OpenFileDialog1"
-        Me.OpenFileDialogProject.Filter = "Tens Project Files|*.tp|All Files|*.*"
-        '
-        'SaveFileDialogProject
-        '
-        Me.SaveFileDialogProject.DefaultExt = "tp"
-        Me.SaveFileDialogProject.Filter = "Tens Project Files|*.tp|All Files|*.*"
-        '
-        'chkOffline
-        '
-        Me.chkOffline.AutoSize = True
-        Me.chkOffline.Location = New System.Drawing.Point(640, 4)
-        Me.chkOffline.Name = "chkOffline"
-        Me.chkOffline.Size = New System.Drawing.Size(56, 17)
-        Me.chkOffline.TabIndex = 5
-        Me.chkOffline.Text = "Offline"
-        Me.chkOffline.UseVisualStyleBackColor = True
-        '
-        'Form1
-        '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(952, 537)
-        Me.Controls.Add(Me.SplitContainerMain)
-        Me.MainMenuStrip = Me.msTabPrograms
-        Me.Name = "Form1"
-        Me.Text = "Ten 25"
-        Me.TabControlMain.ResumeLayout(False)
-        Me.tabChannelMonitor.ResumeLayout(False)
-        Me.tabChannelMonitor.PerformLayout()
-        Me.tsTabChanMon.ResumeLayout(False)
-        Me.tsTabChanMon.PerformLayout()
-        Me.tabPrograms.ResumeLayout(False)
-        Me.splitConProgramsTab.Panel1.ResumeLayout(False)
-        Me.splitConProgramsTab.Panel1.PerformLayout()
-        Me.splitConProgramsTab.Panel2.ResumeLayout(False)
-        CType(Me.splitConProgramsTab, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.splitConProgramsTab.ResumeLayout(False)
-        Me.msTabPrograms.ResumeLayout(False)
-        Me.msTabPrograms.PerformLayout()
-        Me.SplitContainerMain.Panel1.ResumeLayout(False)
-        Me.SplitContainerMain.Panel1.PerformLayout()
-        Me.SplitContainerMain.Panel2.ResumeLayout(False)
-        CType(Me.SplitContainerMain, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.SplitContainerMain.ResumeLayout(False)
-        Me.ResumeLayout(False)
-
+        lstProgDisplay = New ListBox()
+        cmsProgSentences = New ContextMenuStrip(components)
+        cmsPsInsertLine = New ToolStripMenuItem()
+        cmsPsDuplicateLine = New ToolStripMenuItem()
+        cmsPsAddLine = New ToolStripMenuItem()
+        ToolStripSeparator2 = New ToolStripSeparator()
+        cmsPsMoveLineUp = New ToolStripMenuItem()
+        cmsPsMoveLineDown = New ToolStripMenuItem()
+        ToolStripSeparator1 = New ToolStripSeparator()
+        cmsPsDeleteLine = New ToolStripMenuItem()
+        cmdAddRow = New Button()
+        cmdDeleteRow = New Button()
+        cmdMoveRowUp = New Button()
+        cmdInsertRow = New Button()
+        lstPrograms = New ListBox()
+        cmsPrograms = New ContextMenuStrip(components)
+        cmsProgAddBlankProgramToEnd = New ToolStripMenuItem()
+        cmsProgInsertBlankProgram = New ToolStripMenuItem()
+        cmsProgImportProgram = New ToolStripMenuItem()
+        cmsProgDuplicateProgram = New ToolStripMenuItem()
+        ToolStripSeparator3 = New ToolStripSeparator()
+        cmsProgMoveProgramTowardsBeginning = New ToolStripMenuItem()
+        cmsProgMoveProgramTowardsEnd = New ToolStripMenuItem()
+        ToolStripSeparator4 = New ToolStripSeparator()
+        cmsProgEditVarNames = New ToolStripMenuItem()
+        cmsProgEditTimerNames = New ToolStripMenuItem()
+        ToolStripSeparator13 = New ToolStripSeparator()
+        cmsProgDeleteProgram = New ToolStripMenuItem()
+        cmdMoveDown = New Button()
+        cmdDuplicateProgLine = New Button()
+        Button3 = New Button()
+        lblProgName = New Label()
+        txtProgName = New TextBox()
+        cmdEditVarNames = New Button()
+        tabBottom = New TabControl()
+        TabBottomProgram = New TabPage()
+        SplitContainer8 = New SplitContainer()
+        ToolStripContainer1 = New ToolStripContainer()
+        ToolStrip2 = New ToolStrip()
+        tscmdNewProject = New ToolStripButton()
+        ToolStripSeparator14 = New ToolStripSeparator()
+        tscmdOpenProjectFromFile = New ToolStripButton()
+        tscmdSaveProjectToFile = New ToolStripButton()
+        ToolStripSeparator15 = New ToolStripSeparator()
+        tscmdOpenProgramFromDevice = New ToolStripButton()
+        tscmdSaveProgramToDevice = New ToolStripButton()
+        Panel1 = New Panel()
+        SplitContainer1 = New SplitContainer()
+        SplitContainer5 = New SplitContainer()
+        chkLiveTrackLines = New CheckBox()
+        SplitContainer4 = New SplitContainer()
+        UcProgLineEdit1 = New ucProgLineEdit()
+        pnlProgramList = New Panel()
+        SplitContainer2 = New SplitContainer()
+        txtDeviceName = New TextBox()
+        Label4 = New Label()
+        lblDeviceType = New Label()
+        Label2 = New Label()
+        Label1 = New Label()
+        txtProjectName = New TextBox()
+        mnuTabProgram = New MenuStrip()
+        mnuMainProject = New ToolStripMenuItem()
+        CreateNewProjectToolStripMenuItem = New ToolStripMenuItem()
+        tsmDeviceType = New ToolStripMenuItem()
+        ToolStripSeparator11 = New ToolStripSeparator()
+        OpenProjectFromFileToolStripMenuItem = New ToolStripMenuItem()
+        SaveProjectToolStripMenuItem = New ToolStripMenuItem()
+        SaveProjectAsToolStripMenuItem = New ToolStripMenuItem()
+        ToolStripSeparator12 = New ToolStripSeparator()
+        OpenProjectFromDeviceToolStripMenuItem = New ToolStripMenuItem()
+        DownloadProjectToDeviceToolStripMenuItem = New ToolStripMenuItem()
+        mnuMainPrograms = New ToolStripMenuItem()
+        AddNewBlankProgramToolStripMenuItem = New ToolStripMenuItem()
+        mnuAddBlankProgramAtIndex = New ToolStripMenuItem()
+        mnuAddBlankProgramAtEnd = New ToolStripMenuItem()
+        ImportExistingProgramToolStripMenuItem = New ToolStripMenuItem()
+        mnuDuplicateProgram = New ToolStripMenuItem()
+        ToolStripSeparator5 = New ToolStripSeparator()
+        MoveProgramTowardsBeginningToolStripMenuItem = New ToolStripMenuItem()
+        MoveProgramTowardsEndToolStripMenuItem = New ToolStripMenuItem()
+        ToolStripSeparator6 = New ToolStripSeparator()
+        DeleteProgramToolStripMenuItem = New ToolStripMenuItem()
+        mnuProgLines = New ToolStripMenuItem()
+        mnuAddProgLine = New ToolStripMenuItem()
+        mnuInsertProgLine = New ToolStripMenuItem()
+        mnuDuplicateProgLine = New ToolStripMenuItem()
+        ToolStripSeparator7 = New ToolStripSeparator()
+        mnuMoveProgLineUp = New ToolStripMenuItem()
+        mnuMoveProgramLineDown = New ToolStripMenuItem()
+        ToolStripSeparator8 = New ToolStripSeparator()
+        mnuDeleteProgramLine = New ToolStripMenuItem()
+        ToolStripMenuItem2 = New ToolStripMenuItem()
+        TabPage2 = New TabPage()
+        SplitContainer3 = New SplitContainer()
+        SplitContainer6 = New SplitContainer()
+        SplitContainer7 = New SplitContainer()
+        ToolStrip1 = New ToolStrip()
+        cmdResets = New ToolStripDropDownButton()
+        cmdResetDevice = New ToolStripMenuItem()
+        cmdEraseDevice = New ToolStripMenuItem()
+        cboComPorts = New ToolStripComboBox()
+        cmdRefreshComportList = New ToolStripButton()
+        cmdConnect = New ToolStripButton()
+        ToolStripSeparator10 = New ToolStripSeparator()
+        ToolStripLabelAutoStatus = New ToolStripLabel()
+        cmdtsChanMonAutoStatusOff = New ToolStripButton()
+        cmdtsChanMonAutoStatusOn = New ToolStripButton()
+        ToolStripSeparator9 = New ToolStripSeparator()
+        lblDevStatus = New ToolStripLabel()
+        cmdStop = New Button()
+        UcChanControl1 = New ucChanControl()
+        cmdAutostatus = New ToolStripDropDownButton()
+        ofdProject = New OpenFileDialog()
+        sfdProject = New SaveFileDialog()
+        tmrNewMessages = New Timer(components)
+        StatusStrip1 = New StatusStrip()
+        ssmProgressBar = New ToolStripProgressBar()
+        ssmStatusText = New ToolStripStatusLabel()
+        bwDLProgFromDevice = New ComponentModel.BackgroundWorker()
+        bwULProgToDevice = New ComponentModel.BackgroundWorker()
+        tmrClearStatusbar = New Timer(components)
+        tmrCheckComportStatus = New Timer(components)
+        tmrCheckAutostatus = New Timer(components)
+        SplitContainer9 = New SplitContainer()
+        cmsProgSentences.SuspendLayout()
+        cmsPrograms.SuspendLayout()
+        tabBottom.SuspendLayout()
+        TabBottomProgram.SuspendLayout()
+        CType(SplitContainer8, ComponentModel.ISupportInitialize).BeginInit()
+        SplitContainer8.Panel1.SuspendLayout()
+        SplitContainer8.Panel2.SuspendLayout()
+        SplitContainer8.SuspendLayout()
+        ToolStripContainer1.TopToolStripPanel.SuspendLayout()
+        ToolStripContainer1.SuspendLayout()
+        ToolStrip2.SuspendLayout()
+        Panel1.SuspendLayout()
+        CType(SplitContainer1, ComponentModel.ISupportInitialize).BeginInit()
+        SplitContainer1.Panel1.SuspendLayout()
+        SplitContainer1.Panel2.SuspendLayout()
+        SplitContainer1.SuspendLayout()
+        CType(SplitContainer5, ComponentModel.ISupportInitialize).BeginInit()
+        SplitContainer5.Panel1.SuspendLayout()
+        SplitContainer5.Panel2.SuspendLayout()
+        SplitContainer5.SuspendLayout()
+        CType(SplitContainer4, ComponentModel.ISupportInitialize).BeginInit()
+        SplitContainer4.Panel1.SuspendLayout()
+        SplitContainer4.Panel2.SuspendLayout()
+        SplitContainer4.SuspendLayout()
+        pnlProgramList.SuspendLayout()
+        CType(SplitContainer2, ComponentModel.ISupportInitialize).BeginInit()
+        SplitContainer2.Panel1.SuspendLayout()
+        SplitContainer2.Panel2.SuspendLayout()
+        SplitContainer2.SuspendLayout()
+        mnuTabProgram.SuspendLayout()
+        CType(SplitContainer3, ComponentModel.ISupportInitialize).BeginInit()
+        SplitContainer3.Panel1.SuspendLayout()
+        SplitContainer3.Panel2.SuspendLayout()
+        SplitContainer3.SuspendLayout()
+        CType(SplitContainer6, ComponentModel.ISupportInitialize).BeginInit()
+        SplitContainer6.Panel1.SuspendLayout()
+        SplitContainer6.Panel2.SuspendLayout()
+        SplitContainer6.SuspendLayout()
+        CType(SplitContainer7, ComponentModel.ISupportInitialize).BeginInit()
+        SplitContainer7.Panel1.SuspendLayout()
+        SplitContainer7.Panel2.SuspendLayout()
+        SplitContainer7.SuspendLayout()
+        ToolStrip1.SuspendLayout()
+        StatusStrip1.SuspendLayout()
+        CType(SplitContainer9, ComponentModel.ISupportInitialize).BeginInit()
+        SplitContainer9.Panel1.SuspendLayout()
+        SplitContainer9.Panel2.SuspendLayout()
+        SplitContainer9.SuspendLayout()
+        SuspendLayout()
+        ' 
+        ' lstProgDisplay
+        ' 
+        lstProgDisplay.BackColor = SystemColors.Window
+        lstProgDisplay.ContextMenuStrip = cmsProgSentences
+        lstProgDisplay.Dock = DockStyle.Fill
+        lstProgDisplay.FormattingEnabled = True
+        lstProgDisplay.HorizontalScrollbar = True
+        lstProgDisplay.ItemHeight = 15
+        lstProgDisplay.Items.AddRange(New Object() {"Line 0: blah", "Line 1: foo", "Line 2: Bar"})
+        lstProgDisplay.Location = New Point(0, 0)
+        lstProgDisplay.Name = "lstProgDisplay"
+        lstProgDisplay.ScrollAlwaysVisible = True
+        lstProgDisplay.Size = New Size(730, 338)
+        lstProgDisplay.TabIndex = 3
+        ' 
+        ' cmsProgSentences
+        ' 
+        cmsProgSentences.ImageScalingSize = New Size(32, 32)
+        cmsProgSentences.Items.AddRange(New ToolStripItem() {cmsPsInsertLine, cmsPsDuplicateLine, cmsPsAddLine, ToolStripSeparator2, cmsPsMoveLineUp, cmsPsMoveLineDown, ToolStripSeparator1, cmsPsDeleteLine})
+        cmsProgSentences.Name = "cmsProgSentences"
+        cmsProgSentences.Size = New Size(245, 148)
+        ' 
+        ' cmsPsInsertLine
+        ' 
+        cmsPsInsertLine.Name = "cmsPsInsertLine"
+        cmsPsInsertLine.ShortcutKeys = Keys.Control Or Keys.Insert
+        cmsPsInsertLine.Size = New Size(244, 22)
+        cmsPsInsertLine.Text = "Insert Blank Line"
+        ' 
+        ' cmsPsDuplicateLine
+        ' 
+        cmsPsDuplicateLine.Name = "cmsPsDuplicateLine"
+        cmsPsDuplicateLine.ShortcutKeys = Keys.Control Or Keys.D
+        cmsPsDuplicateLine.Size = New Size(244, 22)
+        cmsPsDuplicateLine.Text = "Duplicate Line"
+        ' 
+        ' cmsPsAddLine
+        ' 
+        cmsPsAddLine.Name = "cmsPsAddLine"
+        cmsPsAddLine.ShortcutKeys = Keys.Control Or Keys.End
+        cmsPsAddLine.Size = New Size(244, 22)
+        cmsPsAddLine.Text = "Add Blank Line to End"
+        ' 
+        ' ToolStripSeparator2
+        ' 
+        ToolStripSeparator2.Name = "ToolStripSeparator2"
+        ToolStripSeparator2.Size = New Size(241, 6)
+        ' 
+        ' cmsPsMoveLineUp
+        ' 
+        cmsPsMoveLineUp.Name = "cmsPsMoveLineUp"
+        cmsPsMoveLineUp.ShortcutKeys = Keys.Control Or Keys.Up
+        cmsPsMoveLineUp.Size = New Size(244, 22)
+        cmsPsMoveLineUp.Text = "Move Line Up"
+        ' 
+        ' cmsPsMoveLineDown
+        ' 
+        cmsPsMoveLineDown.Name = "cmsPsMoveLineDown"
+        cmsPsMoveLineDown.ShortcutKeys = Keys.Control Or Keys.Down
+        cmsPsMoveLineDown.Size = New Size(244, 22)
+        cmsPsMoveLineDown.Text = "Move Line Down"
+        ' 
+        ' ToolStripSeparator1
+        ' 
+        ToolStripSeparator1.Name = "ToolStripSeparator1"
+        ToolStripSeparator1.Size = New Size(241, 6)
+        ' 
+        ' cmsPsDeleteLine
+        ' 
+        cmsPsDeleteLine.Name = "cmsPsDeleteLine"
+        cmsPsDeleteLine.ShortcutKeys = Keys.Control Or Keys.Delete
+        cmsPsDeleteLine.Size = New Size(244, 22)
+        cmsPsDeleteLine.Text = "Delete Line"
+        ' 
+        ' cmdAddRow
+        ' 
+        cmdAddRow.Location = New Point(428, 3)
+        cmdAddRow.Name = "cmdAddRow"
+        cmdAddRow.Size = New Size(93, 23)
+        cmdAddRow.TabIndex = 4
+        cmdAddRow.Text = "add blank line"
+        cmdAddRow.UseVisualStyleBackColor = True
+        ' 
+        ' cmdDeleteRow
+        ' 
+        cmdDeleteRow.Location = New Point(527, 24)
+        cmdDeleteRow.Name = "cmdDeleteRow"
+        cmdDeleteRow.Size = New Size(75, 23)
+        cmdDeleteRow.TabIndex = 5
+        cmdDeleteRow.Text = "delete"
+        cmdDeleteRow.UseVisualStyleBackColor = True
+        ' 
+        ' cmdMoveRowUp
+        ' 
+        cmdMoveRowUp.Location = New Point(608, 3)
+        cmdMoveRowUp.Name = "cmdMoveRowUp"
+        cmdMoveRowUp.Size = New Size(89, 23)
+        cmdMoveRowUp.TabIndex = 6
+        cmdMoveRowUp.Text = "move up"
+        cmdMoveRowUp.UseVisualStyleBackColor = True
+        ' 
+        ' cmdInsertRow
+        ' 
+        cmdInsertRow.Location = New Point(527, 3)
+        cmdInsertRow.Name = "cmdInsertRow"
+        cmdInsertRow.Size = New Size(75, 23)
+        cmdInsertRow.TabIndex = 7
+        cmdInsertRow.Text = "insert"
+        cmdInsertRow.UseVisualStyleBackColor = True
+        ' 
+        ' lstPrograms
+        ' 
+        lstPrograms.ContextMenuStrip = cmsPrograms
+        lstPrograms.Dock = DockStyle.Fill
+        lstPrograms.FormattingEnabled = True
+        lstPrograms.ItemHeight = 15
+        lstPrograms.Location = New Point(0, 0)
+        lstPrograms.Name = "lstPrograms"
+        lstPrograms.ScrollAlwaysVisible = True
+        lstPrograms.Size = New Size(136, 236)
+        lstPrograms.TabIndex = 8
+        ' 
+        ' cmsPrograms
+        ' 
+        cmsPrograms.ImageScalingSize = New Size(32, 32)
+        cmsPrograms.Items.AddRange(New ToolStripItem() {cmsProgAddBlankProgramToEnd, cmsProgInsertBlankProgram, cmsProgImportProgram, cmsProgDuplicateProgram, ToolStripSeparator3, cmsProgMoveProgramTowardsBeginning, cmsProgMoveProgramTowardsEnd, ToolStripSeparator4, cmsProgEditVarNames, cmsProgEditTimerNames, ToolStripSeparator13, cmsProgDeleteProgram})
+        cmsPrograms.Name = "cmsProgSentences"
+        cmsPrograms.Size = New Size(305, 220)
+        ' 
+        ' cmsProgAddBlankProgramToEnd
+        ' 
+        cmsProgAddBlankProgramToEnd.Name = "cmsProgAddBlankProgramToEnd"
+        cmsProgAddBlankProgramToEnd.Size = New Size(304, 22)
+        cmsProgAddBlankProgramToEnd.Text = "Add Blank Program to then End"
+        ' 
+        ' cmsProgInsertBlankProgram
+        ' 
+        cmsProgInsertBlankProgram.Name = "cmsProgInsertBlankProgram"
+        cmsProgInsertBlankProgram.Size = New Size(304, 22)
+        cmsProgInsertBlankProgram.Text = "Insert Blank Program"
+        ' 
+        ' cmsProgImportProgram
+        ' 
+        cmsProgImportProgram.Name = "cmsProgImportProgram"
+        cmsProgImportProgram.Size = New Size(304, 22)
+        cmsProgImportProgram.Text = "Import Existing Program"
+        ' 
+        ' cmsProgDuplicateProgram
+        ' 
+        cmsProgDuplicateProgram.Name = "cmsProgDuplicateProgram"
+        cmsProgDuplicateProgram.Size = New Size(304, 22)
+        cmsProgDuplicateProgram.Text = "Duplicate Program"
+        ' 
+        ' ToolStripSeparator3
+        ' 
+        ToolStripSeparator3.Name = "ToolStripSeparator3"
+        ToolStripSeparator3.Size = New Size(301, 6)
+        ' 
+        ' cmsProgMoveProgramTowardsBeginning
+        ' 
+        cmsProgMoveProgramTowardsBeginning.Name = "cmsProgMoveProgramTowardsBeginning"
+        cmsProgMoveProgramTowardsBeginning.ShortcutKeys = Keys.Control Or Keys.Left
+        cmsProgMoveProgramTowardsBeginning.Size = New Size(304, 22)
+        cmsProgMoveProgramTowardsBeginning.Text = "Move Program Towards Start"
+        ' 
+        ' cmsProgMoveProgramTowardsEnd
+        ' 
+        cmsProgMoveProgramTowardsEnd.Name = "cmsProgMoveProgramTowardsEnd"
+        cmsProgMoveProgramTowardsEnd.ShortcutKeys = Keys.Control Or Keys.Right
+        cmsProgMoveProgramTowardsEnd.Size = New Size(304, 22)
+        cmsProgMoveProgramTowardsEnd.Text = "Move Program Towards the End"
+        ' 
+        ' ToolStripSeparator4
+        ' 
+        ToolStripSeparator4.Name = "ToolStripSeparator4"
+        ToolStripSeparator4.Size = New Size(301, 6)
+        ' 
+        ' cmsProgEditVarNames
+        ' 
+        cmsProgEditVarNames.Name = "cmsProgEditVarNames"
+        cmsProgEditVarNames.Size = New Size(304, 22)
+        cmsProgEditVarNames.Text = "Prog Variable Names..."
+        ' 
+        ' cmsProgEditTimerNames
+        ' 
+        cmsProgEditTimerNames.Name = "cmsProgEditTimerNames"
+        cmsProgEditTimerNames.Size = New Size(304, 22)
+        cmsProgEditTimerNames.Text = "Prog Timer Names..."
+        ' 
+        ' ToolStripSeparator13
+        ' 
+        ToolStripSeparator13.Name = "ToolStripSeparator13"
+        ToolStripSeparator13.Size = New Size(301, 6)
+        ' 
+        ' cmsProgDeleteProgram
+        ' 
+        cmsProgDeleteProgram.Name = "cmsProgDeleteProgram"
+        cmsProgDeleteProgram.Size = New Size(304, 22)
+        cmsProgDeleteProgram.Text = "Delete Program"
+        ' 
+        ' cmdMoveDown
+        ' 
+        cmdMoveDown.Location = New Point(608, 25)
+        cmdMoveDown.Name = "cmdMoveDown"
+        cmdMoveDown.Size = New Size(89, 23)
+        cmdMoveDown.TabIndex = 9
+        cmdMoveDown.Text = "move down"
+        cmdMoveDown.UseVisualStyleBackColor = True
+        ' 
+        ' cmdDuplicateProgLine
+        ' 
+        cmdDuplicateProgLine.Location = New Point(428, 24)
+        cmdDuplicateProgLine.Name = "cmdDuplicateProgLine"
+        cmdDuplicateProgLine.Size = New Size(93, 23)
+        cmdDuplicateProgLine.TabIndex = 10
+        cmdDuplicateProgLine.Text = "duplicate line"
+        cmdDuplicateProgLine.UseVisualStyleBackColor = True
+        ' 
+        ' Button3
+        ' 
+        Button3.Location = New Point(16, 11)
+        Button3.Name = "Button3"
+        Button3.Size = New Size(75, 23)
+        Button3.TabIndex = 11
+        Button3.Text = "Enable"
+        Button3.UseVisualStyleBackColor = True
+        ' 
+        ' lblProgName
+        ' 
+        lblProgName.Location = New Point(20, 14)
+        lblProgName.Name = "lblProgName"
+        lblProgName.Size = New Size(117, 15)
+        lblProgName.TabIndex = 12
+        lblProgName.Text = "No Program Loaded."
+        lblProgName.TextAlign = ContentAlignment.MiddleRight
+        ' 
+        ' txtProgName
+        ' 
+        txtProgName.Location = New Point(143, 11)
+        txtProgName.MaxLength = 10
+        txtProgName.Name = "txtProgName"
+        txtProgName.Size = New Size(100, 23)
+        txtProgName.TabIndex = 13
+        ' 
+        ' cmdEditVarNames
+        ' 
+        cmdEditVarNames.Location = New Point(311, 10)
+        cmdEditVarNames.Name = "cmdEditVarNames"
+        cmdEditVarNames.Size = New Size(75, 23)
+        cmdEditVarNames.TabIndex = 15
+        cmdEditVarNames.Text = "Var Names"
+        cmdEditVarNames.UseVisualStyleBackColor = True
+        ' 
+        ' tabBottom
+        ' 
+        tabBottom.Controls.Add(TabBottomProgram)
+        tabBottom.Controls.Add(TabPage2)
+        tabBottom.Dock = DockStyle.Fill
+        tabBottom.Location = New Point(0, 0)
+        tabBottom.Name = "tabBottom"
+        tabBottom.SelectedIndex = 0
+        tabBottom.Size = New Size(1310, 489)
+        tabBottom.TabIndex = 16
+        ' 
+        ' TabBottomProgram
+        ' 
+        TabBottomProgram.Controls.Add(SplitContainer8)
+        TabBottomProgram.Controls.Add(mnuTabProgram)
+        TabBottomProgram.Location = New Point(4, 24)
+        TabBottomProgram.Name = "TabBottomProgram"
+        TabBottomProgram.Padding = New Padding(3)
+        TabBottomProgram.Size = New Size(1302, 461)
+        TabBottomProgram.TabIndex = 0
+        TabBottomProgram.Text = "Program"
+        TabBottomProgram.UseVisualStyleBackColor = True
+        ' 
+        ' SplitContainer8
+        ' 
+        SplitContainer8.Dock = DockStyle.Fill
+        SplitContainer8.FixedPanel = FixedPanel.Panel1
+        SplitContainer8.IsSplitterFixed = True
+        SplitContainer8.Location = New Point(3, 27)
+        SplitContainer8.Name = "SplitContainer8"
+        SplitContainer8.Orientation = Orientation.Horizontal
+        ' 
+        ' SplitContainer8.Panel1
+        ' 
+        SplitContainer8.Panel1.Controls.Add(ToolStripContainer1)
+        ' 
+        ' SplitContainer8.Panel2
+        ' 
+        SplitContainer8.Panel2.Controls.Add(Panel1)
+        SplitContainer8.Size = New Size(1296, 431)
+        SplitContainer8.SplitterDistance = 35
+        SplitContainer8.TabIndex = 21
+        ' 
+        ' ToolStripContainer1
+        ' 
+        ToolStripContainer1.BottomToolStripPanelVisible = False
+        ' 
+        ' ToolStripContainer1.ContentPanel
+        ' 
+        ToolStripContainer1.ContentPanel.Size = New Size(1296, 3)
+        ToolStripContainer1.Dock = DockStyle.Fill
+        ToolStripContainer1.LeftToolStripPanelVisible = False
+        ToolStripContainer1.Location = New Point(0, 0)
+        ToolStripContainer1.Name = "ToolStripContainer1"
+        ToolStripContainer1.RightToolStripPanelVisible = False
+        ToolStripContainer1.Size = New Size(1296, 35)
+        ToolStripContainer1.TabIndex = 20
+        ToolStripContainer1.Text = "ToolStripContainer1"
+        ' 
+        ' ToolStripContainer1.TopToolStripPanel
+        ' 
+        ToolStripContainer1.TopToolStripPanel.Controls.Add(ToolStrip2)
+        ' 
+        ' ToolStrip2
+        ' 
+        ToolStrip2.Dock = DockStyle.None
+        ToolStrip2.ImageScalingSize = New Size(25, 25)
+        ToolStrip2.Items.AddRange(New ToolStripItem() {tscmdNewProject, ToolStripSeparator14, tscmdOpenProjectFromFile, tscmdSaveProjectToFile, ToolStripSeparator15, tscmdOpenProgramFromDevice, tscmdSaveProgramToDevice})
+        ToolStrip2.Location = New Point(3, 0)
+        ToolStrip2.Name = "ToolStrip2"
+        ToolStrip2.Size = New Size(169, 32)
+        ToolStrip2.TabIndex = 0
+        ToolStrip2.Text = "Project"
+        ' 
+        ' tscmdNewProject
+        ' 
+        tscmdNewProject.DisplayStyle = ToolStripItemDisplayStyle.Image
+        tscmdNewProject.Image = CType(resources.GetObject("tscmdNewProject.Image"), Image)
+        tscmdNewProject.ImageTransparentColor = Color.Magenta
+        tscmdNewProject.Name = "tscmdNewProject"
+        tscmdNewProject.Size = New Size(29, 29)
+        tscmdNewProject.Text = "ToolStripButton1"
+        tscmdNewProject.ToolTipText = "Create New Project"
+        ' 
+        ' ToolStripSeparator14
+        ' 
+        ToolStripSeparator14.Name = "ToolStripSeparator14"
+        ToolStripSeparator14.Size = New Size(6, 32)
+        ' 
+        ' tscmdOpenProjectFromFile
+        ' 
+        tscmdOpenProjectFromFile.DisplayStyle = ToolStripItemDisplayStyle.Image
+        tscmdOpenProjectFromFile.Image = CType(resources.GetObject("tscmdOpenProjectFromFile.Image"), Image)
+        tscmdOpenProjectFromFile.ImageTransparentColor = Color.Magenta
+        tscmdOpenProjectFromFile.Name = "tscmdOpenProjectFromFile"
+        tscmdOpenProjectFromFile.Size = New Size(29, 29)
+        tscmdOpenProjectFromFile.Text = "ToolStripButton1"
+        tscmdOpenProjectFromFile.ToolTipText = "Open Project From File"
+        ' 
+        ' tscmdSaveProjectToFile
+        ' 
+        tscmdSaveProjectToFile.DisplayStyle = ToolStripItemDisplayStyle.Image
+        tscmdSaveProjectToFile.Image = CType(resources.GetObject("tscmdSaveProjectToFile.Image"), Image)
+        tscmdSaveProjectToFile.ImageTransparentColor = Color.Magenta
+        tscmdSaveProjectToFile.Name = "tscmdSaveProjectToFile"
+        tscmdSaveProjectToFile.Size = New Size(29, 29)
+        tscmdSaveProjectToFile.Text = "ToolStripButton1"
+        tscmdSaveProjectToFile.ToolTipText = "Save Program To File"
+        ' 
+        ' ToolStripSeparator15
+        ' 
+        ToolStripSeparator15.Name = "ToolStripSeparator15"
+        ToolStripSeparator15.Size = New Size(6, 32)
+        ' 
+        ' tscmdOpenProgramFromDevice
+        ' 
+        tscmdOpenProgramFromDevice.DisplayStyle = ToolStripItemDisplayStyle.Image
+        tscmdOpenProgramFromDevice.Image = CType(resources.GetObject("tscmdOpenProgramFromDevice.Image"), Image)
+        tscmdOpenProgramFromDevice.ImageTransparentColor = Color.Magenta
+        tscmdOpenProgramFromDevice.Name = "tscmdOpenProgramFromDevice"
+        tscmdOpenProgramFromDevice.Size = New Size(29, 29)
+        tscmdOpenProgramFromDevice.Text = "ToolStripButton1"
+        tscmdOpenProgramFromDevice.ToolTipText = "Download Project FROM Device"
+        ' 
+        ' tscmdSaveProgramToDevice
+        ' 
+        tscmdSaveProgramToDevice.DisplayStyle = ToolStripItemDisplayStyle.Image
+        tscmdSaveProgramToDevice.Image = CType(resources.GetObject("tscmdSaveProgramToDevice.Image"), Image)
+        tscmdSaveProgramToDevice.ImageTransparentColor = Color.Magenta
+        tscmdSaveProgramToDevice.Name = "tscmdSaveProgramToDevice"
+        tscmdSaveProgramToDevice.Size = New Size(29, 29)
+        tscmdSaveProgramToDevice.Text = "ToolStripButton1"
+        tscmdSaveProgramToDevice.ToolTipText = "Upload Project TO Device"
+        ' 
+        ' Panel1
+        ' 
+        Panel1.Controls.Add(SplitContainer1)
+        Panel1.Controls.Add(pnlProgramList)
+        Panel1.Dock = DockStyle.Fill
+        Panel1.Location = New Point(0, 0)
+        Panel1.Name = "Panel1"
+        Panel1.Size = New Size(1296, 392)
+        Panel1.TabIndex = 19
+        ' 
+        ' SplitContainer1
+        ' 
+        SplitContainer1.Dock = DockStyle.Fill
+        SplitContainer1.FixedPanel = FixedPanel.Panel1
+        SplitContainer1.Location = New Point(136, 0)
+        SplitContainer1.Name = "SplitContainer1"
+        SplitContainer1.Orientation = Orientation.Horizontal
+        ' 
+        ' SplitContainer1.Panel1
+        ' 
+        SplitContainer1.Panel1.Controls.Add(SplitContainer5)
+        ' 
+        ' SplitContainer1.Panel2
+        ' 
+        SplitContainer1.Panel2.Controls.Add(SplitContainer4)
+        SplitContainer1.Size = New Size(1160, 392)
+        SplitContainer1.TabIndex = 18
+        ' 
+        ' SplitContainer5
+        ' 
+        SplitContainer5.Dock = DockStyle.Fill
+        SplitContainer5.FixedPanel = FixedPanel.Panel2
+        SplitContainer5.IsSplitterFixed = True
+        SplitContainer5.Location = New Point(0, 0)
+        SplitContainer5.Name = "SplitContainer5"
+        ' 
+        ' SplitContainer5.Panel1
+        ' 
+        SplitContainer5.Panel1.Controls.Add(cmdEditVarNames)
+        SplitContainer5.Panel1.Controls.Add(lblProgName)
+        SplitContainer5.Panel1.Controls.Add(cmdMoveDown)
+        SplitContainer5.Panel1.Controls.Add(cmdMoveRowUp)
+        SplitContainer5.Panel1.Controls.Add(cmdDeleteRow)
+        SplitContainer5.Panel1.Controls.Add(cmdAddRow)
+        SplitContainer5.Panel1.Controls.Add(cmdDuplicateProgLine)
+        SplitContainer5.Panel1.Controls.Add(txtProgName)
+        SplitContainer5.Panel1.Controls.Add(cmdInsertRow)
+        ' 
+        ' SplitContainer5.Panel2
+        ' 
+        SplitContainer5.Panel2.Controls.Add(chkLiveTrackLines)
+        SplitContainer5.Panel2.Controls.Add(Button3)
+        SplitContainer5.Panel2MinSize = 410
+        SplitContainer5.Size = New Size(1160, 50)
+        SplitContainer5.SplitterDistance = 730
+        SplitContainer5.TabIndex = 16
+        ' 
+        ' chkLiveTrackLines
+        ' 
+        chkLiveTrackLines.AutoSize = True
+        chkLiveTrackLines.Location = New Point(135, 16)
+        chkLiveTrackLines.Name = "chkLiveTrackLines"
+        chkLiveTrackLines.Size = New Size(109, 19)
+        chkLiveTrackLines.TabIndex = 12
+        chkLiveTrackLines.Text = "Live Track Line#"
+        chkLiveTrackLines.UseVisualStyleBackColor = True
+        ' 
+        ' SplitContainer4
+        ' 
+        SplitContainer4.Dock = DockStyle.Fill
+        SplitContainer4.FixedPanel = FixedPanel.Panel2
+        SplitContainer4.IsSplitterFixed = True
+        SplitContainer4.Location = New Point(0, 0)
+        SplitContainer4.Name = "SplitContainer4"
+        ' 
+        ' SplitContainer4.Panel1
+        ' 
+        SplitContainer4.Panel1.Controls.Add(lstProgDisplay)
+        ' 
+        ' SplitContainer4.Panel2
+        ' 
+        SplitContainer4.Panel2.Controls.Add(UcProgLineEdit1)
+        SplitContainer4.Panel2MinSize = 410
+        SplitContainer4.Size = New Size(1160, 338)
+        SplitContainer4.SplitterDistance = 730
+        SplitContainer4.TabIndex = 4
+        ' 
+        ' UcProgLineEdit1
+        ' 
+        UcProgLineEdit1.Dock = DockStyle.Fill
+        UcProgLineEdit1.Location = New Point(0, 0)
+        UcProgLineEdit1.Margin = New Padding(6)
+        UcProgLineEdit1.Name = "UcProgLineEdit1"
+        UcProgLineEdit1.Size = New Size(426, 338)
+        UcProgLineEdit1.TabIndex = 0
+        ' 
+        ' pnlProgramList
+        ' 
+        pnlProgramList.Controls.Add(SplitContainer2)
+        pnlProgramList.Dock = DockStyle.Left
+        pnlProgramList.Location = New Point(0, 0)
+        pnlProgramList.MinimumSize = New Size(0, 240)
+        pnlProgramList.Name = "pnlProgramList"
+        pnlProgramList.Size = New Size(136, 392)
+        pnlProgramList.TabIndex = 16
+        ' 
+        ' SplitContainer2
+        ' 
+        SplitContainer2.Dock = DockStyle.Fill
+        SplitContainer2.FixedPanel = FixedPanel.Panel1
+        SplitContainer2.IsSplitterFixed = True
+        SplitContainer2.Location = New Point(0, 0)
+        SplitContainer2.Name = "SplitContainer2"
+        SplitContainer2.Orientation = Orientation.Horizontal
+        ' 
+        ' SplitContainer2.Panel1
+        ' 
+        SplitContainer2.Panel1.Controls.Add(txtDeviceName)
+        SplitContainer2.Panel1.Controls.Add(Label4)
+        SplitContainer2.Panel1.Controls.Add(lblDeviceType)
+        SplitContainer2.Panel1.Controls.Add(Label2)
+        SplitContainer2.Panel1.Controls.Add(Label1)
+        SplitContainer2.Panel1.Controls.Add(txtProjectName)
+        ' 
+        ' SplitContainer2.Panel2
+        ' 
+        SplitContainer2.Panel2.Controls.Add(lstPrograms)
+        SplitContainer2.Panel2MinSize = 65
+        SplitContainer2.Size = New Size(136, 392)
+        SplitContainer2.SplitterDistance = 152
+        SplitContainer2.TabIndex = 21
+        ' 
+        ' txtDeviceName
+        ' 
+        txtDeviceName.Location = New Point(16, 57)
+        txtDeviceName.MaxLength = 20
+        txtDeviceName.Name = "txtDeviceName"
+        txtDeviceName.Size = New Size(105, 23)
+        txtDeviceName.TabIndex = 24
+        ' 
+        ' Label4
+        ' 
+        Label4.Location = New Point(3, 40)
+        Label4.Name = "Label4"
+        Label4.Size = New Size(129, 15)
+        Label4.TabIndex = 23
+        Label4.Text = "Device Name:"
+        Label4.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' lblDeviceType
+        ' 
+        lblDeviceType.Location = New Point(16, 20)
+        lblDeviceType.Name = "lblDeviceType"
+        lblDeviceType.Size = New Size(113, 15)
+        lblDeviceType.TabIndex = 22
+        lblDeviceType.Text = "lblDeviceType"
+        lblDeviceType.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' Label2
+        ' 
+        Label2.Location = New Point(5, 5)
+        Label2.Name = "Label2"
+        Label2.Size = New Size(129, 15)
+        Label2.TabIndex = 21
+        Label2.Text = "Device Type:"
+        Label2.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' Label1
+        ' 
+        Label1.Location = New Point(3, 80)
+        Label1.Name = "Label1"
+        Label1.Size = New Size(103, 15)
+        Label1.TabIndex = 19
+        Label1.Text = "Project Name:"
+        Label1.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' txtProjectName
+        ' 
+        txtProjectName.Location = New Point(18, 98)
+        txtProjectName.MaxLength = 20
+        txtProjectName.Name = "txtProjectName"
+        txtProjectName.Size = New Size(105, 23)
+        txtProjectName.TabIndex = 20
+        txtProjectName.Text = "OneTwoThreeWRGUWQZMH"
+        ' 
+        ' mnuTabProgram
+        ' 
+        mnuTabProgram.ImageScalingSize = New Size(32, 32)
+        mnuTabProgram.Items.AddRange(New ToolStripItem() {mnuMainProject, mnuMainPrograms, mnuProgLines, ToolStripMenuItem2})
+        mnuTabProgram.Location = New Point(3, 3)
+        mnuTabProgram.Name = "mnuTabProgram"
+        mnuTabProgram.Size = New Size(1296, 24)
+        mnuTabProgram.TabIndex = 18
+        mnuTabProgram.Text = "MenuStrip1"
+        ' 
+        ' mnuMainProject
+        ' 
+        mnuMainProject.DropDownItems.AddRange(New ToolStripItem() {CreateNewProjectToolStripMenuItem, tsmDeviceType, ToolStripSeparator11, OpenProjectFromFileToolStripMenuItem, SaveProjectToolStripMenuItem, SaveProjectAsToolStripMenuItem, ToolStripSeparator12, OpenProjectFromDeviceToolStripMenuItem, DownloadProjectToDeviceToolStripMenuItem})
+        mnuMainProject.Name = "mnuMainProject"
+        mnuMainProject.Size = New Size(56, 20)
+        mnuMainProject.Text = "Project"
+        ' 
+        ' CreateNewProjectToolStripMenuItem
+        ' 
+        CreateNewProjectToolStripMenuItem.Name = "CreateNewProjectToolStripMenuItem"
+        CreateNewProjectToolStripMenuItem.Size = New Size(221, 22)
+        CreateNewProjectToolStripMenuItem.Text = "Create New Project"
+        ' 
+        ' tsmDeviceType
+        ' 
+        tsmDeviceType.Name = "tsmDeviceType"
+        tsmDeviceType.Size = New Size(221, 22)
+        tsmDeviceType.Text = "Default Device Type..."
+        ' 
+        ' ToolStripSeparator11
+        ' 
+        ToolStripSeparator11.Name = "ToolStripSeparator11"
+        ToolStripSeparator11.Size = New Size(218, 6)
+        ' 
+        ' OpenProjectFromFileToolStripMenuItem
+        ' 
+        OpenProjectFromFileToolStripMenuItem.Name = "OpenProjectFromFileToolStripMenuItem"
+        OpenProjectFromFileToolStripMenuItem.Size = New Size(221, 22)
+        OpenProjectFromFileToolStripMenuItem.Text = "Open Project From File"
+        ' 
+        ' SaveProjectToolStripMenuItem
+        ' 
+        SaveProjectToolStripMenuItem.Name = "SaveProjectToolStripMenuItem"
+        SaveProjectToolStripMenuItem.Size = New Size(221, 22)
+        SaveProjectToolStripMenuItem.Text = "Save Project"
+        ' 
+        ' SaveProjectAsToolStripMenuItem
+        ' 
+        SaveProjectAsToolStripMenuItem.Name = "SaveProjectAsToolStripMenuItem"
+        SaveProjectAsToolStripMenuItem.Size = New Size(221, 22)
+        SaveProjectAsToolStripMenuItem.Text = "Save Project As..."
+        ' 
+        ' ToolStripSeparator12
+        ' 
+        ToolStripSeparator12.Name = "ToolStripSeparator12"
+        ToolStripSeparator12.Size = New Size(218, 6)
+        ' 
+        ' OpenProjectFromDeviceToolStripMenuItem
+        ' 
+        OpenProjectFromDeviceToolStripMenuItem.Name = "OpenProjectFromDeviceToolStripMenuItem"
+        OpenProjectFromDeviceToolStripMenuItem.Size = New Size(221, 22)
+        OpenProjectFromDeviceToolStripMenuItem.Text = "Get Project From Device"
+        ' 
+        ' DownloadProjectToDeviceToolStripMenuItem
+        ' 
+        DownloadProjectToDeviceToolStripMenuItem.Name = "DownloadProjectToDeviceToolStripMenuItem"
+        DownloadProjectToDeviceToolStripMenuItem.Size = New Size(221, 22)
+        DownloadProjectToDeviceToolStripMenuItem.Text = "Download Project To Device"
+        ' 
+        ' mnuMainPrograms
+        ' 
+        mnuMainPrograms.DropDownItems.AddRange(New ToolStripItem() {AddNewBlankProgramToolStripMenuItem, ImportExistingProgramToolStripMenuItem, mnuDuplicateProgram, ToolStripSeparator5, MoveProgramTowardsBeginningToolStripMenuItem, MoveProgramTowardsEndToolStripMenuItem, ToolStripSeparator6, DeleteProgramToolStripMenuItem})
+        mnuMainPrograms.Name = "mnuMainPrograms"
+        mnuMainPrograms.Size = New Size(70, 20)
+        mnuMainPrograms.Text = "Programs"
+        ' 
+        ' AddNewBlankProgramToolStripMenuItem
+        ' 
+        AddNewBlankProgramToolStripMenuItem.DropDownItems.AddRange(New ToolStripItem() {mnuAddBlankProgramAtIndex, mnuAddBlankProgramAtEnd})
+        AddNewBlankProgramToolStripMenuItem.Name = "AddNewBlankProgramToolStripMenuItem"
+        AddNewBlankProgramToolStripMenuItem.Size = New Size(256, 22)
+        AddNewBlankProgramToolStripMenuItem.Text = "Add New (Blank) Program To End"
+        ' 
+        ' mnuAddBlankProgramAtIndex
+        ' 
+        mnuAddBlankProgramAtIndex.Name = "mnuAddBlankProgramAtIndex"
+        mnuAddBlankProgramAtIndex.Size = New Size(210, 22)
+        mnuAddBlankProgramAtIndex.Text = "Insert At Current Location"
+        ' 
+        ' mnuAddBlankProgramAtEnd
+        ' 
+        mnuAddBlankProgramAtEnd.Name = "mnuAddBlankProgramAtEnd"
+        mnuAddBlankProgramAtEnd.Size = New Size(210, 22)
+        mnuAddBlankProgramAtEnd.Text = "Add to End"
+        ' 
+        ' ImportExistingProgramToolStripMenuItem
+        ' 
+        ImportExistingProgramToolStripMenuItem.Name = "ImportExistingProgramToolStripMenuItem"
+        ImportExistingProgramToolStripMenuItem.Size = New Size(256, 22)
+        ImportExistingProgramToolStripMenuItem.Text = "Import Existing Program"
+        ' 
+        ' mnuDuplicateProgram
+        ' 
+        mnuDuplicateProgram.Name = "mnuDuplicateProgram"
+        mnuDuplicateProgram.Size = New Size(256, 22)
+        mnuDuplicateProgram.Text = "Duplicate Program"
+        ' 
+        ' ToolStripSeparator5
+        ' 
+        ToolStripSeparator5.Name = "ToolStripSeparator5"
+        ToolStripSeparator5.Size = New Size(253, 6)
+        ' 
+        ' MoveProgramTowardsBeginningToolStripMenuItem
+        ' 
+        MoveProgramTowardsBeginningToolStripMenuItem.Name = "MoveProgramTowardsBeginningToolStripMenuItem"
+        MoveProgramTowardsBeginningToolStripMenuItem.Size = New Size(256, 22)
+        MoveProgramTowardsBeginningToolStripMenuItem.Text = "Move Program Towards Beginning"
+        ' 
+        ' MoveProgramTowardsEndToolStripMenuItem
+        ' 
+        MoveProgramTowardsEndToolStripMenuItem.Name = "MoveProgramTowardsEndToolStripMenuItem"
+        MoveProgramTowardsEndToolStripMenuItem.Size = New Size(256, 22)
+        MoveProgramTowardsEndToolStripMenuItem.Text = "Move Program Towards End"
+        ' 
+        ' ToolStripSeparator6
+        ' 
+        ToolStripSeparator6.Name = "ToolStripSeparator6"
+        ToolStripSeparator6.Size = New Size(253, 6)
+        ' 
+        ' DeleteProgramToolStripMenuItem
+        ' 
+        DeleteProgramToolStripMenuItem.Name = "DeleteProgramToolStripMenuItem"
+        DeleteProgramToolStripMenuItem.Size = New Size(256, 22)
+        DeleteProgramToolStripMenuItem.Text = "Delete Program"
+        ' 
+        ' mnuProgLines
+        ' 
+        mnuProgLines.DropDownItems.AddRange(New ToolStripItem() {mnuAddProgLine, mnuInsertProgLine, mnuDuplicateProgLine, ToolStripSeparator7, mnuMoveProgLineUp, mnuMoveProgramLineDown, ToolStripSeparator8, mnuDeleteProgramLine})
+        mnuProgLines.Name = "mnuProgLines"
+        mnuProgLines.Size = New Size(95, 20)
+        mnuProgLines.Text = "Program Lines"
+        ' 
+        ' mnuAddProgLine
+        ' 
+        mnuAddProgLine.Name = "mnuAddProgLine"
+        mnuAddProgLine.Size = New Size(212, 22)
+        mnuAddProgLine.Text = "Add Blank Program Line"
+        ' 
+        ' mnuInsertProgLine
+        ' 
+        mnuInsertProgLine.Name = "mnuInsertProgLine"
+        mnuInsertProgLine.Size = New Size(212, 22)
+        mnuInsertProgLine.Text = "Insert Blank Program Line"
+        ' 
+        ' mnuDuplicateProgLine
+        ' 
+        mnuDuplicateProgLine.Name = "mnuDuplicateProgLine"
+        mnuDuplicateProgLine.Size = New Size(212, 22)
+        mnuDuplicateProgLine.Text = "Duplicate Program Line"
+        ' 
+        ' ToolStripSeparator7
+        ' 
+        ToolStripSeparator7.Name = "ToolStripSeparator7"
+        ToolStripSeparator7.Size = New Size(209, 6)
+        ' 
+        ' mnuMoveProgLineUp
+        ' 
+        mnuMoveProgLineUp.Name = "mnuMoveProgLineUp"
+        mnuMoveProgLineUp.Size = New Size(212, 22)
+        mnuMoveProgLineUp.Text = "Move Program Line Up"
+        ' 
+        ' mnuMoveProgramLineDown
+        ' 
+        mnuMoveProgramLineDown.Name = "mnuMoveProgramLineDown"
+        mnuMoveProgramLineDown.Size = New Size(212, 22)
+        mnuMoveProgramLineDown.Text = "Move Program Line Down"
+        ' 
+        ' ToolStripSeparator8
+        ' 
+        ToolStripSeparator8.Name = "ToolStripSeparator8"
+        ToolStripSeparator8.Size = New Size(209, 6)
+        ' 
+        ' mnuDeleteProgramLine
+        ' 
+        mnuDeleteProgramLine.Name = "mnuDeleteProgramLine"
+        mnuDeleteProgramLine.Size = New Size(212, 22)
+        mnuDeleteProgramLine.Text = "Delete Program Line"
+        ' 
+        ' ToolStripMenuItem2
+        ' 
+        ToolStripMenuItem2.Name = "ToolStripMenuItem2"
+        ToolStripMenuItem2.Size = New Size(126, 20)
+        ToolStripMenuItem2.Text = "ToolStripMenuItem2"
+        ' 
+        ' TabPage2
+        ' 
+        TabPage2.Location = New Point(4, 24)
+        TabPage2.Name = "TabPage2"
+        TabPage2.Padding = New Padding(3)
+        TabPage2.Size = New Size(192, 72)
+        TabPage2.TabIndex = 1
+        TabPage2.Text = "TabPage2"
+        TabPage2.UseVisualStyleBackColor = True
+        ' 
+        ' SplitContainer3
+        ' 
+        SplitContainer3.BorderStyle = BorderStyle.Fixed3D
+        SplitContainer3.Dock = DockStyle.Fill
+        SplitContainer3.FixedPanel = FixedPanel.Panel1
+        SplitContainer3.Location = New Point(0, 0)
+        SplitContainer3.Name = "SplitContainer3"
+        SplitContainer3.Orientation = Orientation.Horizontal
+        ' 
+        ' SplitContainer3.Panel1
+        ' 
+        SplitContainer3.Panel1.Controls.Add(SplitContainer6)
+        ' 
+        ' SplitContainer3.Panel2
+        ' 
+        SplitContainer3.Panel2.Controls.Add(tabBottom)
+        SplitContainer3.Size = New Size(1314, 808)
+        SplitContainer3.SplitterDistance = 311
+        SplitContainer3.TabIndex = 17
+        ' 
+        ' SplitContainer6
+        ' 
+        SplitContainer6.Dock = DockStyle.Fill
+        SplitContainer6.FixedPanel = FixedPanel.Panel1
+        SplitContainer6.Location = New Point(0, 0)
+        SplitContainer6.Name = "SplitContainer6"
+        SplitContainer6.Orientation = Orientation.Horizontal
+        ' 
+        ' SplitContainer6.Panel1
+        ' 
+        SplitContainer6.Panel1.Controls.Add(SplitContainer7)
+        ' 
+        ' SplitContainer6.Panel2
+        ' 
+        SplitContainer6.Panel2.AutoScroll = True
+        SplitContainer6.Panel2.Controls.Add(UcChanControl1)
+        SplitContainer6.Size = New Size(1310, 307)
+        SplitContainer6.SplitterDistance = 25
+        SplitContainer6.TabIndex = 11
+        ' 
+        ' SplitContainer7
+        ' 
+        SplitContainer7.Dock = DockStyle.Fill
+        SplitContainer7.FixedPanel = FixedPanel.Panel1
+        SplitContainer7.Location = New Point(0, 0)
+        SplitContainer7.Name = "SplitContainer7"
+        ' 
+        ' SplitContainer7.Panel1
+        ' 
+        SplitContainer7.Panel1.Controls.Add(ToolStrip1)
+        ' 
+        ' SplitContainer7.Panel2
+        ' 
+        SplitContainer7.Panel2.Controls.Add(cmdStop)
+        SplitContainer7.Size = New Size(1310, 25)
+        SplitContainer7.SplitterDistance = 721
+        SplitContainer7.TabIndex = 3
+        ' 
+        ' ToolStrip1
+        ' 
+        ToolStrip1.Dock = DockStyle.Fill
+        ToolStrip1.ImageScalingSize = New Size(32, 32)
+        ToolStrip1.Items.AddRange(New ToolStripItem() {cmdResets, cboComPorts, cmdRefreshComportList, cmdConnect, ToolStripSeparator10, ToolStripLabelAutoStatus, cmdtsChanMonAutoStatusOff, cmdtsChanMonAutoStatusOn, ToolStripSeparator9, lblDevStatus})
+        ToolStrip1.Location = New Point(0, 0)
+        ToolStrip1.Name = "ToolStrip1"
+        ToolStrip1.Padding = New Padding(0, 0, 2, 0)
+        ToolStrip1.Size = New Size(721, 25)
+        ToolStrip1.TabIndex = 4
+        ToolStrip1.Text = "ToolStrip1"
+        ' 
+        ' cmdResets
+        ' 
+        cmdResets.AutoSize = False
+        cmdResets.DisplayStyle = ToolStripItemDisplayStyle.Image
+        cmdResets.DropDownItems.AddRange(New ToolStripItem() {cmdResetDevice, cmdEraseDevice})
+        cmdResets.Image = CType(resources.GetObject("cmdResets.Image"), Image)
+        cmdResets.ImageTransparentColor = Color.Magenta
+        cmdResets.Name = "cmdResets"
+        cmdResets.Size = New Size(40, 22)
+        cmdResets.Text = "ToolStripDropDownButton1"
+        ' 
+        ' cmdResetDevice
+        ' 
+        cmdResetDevice.Name = "cmdResetDevice"
+        cmdResetDevice.Size = New Size(102, 22)
+        cmdResetDevice.Text = "Reset"
+        cmdResetDevice.ToolTipText = "Reset Device"
+        ' 
+        ' cmdEraseDevice
+        ' 
+        cmdEraseDevice.Name = "cmdEraseDevice"
+        cmdEraseDevice.Size = New Size(102, 22)
+        cmdEraseDevice.Text = "Erase"
+        ' 
+        ' cboComPorts
+        ' 
+        cboComPorts.Name = "cboComPorts"
+        cboComPorts.Size = New Size(121, 25)
+        ' 
+        ' cmdRefreshComportList
+        ' 
+        cmdRefreshComportList.DisplayStyle = ToolStripItemDisplayStyle.Text
+        cmdRefreshComportList.Image = CType(resources.GetObject("cmdRefreshComportList.Image"), Image)
+        cmdRefreshComportList.ImageTransparentColor = Color.Magenta
+        cmdRefreshComportList.Name = "cmdRefreshComportList"
+        cmdRefreshComportList.Size = New Size(50, 22)
+        cmdRefreshComportList.Text = "Refresh"
+        ' 
+        ' cmdConnect
+        ' 
+        cmdConnect.DisplayStyle = ToolStripItemDisplayStyle.Text
+        cmdConnect.Image = CType(resources.GetObject("cmdConnect.Image"), Image)
+        cmdConnect.ImageTransparentColor = Color.Magenta
+        cmdConnect.Name = "cmdConnect"
+        cmdConnect.Size = New Size(56, 22)
+        cmdConnect.Text = "Connect"
+        ' 
+        ' ToolStripSeparator10
+        ' 
+        ToolStripSeparator10.Name = "ToolStripSeparator10"
+        ToolStripSeparator10.Size = New Size(6, 25)
+        ' 
+        ' ToolStripLabelAutoStatus
+        ' 
+        ToolStripLabelAutoStatus.Name = "ToolStripLabelAutoStatus"
+        ToolStripLabelAutoStatus.Size = New Size(68, 22)
+        ToolStripLabelAutoStatus.Text = "AutoStatus:"
+        ' 
+        ' cmdtsChanMonAutoStatusOff
+        ' 
+        cmdtsChanMonAutoStatusOff.DisplayStyle = ToolStripItemDisplayStyle.Text
+        cmdtsChanMonAutoStatusOff.Image = CType(resources.GetObject("cmdtsChanMonAutoStatusOff.Image"), Image)
+        cmdtsChanMonAutoStatusOff.ImageTransparentColor = Color.Magenta
+        cmdtsChanMonAutoStatusOff.Name = "cmdtsChanMonAutoStatusOff"
+        cmdtsChanMonAutoStatusOff.Size = New Size(28, 22)
+        cmdtsChanMonAutoStatusOff.Text = "Off"
+        ' 
+        ' cmdtsChanMonAutoStatusOn
+        ' 
+        cmdtsChanMonAutoStatusOn.DisplayStyle = ToolStripItemDisplayStyle.Text
+        cmdtsChanMonAutoStatusOn.Image = CType(resources.GetObject("cmdtsChanMonAutoStatusOn.Image"), Image)
+        cmdtsChanMonAutoStatusOn.ImageTransparentColor = Color.Magenta
+        cmdtsChanMonAutoStatusOn.Name = "cmdtsChanMonAutoStatusOn"
+        cmdtsChanMonAutoStatusOn.Size = New Size(27, 22)
+        cmdtsChanMonAutoStatusOn.Text = "On"
+        ' 
+        ' ToolStripSeparator9
+        ' 
+        ToolStripSeparator9.Name = "ToolStripSeparator9"
+        ToolStripSeparator9.Size = New Size(6, 25)
+        ' 
+        ' lblDevStatus
+        ' 
+        lblDevStatus.Name = "lblDevStatus"
+        lblDevStatus.Size = New Size(87, 22)
+        lblDevStatus.Text = "ToolStripLabel1"
+        ' 
+        ' cmdStop
+        ' 
+        cmdStop.Dock = DockStyle.Fill
+        cmdStop.Location = New Point(0, 0)
+        cmdStop.Name = "cmdStop"
+        cmdStop.Size = New Size(585, 25)
+        cmdStop.TabIndex = 0
+        cmdStop.Text = "STOP"
+        cmdStop.UseVisualStyleBackColor = True
+        ' 
+        ' UcChanControl1
+        ' 
+        UcChanControl1.BorderStyle = BorderStyle.FixedSingle
+        UcChanControl1.ChanEnabled = False
+        UcChanControl1.ChanIndex = -1
+        UcChanControl1.ChanName = Nothing
+        UcChanControl1.ChanType = 0
+        UcChanControl1.Duration = -1
+        UcChanControl1.LineNum = -1
+        UcChanControl1.Location = New Point(5, 5)
+        UcChanControl1.Margin = New Padding(6)
+        UcChanControl1.MaxSpeed = 0
+        UcChanControl1.MinSpeed = 0
+        UcChanControl1.Name = "UcChanControl1"
+        UcChanControl1.OutputIntensityMax = 0
+        UcChanControl1.OutputIntensityMin = 0
+        UcChanControl1.OutputIntensityPct = 0
+        UcChanControl1.PercentComplete = -1
+        UcChanControl1.Polarity = -1
+        UcChanControl1.PolaritySwapped = False
+        UcChanControl1.ProgNum = -1
+        UcChanControl1.ProgState = -1
+        UcChanControl1.PulseWidth = 0
+        UcChanControl1.PulseWidthEnd = -1
+        UcChanControl1.PulseWidthStart = -1
+        UcChanControl1.RepeatsRemaining = -1
+        UcChanControl1.Size = New Size(177, 270)
+        UcChanControl1.Speed = 0
+        UcChanControl1.TabIndex = 0
+        UcChanControl1.Visible = False
+        ' 
+        ' cmdAutostatus
+        ' 
+        cmdAutostatus.DisplayStyle = ToolStripItemDisplayStyle.Image
+        cmdAutostatus.Image = CType(resources.GetObject("cmdAutostatus.Image"), Image)
+        cmdAutostatus.ImageTransparentColor = Color.Magenta
+        cmdAutostatus.Name = "cmdAutostatus"
+        cmdAutostatus.Size = New Size(29, 22)
+        cmdAutostatus.Text = "ToolStripDropDownButton1"
+        ' 
+        ' ofdProject
+        ' 
+        ofdProject.DefaultExt = "tp"
+        ofdProject.Filter = "Tens Project Files|*.tp|All Files|*.*"
+        ' 
+        ' sfdProject
+        ' 
+        sfdProject.DefaultExt = "tp"
+        sfdProject.Filter = "Tens Project Files|*.tp|All Files|*.*"
+        ' 
+        ' tmrNewMessages
+        ' 
+        tmrNewMessages.Enabled = True
+        tmrNewMessages.Interval = 1
+        ' 
+        ' StatusStrip1
+        ' 
+        StatusStrip1.Dock = DockStyle.Fill
+        StatusStrip1.ImageScalingSize = New Size(32, 32)
+        StatusStrip1.Items.AddRange(New ToolStripItem() {ssmProgressBar, ssmStatusText})
+        StatusStrip1.Location = New Point(0, 0)
+        StatusStrip1.Name = "StatusStrip1"
+        StatusStrip1.Size = New Size(1314, 25)
+        StatusStrip1.TabIndex = 18
+        StatusStrip1.Text = "statusStripMain"
+        ' 
+        ' ssmProgressBar
+        ' 
+        ssmProgressBar.Name = "ssmProgressBar"
+        ssmProgressBar.Size = New Size(100, 17)
+        ' 
+        ' ssmStatusText
+        ' 
+        ssmStatusText.Name = "ssmStatusText"
+        ssmStatusText.Size = New Size(81, 18)
+        ssmStatusText.Text = "ssmStatusText"
+        ' 
+        ' bwDLProgFromDevice
+        ' 
+        bwDLProgFromDevice.WorkerReportsProgress = True
+        ' 
+        ' bwULProgToDevice
+        ' 
+        bwULProgToDevice.WorkerReportsProgress = True
+        bwULProgToDevice.WorkerSupportsCancellation = True
+        ' 
+        ' tmrClearStatusbar
+        ' 
+        tmrClearStatusbar.Interval = 3000
+        ' 
+        ' tmrCheckComportStatus
+        ' 
+        ' 
+        ' tmrCheckAutostatus
+        ' 
+        tmrCheckAutostatus.Interval = 1000
+        ' 
+        ' SplitContainer9
+        ' 
+        SplitContainer9.Dock = DockStyle.Fill
+        SplitContainer9.FixedPanel = FixedPanel.Panel2
+        SplitContainer9.IsSplitterFixed = True
+        SplitContainer9.Location = New Point(0, 0)
+        SplitContainer9.Name = "SplitContainer9"
+        SplitContainer9.Orientation = Orientation.Horizontal
+        ' 
+        ' SplitContainer9.Panel1
+        ' 
+        SplitContainer9.Panel1.Controls.Add(SplitContainer3)
+        ' 
+        ' SplitContainer9.Panel2
+        ' 
+        SplitContainer9.Panel2.Controls.Add(StatusStrip1)
+        SplitContainer9.Size = New Size(1314, 837)
+        SplitContainer9.SplitterDistance = 808
+        SplitContainer9.TabIndex = 19
+        ' 
+        ' Form1
+        ' 
+        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleMode = AutoScaleMode.Font
+        ClientSize = New Size(1314, 837)
+        Controls.Add(SplitContainer9)
+        MinimumSize = New Size(840, 507)
+        Name = "Form1"
+        Text = "Tens2503"
+        cmsProgSentences.ResumeLayout(False)
+        cmsPrograms.ResumeLayout(False)
+        tabBottom.ResumeLayout(False)
+        TabBottomProgram.ResumeLayout(False)
+        TabBottomProgram.PerformLayout()
+        SplitContainer8.Panel1.ResumeLayout(False)
+        SplitContainer8.Panel2.ResumeLayout(False)
+        CType(SplitContainer8, ComponentModel.ISupportInitialize).EndInit()
+        SplitContainer8.ResumeLayout(False)
+        ToolStripContainer1.TopToolStripPanel.ResumeLayout(False)
+        ToolStripContainer1.TopToolStripPanel.PerformLayout()
+        ToolStripContainer1.ResumeLayout(False)
+        ToolStripContainer1.PerformLayout()
+        ToolStrip2.ResumeLayout(False)
+        ToolStrip2.PerformLayout()
+        Panel1.ResumeLayout(False)
+        SplitContainer1.Panel1.ResumeLayout(False)
+        SplitContainer1.Panel2.ResumeLayout(False)
+        CType(SplitContainer1, ComponentModel.ISupportInitialize).EndInit()
+        SplitContainer1.ResumeLayout(False)
+        SplitContainer5.Panel1.ResumeLayout(False)
+        SplitContainer5.Panel1.PerformLayout()
+        SplitContainer5.Panel2.ResumeLayout(False)
+        SplitContainer5.Panel2.PerformLayout()
+        CType(SplitContainer5, ComponentModel.ISupportInitialize).EndInit()
+        SplitContainer5.ResumeLayout(False)
+        SplitContainer4.Panel1.ResumeLayout(False)
+        SplitContainer4.Panel2.ResumeLayout(False)
+        CType(SplitContainer4, ComponentModel.ISupportInitialize).EndInit()
+        SplitContainer4.ResumeLayout(False)
+        pnlProgramList.ResumeLayout(False)
+        SplitContainer2.Panel1.ResumeLayout(False)
+        SplitContainer2.Panel1.PerformLayout()
+        SplitContainer2.Panel2.ResumeLayout(False)
+        CType(SplitContainer2, ComponentModel.ISupportInitialize).EndInit()
+        SplitContainer2.ResumeLayout(False)
+        mnuTabProgram.ResumeLayout(False)
+        mnuTabProgram.PerformLayout()
+        SplitContainer3.Panel1.ResumeLayout(False)
+        SplitContainer3.Panel2.ResumeLayout(False)
+        CType(SplitContainer3, ComponentModel.ISupportInitialize).EndInit()
+        SplitContainer3.ResumeLayout(False)
+        SplitContainer6.Panel1.ResumeLayout(False)
+        SplitContainer6.Panel2.ResumeLayout(False)
+        CType(SplitContainer6, ComponentModel.ISupportInitialize).EndInit()
+        SplitContainer6.ResumeLayout(False)
+        SplitContainer7.Panel1.ResumeLayout(False)
+        SplitContainer7.Panel1.PerformLayout()
+        SplitContainer7.Panel2.ResumeLayout(False)
+        CType(SplitContainer7, ComponentModel.ISupportInitialize).EndInit()
+        SplitContainer7.ResumeLayout(False)
+        ToolStrip1.ResumeLayout(False)
+        ToolStrip1.PerformLayout()
+        StatusStrip1.ResumeLayout(False)
+        StatusStrip1.PerformLayout()
+        SplitContainer9.Panel1.ResumeLayout(False)
+        SplitContainer9.Panel2.ResumeLayout(False)
+        SplitContainer9.Panel2.PerformLayout()
+        CType(SplitContainer9, ComponentModel.ISupportInitialize).EndInit()
+        SplitContainer9.ResumeLayout(False)
+        ResumeLayout(False)
     End Sub
-    Friend WithEvents SerialPort1 As IO.Ports.SerialPort
-    Friend WithEvents TabControlMain As TabControl
-    Friend WithEvents tabChannelMonitor As TabPage
-    Friend WithEvents tabPrograms As TabPage
-    Friend WithEvents tabSettings As TabPage
+
+    'Friend WithEvents UcProgLineEdit1 As ucProgLineEdit
+    Friend WithEvents lstProgDisplay As ListBox
+    Friend WithEvents cmdAddRow As Button
+    Friend WithEvents cmdDeleteRow As Button
+    Friend WithEvents cmdMoveRowUp As Button
+    Friend WithEvents cmdInsertRow As Button
+    Friend WithEvents lstPrograms As ListBox
+    Friend WithEvents cmdMoveDown As Button
+    Friend WithEvents cmdDuplicateProgLine As Button
+    Friend WithEvents cmsProgSentences As ContextMenuStrip
+    Friend WithEvents cmsPsAddLine As ToolStripMenuItem
+    Friend WithEvents cmsPsInsertLine As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator2 As ToolStripSeparator
+    Friend WithEvents cmsPsDeleteLine As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator1 As ToolStripSeparator
+    Friend WithEvents cmsPsMoveLineUp As ToolStripMenuItem
+    Friend WithEvents cmsPsMoveLineDown As ToolStripMenuItem
+    Friend WithEvents cmsPsDuplicateLine As ToolStripMenuItem
+    Friend WithEvents cmsPrograms As ContextMenuStrip
+    Friend WithEvents cmsProgInsertBlankProgram As ToolStripMenuItem
+    Friend WithEvents cmsProgDuplicateProgram As ToolStripMenuItem
+    Friend WithEvents cmsProgAddBlankProgramToEnd As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator3 As ToolStripSeparator
+    Friend WithEvents cmsProgMoveProgramTowardsBeginning As ToolStripMenuItem
+    Friend WithEvents cmsProgMoveProgramTowardsEnd As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator4 As ToolStripSeparator
+    Friend WithEvents cmsProgDeleteProgram As ToolStripMenuItem
+    Friend WithEvents Button3 As Button
+    Friend WithEvents lblProgName As Label
+    Friend WithEvents txtProgName As TextBox
+    Friend WithEvents cmdEditVarNames As Button
+    Friend WithEvents tabBottom As TabControl
+    Friend WithEvents TabBottomProgram As TabPage
+    Friend WithEvents TabPage2 As TabPage
+    Friend WithEvents SplitContainer3 As SplitContainer
+    Friend WithEvents ofdProject As OpenFileDialog
+    Friend WithEvents sfdProject As SaveFileDialog
+    Friend WithEvents Label1 As Label
+    Friend WithEvents txtProjectName As TextBox
+    Friend WithEvents cmsProgImportProgram As ToolStripMenuItem
+    Friend WithEvents pnlProgramList As Panel
+    Friend WithEvents mnuTabProgram As MenuStrip
+    Friend WithEvents mnuMainProject As ToolStripMenuItem
+    Friend WithEvents mnuMainPrograms As ToolStripMenuItem
+    Friend WithEvents mnuProgLines As ToolStripMenuItem
+    Friend WithEvents ToolStripMenuItem2 As ToolStripMenuItem
+    Friend WithEvents Panel1 As Panel
+    Friend WithEvents SplitContainer1 As SplitContainer
+    Friend WithEvents SplitContainer4 As SplitContainer
+    Friend WithEvents SplitContainer5 As SplitContainer
+    Friend WithEvents OpenProjectFromFileToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents CreateNewProjectToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents SaveProjectToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents SaveProjectAsToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents AddNewBlankProgramToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents ImportExistingProgramToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents MoveProgramTowardsBeginningToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents MoveProgramTowardsEndToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents mnuAddBlankProgramAtIndex As ToolStripMenuItem
+    Friend WithEvents mnuAddBlankProgramAtEnd As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator5 As ToolStripSeparator
+    Friend WithEvents ToolStripSeparator6 As ToolStripSeparator
+    Friend WithEvents DeleteProgramToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents mnuAddProgLine As ToolStripMenuItem
+    Friend WithEvents mnuInsertProgLine As ToolStripMenuItem
+    Friend WithEvents mnuDuplicateProgLine As ToolStripMenuItem
+    Friend WithEvents mnuMoveProgLineUp As ToolStripMenuItem
+    Friend WithEvents mnuDuplicateProgram As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator7 As ToolStripSeparator
+    Friend WithEvents mnuMoveProgramLineDown As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator8 As ToolStripSeparator
+    Friend WithEvents mnuDeleteProgramLine As ToolStripMenuItem
+    Friend WithEvents SplitContainer2 As SplitContainer
     Friend WithEvents tmrNewMessages As Timer
-    Friend WithEvents tmrStatusUpdates As Timer
-    Friend WithEvents tsTabChanMon As ToolStrip
-    Friend WithEvents cmdtsChanMon_AutoStatusFast As ToolStripButton
-    Friend WithEvents cmdtsChanMon_AutoStatusSlow As ToolStripButton
-    Friend WithEvents ToolStripLabel1 As ToolStripLabel
+    Friend WithEvents SplitContainer6 As SplitContainer
+    'Friend WithEvents cboComPorts As ComboBox
+    Friend WithEvents SplitContainer7 As SplitContainer
+    Friend WithEvents cmdStop As Button
+    Friend WithEvents ToolStrip1 As ToolStrip
+    Friend WithEvents ToolStripComboBox1 As ToolStripComboBox
+    Friend WithEvents cmdRefreshComportList As ToolStripButton
+    Friend WithEvents cmdConnect As ToolStripButton
+    Friend WithEvents cmdAutostatus As ToolStripDropDownButton
+    Friend WithEvents lblDevStatus As ToolStripLabel
+    Friend WithEvents cboComPorts As ToolStripComboBox
     Friend WithEvents ToolStripLabelAutoStatus As ToolStripLabel
     Friend WithEvents cmdtsChanMonAutoStatusOff As ToolStripButton
-    Friend WithEvents ToolStripSeparator1 As ToolStripSeparator
-    Friend WithEvents tsCMTensMax_Low As ToolStripMenuItem
-    Friend WithEvents tsCMTensMax_Med As ToolStripMenuItem
-    Friend WithEvents tsCMTensMax_High As ToolStripMenuItem
-    Friend WithEvents ToolStripSeparator2 As ToolStripSeparator
-    Friend WithEvents tsChanMonDDCmdTensMaxV As ToolStripDropDownButton
-    Friend WithEvents SplitContainerMain As SplitContainer
-    Friend WithEvents cmdRefreshComportList As Button
-    Friend WithEvents cboComPorts As ComboBox
-    Friend WithEvents cmdConnect As Button
-    Friend WithEvents lblDevStatus As Label
-    Friend WithEvents cmdStop As Button
-    Friend WithEvents cboProgNumSelect As ComboBox
-    Friend WithEvents splitConProgramsTab As SplitContainer
+    Friend WithEvents cmdtsChanMonAutoStatusOn As ToolStripButton
+    Friend WithEvents ToolStripSeparator10 As ToolStripSeparator
+    Friend WithEvents ToolStripSeparator9 As ToolStripSeparator
+    Friend WithEvents UcChanControl1 As ucChanControl
+    Friend WithEvents UcProgLineEdit1 As ucProgLineEdit
+    Friend WithEvents ToolStripSeparator11 As ToolStripSeparator
+    Friend WithEvents ToolStripSeparator12 As ToolStripSeparator
+    Friend WithEvents OpenProjectFromDeviceToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents DownloadProjectToDeviceToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents StatusStrip1 As StatusStrip
+    Friend WithEvents ssmProgressBar As ToolStripProgressBar
+    Friend WithEvents ssmStatusText As ToolStripStatusLabel
+    Friend WithEvents bwDLProgFromDevice As System.ComponentModel.BackgroundWorker
+    Friend WithEvents bwULProgToDevice As System.ComponentModel.BackgroundWorker
+    Friend WithEvents tmrClearStatusbar As Timer
+    Friend WithEvents chkLiveTrackLines As CheckBox
+    Friend WithEvents cmsProgEditVarNames As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator13 As ToolStripSeparator
+    Friend WithEvents ToolStripContainer1 As ToolStripContainer
+    Friend WithEvents ToolStrip2 As ToolStrip
+    Friend WithEvents tscmdNewProject As ToolStripButton
+    Friend WithEvents ToolStripSeparator14 As ToolStripSeparator
+    Friend WithEvents tscmdOpenProjectFromFile As ToolStripButton
+    Friend WithEvents tscmdSaveProjectToFile As ToolStripButton
+    Friend WithEvents ToolStripSeparator15 As ToolStripSeparator
+    Friend WithEvents tscmdOpenProgramFromDevice As ToolStripButton
+    Friend WithEvents tscmdSaveProgramToDevice As ToolStripButton
+    Friend WithEvents SplitContainer8 As SplitContainer
+    Friend WithEvents tmrCheckComportStatus As Timer
+    Friend WithEvents tmrCheckAutostatus As Timer
+    Friend WithEvents cmsProgEditTimerNames As ToolStripMenuItem
+    Friend WithEvents tsmDeviceType As ToolStripMenuItem
+    Friend WithEvents lblDeviceType As Label
     Friend WithEvents Label2 As Label
-    Friend WithEvents Label1 As Label
-    Friend WithEvents txtProgName As TextBox
-    Friend WithEvents lblProgsTotalNumProgs As Label
-    Friend WithEvents Label3 As Label
-    Friend WithEvents OpenFileDialogProject As OpenFileDialog
-    Friend WithEvents SaveFileDialogProject As SaveFileDialog
-    Friend WithEvents ucProg As UserControlPrograms
-    Friend WithEvents msTabPrograms As MenuStrip
-    Friend WithEvents FileToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents ProgramToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents CreateNewProjectToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents OpenProjectFromComputerToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents GetProjectFromDeviceToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents SaveProjectToDeviceToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents SaveProjectToComputerToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents AddNewProgramToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents ImportProgramFromFileToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents ExportCurrentProgramToFileToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents ToolStripSeparator3 As ToolStripSeparator
-    Friend WithEvents DeleteCurrentProgramToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents EditToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents AddNewRowToEndToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents InsertNewRowToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents DeleteActiveRowToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents MoveActiveRowUpToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents MoveActiveRowDownToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents MoveCurrentProgramTowardsBeginningToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents MoveCurrentProgramTowardsEndToolStripMenuItem As ToolStripMenuItem
-    Friend WithEvents ToolStripSeparator5 As ToolStripSeparator
-    Friend WithEvents ToolStripSeparator4 As ToolStripSeparator
-    Friend WithEvents chkOffline As CheckBox
+    Friend WithEvents txtDeviceName As TextBox
+    Friend WithEvents Label4 As Label
+    Friend WithEvents cmdResets As ToolStripDropDownButton
+    Friend WithEvents cmdResetDevice As ToolStripMenuItem
+    Friend WithEvents cmdEraseDevice As ToolStripMenuItem
+    Friend WithEvents SplitContainer9 As SplitContainer
+
 End Class

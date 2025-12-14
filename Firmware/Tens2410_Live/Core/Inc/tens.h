@@ -326,16 +326,12 @@ typedef struct {
 	char				displayReqChars[DISPLAY_REQ_MAXLEN];
 	char				displayReqCharsLast[DISPLAY_REQ_MAXLEN];
 	uint8_t				displayReqLen;
+	uint32_t			notInUse[4];	//testing to see if this prevents overwriting of audio data
+	Audio_HandleTypeDef* audioRef;		//Allows tens programs to access the audio data
+	uint32_t			notInUse2[4];	//testing to see if this prevents overwriting of audio data
 
-//	uint8_t				audioSpectrumLevel[NUM_FREQ]
-//	uint8_t				audioValLow;	//Allows tens programs to access the audio level values
-//	uint8_t				audioValMid;
-//	uint8_t				audioValHigh;
-//	uint8_t				audioValTotal;
-
-	Audio_HandleTypeDef* audioRef;	//Allows tens programs to access the audio data
-	IMU_HandleTypeDef*	imuRef;		//Allows tens programs to access the imu data
-	TIM_HandleTypeDef* 	loopTimer;	//Reference to the timer that calls tensLoop.
+	IMU_HandleTypeDef*	imuRef;			//Allows tens programs to access the imu data
+	TIM_HandleTypeDef* 	loopTimer;		//Reference to the timer that calls tensLoop.
 
 
 } Tens_HandleTypeDef;
