@@ -273,6 +273,11 @@ typedef enum {
 	dssSetting_UpDirection = 1,
 	dssSetting_StepCount = 2,
 	dssSetting_AudioTotal = 3,
+//	dssSetting_AudioLeft = 3,
+//	dssSetting_AudioRight = 4,
+//	dssSetting_AudioLRAvg = 5,
+//	dssSetting_AudioLRMin = 6,
+//	dssSetting_AudioLRMax = 7,
 	dssSetting_AudioLow = 4,
 	dssSetting_AudioMid = 5,
 	dssSetting_AudioHigh = 6

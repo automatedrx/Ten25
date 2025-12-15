@@ -4070,8 +4070,6 @@ void pushButtonEvent(uint8_t pbId, uint8_t eventId){
 
 }
 
-
-
 void initImu(void){
 	ImuInit(&imu, &hspi1, IMU_CS_GPIO_Port, IMU_CS_Pin, IMU_INT1_Pin, IMU_INT2_Pin);
 	imu.stepIntPin = imu.int2Pin;
@@ -4248,10 +4246,6 @@ int main(void)
 
   tens.imuRef = &imu;
 
-
-  //Init Timer for TensLoop:
-  //HAL_TIM_Base_Start_IT(&htim7);
-  //HAL_TIM_Base_Start_IT(&tensLoopTim);
 
   /* USER CODE END 2 */
 

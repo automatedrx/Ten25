@@ -1845,6 +1845,12 @@ uint32_t TensGetValue(Tens_HandleTypeDef* dev, enumDataSource dataSource, uint32
 		}
 		break;
 	case dataSource_SystemSetting:
+		uint8_t startFreqBand = 0;				//used for audio levels
+		uint8_t numBands = NUM_FREQ_BANDS / 3;	//used for audio levels
+		uint16_t bandTotalVal = 0;				//used for audio levels
+		uint8_t bandMinVal = 0;
+		uint8_t bandMaxVal = 0;
+
 		switch(dataVal1){
 		case dssSetting_ZRotation:
 			retVal = dev->imuRef->globalZRotation;
@@ -1859,19 +1865,61 @@ uint32_t TensGetValue(Tens_HandleTypeDef* dev, enumDataSource dataSource, uint32
 			//retVal = dev->audioValTotal;
 			retVal = dev->audioRef->audioValTotal;
 			break;
+//		case dssSetting_AudioLowAvg:
+//			//return the avg of the lower 1/3 of the freq bands
+//			startFreqBand = 0;
+//			for(uint8_t n=0; n<numBands; n++){
+//				bandTotalVal += dev->audioRef->freqBandVal[n+startFreqBand];
+//			}
+//			retVal = bandTotalVal / numBands;
+//			retVal = (retVal <=100 ? retVal : 100);
+//			break;
 		case dssSetting_AudioLow:
-			retVal = dev->audioRef->freqBandVal[0];
+			//return the highest val of the lower 1/3 of the freq bands
+			startFreqBand = 0;
+			for(uint8_t n=0; n<numBands; n++){
+				if(dev->audioRef->freqBandVal[n+startFreqBand] > bandMaxVal){
+					bandMaxVal = dev->audioRef->freqBandVal[n+startFreqBand];
+				}
+			}
+			retVal = bandMaxVal;
 			break;
+//		case dssSetting_AudioMidAvg:
+//			startFreqBand = numBands;  //low range is bands 0 to [numBands -1], so mid level starts on [numBands].
+//			for(uint8_t n=0; n<numBands; n++){
+//				bandTotalVal += dev->audioRef->freqBandVal[n+startFreqBand];
+//			}
+//			retVal = bandTotalVal / numBands;
+//			retVal = (retVal <=100 ? retVal : 100);
+//			break;
 		case dssSetting_AudioMid:
-			//retVal = dev->audioValMid;
-			retVal = dev->audioRef->freqBandVal[3];
+			startFreqBand = numBands;  //low range is bands 0 to [numBands -1], so mid level starts on [numBands].
+			for(uint8_t n=0; n<numBands; n++){
+				if(dev->audioRef->freqBandVal[n+startFreqBand] > bandMaxVal){
+					bandMaxVal = dev->audioRef->freqBandVal[n+startFreqBand];
+				}
+			}
+			retVal = bandMaxVal;
 			break;
+//		case dssSetting_AudioHighMax:
+//			startFreqBand = (NUM_FREQ_BANDS / 3) * 2;
+//			numBands = NUM_FREQ_BANDS - (startFreqBand + 1);	//Give the remaining extra band to the high range.
+//			for(uint8_t n=0; n<numBands; n++){
+//				bandTotalVal += dev->audioRef->freqBandVal[n+startFreqBand];
+//			}
+//			retVal = bandTotalVal / numBands;
+//			retVal = (retVal <=100 ? retVal : 100);
+//			break;
 		case dssSetting_AudioHigh:
-			//retVal = dev->audioValHigh;
-			retVal = dev->audioRef->freqBandVal[7];
+			startFreqBand = (NUM_FREQ_BANDS / 3) * 2;
+			numBands = NUM_FREQ_BANDS - (startFreqBand + 1);	//Give the remaining extra band to the high range.
+			for(uint8_t n=0; n<numBands; n++){
+				if(dev->audioRef->freqBandVal[n+startFreqBand] > bandMaxVal){
+					bandMaxVal = dev->audioRef->freqBandVal[n+startFreqBand];
+				}
+			}
+			retVal = bandMaxVal;
 			break;
-
-
 		}
 		break;
 	case dataSource_DigitalInput:
