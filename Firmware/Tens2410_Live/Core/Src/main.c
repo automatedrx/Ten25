@@ -91,36 +91,6 @@ TIM_HandleTypeDef htim17;
 Audio_HandleTypeDef haud;
 
 
-//#include "arm_math.h"  // CMSIS DSP library for FFT
-//#define AUDIO_BUFFER_SIZE 1024 //1024  // Samples for FFT
-//#define FFT_SIZE (AUDIO_BUFFER_SIZE/2)
-//#define SAMPLE_RATE 16000       // 16kHz sampling rate
-//
-//int32_t audio_buffer_left[AUDIO_BUFFER_SIZE];
-////int32_t audio_buffer_right[AUDIO_BUFFER_SIZE];
-//float_t fft_input[AUDIO_BUFFER_SIZE];
-//float_t fft_output[FFT_SIZE];
-//float_t fft_magnitude[FFT_SIZE];
-//
-//// Frequency band results (0-100 scale)
-//#define NUM_FREQ_BANDS 8//5//38
-//uint8_t frequency_bands[NUM_FREQ_BANDS];
-//float32_t smoothed_bands[NUM_FREQ_BANDS] = {0};  // Holds the smoothed values (float for precision)
-//
-//// AGC parameters
-//#define SMOOTHING_ALPHA 1.0f //0.2f      // Smoothing factor for bands (0 < alpha <= 1)
-//#define AGC_ALPHA 0.02f //0.05f           // Smoothing factor for AGC gain (slower response)
-//#define TARGET_LEVEL 50.0f //25.0f //50.0f        // Target average band level (0-100 scale)
-//#define MAX_GAIN 30.0f            // Maximum gain to prevent noise amplification
-//float32_t agc_gain = 1.0f;        // Initial AGC gain
-//
-//// CMSIS DSP FFT instance
-//arm_rfft_fast_instance_f32 fft_handler;
-
-// Flags
-//volatile uint8_t audioBufferFull = 0;
-//volatile bool audioEnabled = true;
-
 
 
 

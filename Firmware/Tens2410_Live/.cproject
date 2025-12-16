@@ -63,7 +63,6 @@
 									<listOptionValue builtIn="false" value="../RFM69"/>
 									<listOptionValue builtIn="false" value="../Encoder"/>
 									<listOptionValue builtIn="false" value="../Displays/Fonts"/>
-									<listOptionValue builtIn="false" value="&quot;../Displays\ST7735&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../Displays\ST7735_Canvas&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1167523344" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
