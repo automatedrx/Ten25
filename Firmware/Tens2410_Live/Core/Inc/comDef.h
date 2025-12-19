@@ -132,7 +132,7 @@ typedef enum {
 	pStat_MaxIntensity			= 'u',
 
 	pStat_SwapPolarity			= 'v',
-
+	pStat_MaxOutputPulsewidthPct = 'w',
 
 
 	pStat_NumPrograms			= 'A',	//'Includes chanProgs and sysProgs.
@@ -265,7 +265,8 @@ typedef enum {
 	dscSetting_IntensityMax,
 	dscSetting_CurProgNum,
 	dscSetting_CurLineNum,
-	dscSetting_CurChanNum
+	dscSetting_CurChanNum,
+	dscSetting_OutputPulseWidthMaxPercent
 }enumDataSourceChanSetting;
 
 typedef enum {

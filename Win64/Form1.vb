@@ -141,6 +141,7 @@ Public Class Form1
         End If
         Dim availPorts As String() = SerialPort.GetPortNames
         Array.Sort(availPorts)
+        cboComPorts.Items.Clear()
         cboComPorts.Items.AddRange(availPorts)
         If My.Settings.lastComPort.Length Then
             If cboComPorts.Items.Contains(My.Settings.lastComPort.ToString) Then
@@ -462,6 +463,9 @@ Public Class Form1
             Case pStatEnum.CurSpeed
             Case pStatEnum.MinIntensity
             Case pStatEnum.MaxIntensity
+            Case pStatEnum.SwapPolarity
+
+            Case pStatEnum.MaxPulsewidthOutputPct
 
             Case pStatEnum.NumberOfPrograms
 
@@ -521,7 +525,7 @@ Public Class Form1
                 '// chan0-3
                 '// 0 chanEnabled, 1 chanSpeed, 2 curLineNum, 3 startVal, 4 endVal, 5 modDuration,
                 '// 6 percentComplete, 7 RepeatsRemaining, 8 chanCurVal, 9 chanCurIntensity,
-                '// 10 progState, 11 polaritySwapped, 12 polarity, 13 curProgNumber, 14 minIntensity, 15 maxIntensity
+                '// 10 progState, 11 polaritySwapped, 12 polarity, 13 curProgNumber, 14 minIntensity, 15 maxIntensity, 16 maxOutputPulsewidthPct
 
                 Dim tmpCurProgNum As Integer = CInt(valArray(13))
                 Dim tmpCurLineNum As Integer = CInt(valArray(2))
@@ -562,6 +566,7 @@ Public Class Form1
 
                 chanControls(paramIndex(0)).OutputIntensityMin = CInt(valArray(14))
                 chanControls(paramIndex(0)).OutputIntensityMax = CInt(valArray(15))
+                chanControls(paramIndex(0)).MaxOutputPulsewidthPct = CInt(valArray(16))
 
                 lastChanStatsReceivedTime = Now
                 If autoStatus = AutoStatusenum.asOn Then
@@ -691,6 +696,7 @@ Public Class Form1
                         .ChanName = monitorDev.allChannelsString(n),
                         .Duration = 0,
                         .OutputIntensityMax = My.Settings.TensMaxOutputLow,
+                        .MaxOutputPulsewidthPct = My.Settings.TensMaxPulsewidthOutputPctInitial,
                         .ProgState = 0,
                         .PulseWidth = 0, .PulseWidthStart = 0, .PulseWidthEnd = 0,
                         .Polarity = -1}
@@ -701,6 +707,7 @@ Public Class Form1
             AddHandler chanControls(n).IntensityMin_Changed, AddressOf Chan_IntensityMin_Changed
             AddHandler chanControls(n).IntensityMax_Changed, AddressOf Chan_IntensityMax_Changed
             AddHandler chanControls(n).SwapPolarity_Changed, AddressOf UcChanControl1_SwapPolarity_Changed
+            AddHandler chanControls(n).MaxPulseWidthOutputPct_Changed, AddressOf Chan_MaxOutputPulsewidthPct_Changed
             SplitContainer6.Panel2.Controls.Add(chanControls(n))
         Next
     End Sub
@@ -715,6 +722,9 @@ Public Class Form1
     End Sub
     Private Sub Chan_OutputIntensity_Changed(ByVal index As Integer, ByVal NewVal As Integer)
         sendParameter(pStatEnum.ChanCurIntensityPct, NewVal, index)
+    End Sub
+    Private Sub Chan_MaxOutputPulsewidthPct_Changed(ByVal index As Integer, ByVal NewVal As Integer)
+        sendParameter(pStatEnum.MaxPulsewidthOutputPct, NewVal, index)
     End Sub
     Private Sub Chan_IntensityMin_Changed(ByVal index As Integer, ByVal newMin As Integer)
         sendParameter(pStatEnum.MinIntensity, newMin, index)

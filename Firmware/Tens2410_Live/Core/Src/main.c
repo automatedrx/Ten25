@@ -2016,8 +2016,15 @@ bool setParameter(char* buff, uint8_t indx, comChanEnum comChannel, uint16_t sen
 		if( (chanIndex >= 0) && (chanIndex < NUM_CHANNELS) ){
 			tens.tensChan[chanIndex].polaritySwapped = ((uint8_t)newVal == 0 ? false : true);
 			TensSetPolarity(&tens.tensChan[chanIndex], tens.tensChan[chanIndex].polarity);
-			break;
 		}
+		break;
+	case pStat_MaxOutputPulsewidthPct:
+		if( (chanIndex >= 0) && (chanIndex < NUM_CHANNELS) ){
+			if( (newVal >= 0) && (newVal <=100) ){
+				tens.tensChan[chanIndex].outputMaxPct = (uint8_t)newVal;
+			}
+		}
+		break;
 	case pStat_NumPrograms:
 		//A remote device is initiating a program download to this device.
 		//Stop all channels and prepare for the download.
@@ -2785,7 +2792,8 @@ bool sendParameter(char* buff, uint8_t indx, comChanEnum comChannel, uint16_t se
 		break;
 	case pStat_ChanCurPWidthPct:
 		if(paramIndex < NUM_CHANNELS){
-			tmpVal = tens.tensChan[paramIndex].curVal;
+			//tmpVal = tens.tensChan[paramIndex].curVal;
+			tmpVal = tens.tensChan[paramIndex].mappedCurVal;
 		}else{
 			tmpVal = 0;
 		}
@@ -2807,8 +2815,24 @@ bool sendParameter(char* buff, uint8_t indx, comChanEnum comChannel, uint16_t se
 		}
 		len = sprintf(&dataBuff[tmpStart], "%d=%d\n", paramIndex, tmpVal);
 		break;
-
-
+	case pStat_MinIntensity:
+		if(paramIndex < NUM_CHANNELS){
+			tmpVal = tens.tensChan[paramIndex].intensityMin;
+		}
+		len = sprintf(&dataBuff[tmpStart], "%d=%d\n", paramIndex, tmpVal);
+		break;
+	case pStat_MaxIntensity:
+		if(paramIndex < NUM_CHANNELS){
+			tmpVal = tens.tensChan[paramIndex].intensityMax;
+		}
+		len = sprintf(&dataBuff[tmpStart], "%d=%d\n", paramIndex, tmpVal);
+		break;
+	case pStat_MaxOutputPulsewidthPct:
+		if(paramIndex < NUM_CHANNELS){
+			tmpVal = tens.tensChan[paramIndex].outputMaxPct;
+		}
+		len = sprintf(&dataBuff[tmpStart], "%d=%d\n", paramIndex, tmpVal);
+		break;
 	case pStat_NumPrograms:
 		len = sprintf(&dataBuff[tmpStart], "=%d\n", tens.numProgFiles);
 		break;
@@ -2910,7 +2934,7 @@ bool sendParameterArray(char* buff, uint8_t indx, comChanEnum comChannel, uint16
 		// chan0-3
 		// 0 chanEnabled, 1 chanSpeed, 2 curLineNum, 3 startVal, 4 endVal, 5 modDuration,
 		// 6 percentComplete, 7 RepeatsRemaining, 8 chanCurVal, 9 chanCurIntensity,
-		// 10 progState, 11 polaritySwapped, 12 polarity, 13 curProgNumber, 14 minIntensity, 15 maxIntensity
+		// 10 progState, 11 polaritySwapped, 12 polarity, 13 curProgNumber, 14 minIntensity, 15 maxIntensity, 16 maxOutputPulsewidthPct
 		if( (msgIndex[0] < 0) || (msgIndex[0] >= NUM_CHANNELS) ) return false;
 		TensProgramStatus_HandleTypeDef* pCurStatus = &tens.curProgStatus[msgIndex[0]];
 		structProgLine* pCurLine = &tens.curProgLine[msgIndex[0]];
@@ -2935,22 +2959,22 @@ bool sendParameterArray(char* buff, uint8_t indx, comChanEnum comChannel, uint16
 			}
 		}
 
-		//len += sprintf(&dataBuff[len], "%d=%d,%d,%d,%d,%d,%lu,%d,%d,%d,%d,%d,%d,%d,%d,%u,%u\n", (int16_t)msgIndex[0],
-		//			(tens.tensChan[msgIndex[0]].chanEnabled == true ? 1 : 0), tens.tensChan[msgIndex[0]].chanSpeed,
-		//			pCurStatus->curLineNum, tens.tensChan[msgIndex[0]].startVal,
-		//			tens.tensChan[msgIndex[0]].endVal, pCurStatus->modDuration,
-		//			(uint8_t)floor(tens.tensChan[msgIndex[0]].pctComplete), tens.tensChan[msgIndex[0]].repeatCounter,
-		//			(uint8_t)tens.tensChan[msgIndex[0]].curVal, tens.tensChan[msgIndex[0]].curIntensityPct,
-		//			pCurStatus->progState, (tens.tensChan[msgIndex[0]].polaritySwapped == false ? 0 : 1), pCurLine->polarity, tens.curProgNum[msgIndex[0]],
-		//			tmpMin, tmpMax);
-		len += sprintf(&dataBuff[len], "%d=%d,%d,%d,%d,%d,%lu,%d,%d,%d,%d,%d,%d,%d,%d,%u,%u\n", (int16_t)msgIndex[0],
+//		len += sprintf(&dataBuff[len], "%d=%d,%d,%d,%d,%d,%lu,%d,%d,%d,%d,%d,%d,%d,%d,%u,%u\n", (int16_t)msgIndex[0],
+//					(tens.tensChan[msgIndex[0]].chanEnabled == true ? 1 : 0), tens.tensChan[msgIndex[0]].chanSpeed,
+//					pCurStatus->curLineNum, tens.tensChan[msgIndex[0]].startVal,
+//					tens.tensChan[msgIndex[0]].endVal, tmpTotalDuration,
+//					(uint8_t)floor(tmpTotalPctComplete), tens.tensChan[msgIndex[0]].repeatCounter,
+//					(uint8_t)tens.tensChan[msgIndex[0]].curVal, tens.tensChan[msgIndex[0]].curIntensityPct,
+//					pCurStatus->progState, (tens.tensChan[msgIndex[0]].polaritySwapped == false ? 0 : 1),
+//					pCurLine->polarity, tens.curProgNum[msgIndex[0]], tmpMin, tmpMax);
+		len += sprintf(&dataBuff[len], "%d=%d,%d,%d,%d,%d,%lu,%d,%d,%d,%d,%d,%d,%d,%d,%u,%u,%u\n", (int16_t)msgIndex[0],
 					(tens.tensChan[msgIndex[0]].chanEnabled == true ? 1 : 0), tens.tensChan[msgIndex[0]].chanSpeed,
 					pCurStatus->curLineNum, tens.tensChan[msgIndex[0]].startVal,
 					tens.tensChan[msgIndex[0]].endVal, tmpTotalDuration,
 					(uint8_t)floor(tmpTotalPctComplete), tens.tensChan[msgIndex[0]].repeatCounter,
-					(uint8_t)tens.tensChan[msgIndex[0]].curVal, tens.tensChan[msgIndex[0]].curIntensityPct,
+					(uint8_t)tens.tensChan[msgIndex[0]].mappedCurVal, tens.tensChan[msgIndex[0]].curIntensityPct,
 					pCurStatus->progState, (tens.tensChan[msgIndex[0]].polaritySwapped == false ? 0 : 1),
-					pCurLine->polarity, tens.curProgNum[msgIndex[0]], tmpMin, tmpMax);
+					pCurLine->polarity, tens.curProgNum[msgIndex[0]], tmpMin, tmpMax, tens.tensChan[msgIndex[0]].outputMaxPct);
 		retVal = true;
 		break;
 
@@ -3630,9 +3654,18 @@ void initTens(){
 //	TensInitTensChannel(&tens, tens.numChans++, TENS_POL_CH1_GPIO_Port, TENS_POL_CH1_Pin, &htim17, &TIM17->CCR1, TIM_CHANNEL_1, &hdac1, DAC_CHANNEL_1, 800, 1200, 300, speedSlowOutMin, speedFastOutMax);
 //	TensInitTensChannel(&tens, tens.numChans++, TENS_POL_CH2_GPIO_Port, TENS_POL_CH2_Pin, &htim4, &TIM4->CCR2, TIM_CHANNEL_2, &hdac1, DAC_CHANNEL_2, 800, 1200, 300, speedSlowOutMin, speedFastOutMax);
 //	TensInitTensChannel(&tens, tens.numChans++, TENS_POL_CH3_GPIO_Port, TENS_POL_CH3_Pin, &htim4, &TIM4->CCR4, TIM_CHANNEL_4, &hdac1, DAC_CHANNEL_2, 800, 1200, 300, speedSlowOutMin, speedFastOutMax);
-	TensInitTensChannel(&tens, tens.numChans++, TENS_POL_CH1_GPIO_Port, TENS_POL_CH1_Pin, &htim17, &TIM17->CCR1, TIM_CHANNEL_1, &hdac1, DAC_CHANNEL_1, 800, 1300, 300, speedSlowOutMin, speedFastOutMax); //800, 1400, 300
-	TensInitTensChannel(&tens, tens.numChans++, TENS_POL_CH2_GPIO_Port, TENS_POL_CH2_Pin, &htim4, &TIM4->CCR2, TIM_CHANNEL_2, &hdac1, DAC_CHANNEL_2, 800, 1300, 300, speedSlowOutMin, speedFastOutMax);
+
+	//Original channel order:
+//	TensInitTensChannel(&tens, tens.numChans++, TENS_POL_CH1_GPIO_Port, TENS_POL_CH1_Pin, &htim17, &TIM17->CCR1, TIM_CHANNEL_1, &hdac1, DAC_CHANNEL_1, 800, 1300, 300, speedSlowOutMin, speedFastOutMax); //800, 1400, 300
+//	TensInitTensChannel(&tens, tens.numChans++, TENS_POL_CH2_GPIO_Port, TENS_POL_CH2_Pin, &htim4, &TIM4->CCR2, TIM_CHANNEL_2, &hdac1, DAC_CHANNEL_2, 800, 1300, 300, speedSlowOutMin, speedFastOutMax);
+//	TensInitTensChannel(&tens, tens.numChans++, TENS_POL_CH3_GPIO_Port, TENS_POL_CH3_Pin, &htim4, &TIM4->CCR4, TIM_CHANNEL_4, &hdac1, DAC_CHANNEL_2, 800, 1300, 300, speedSlowOutMin, speedFastOutMax);
+
+	//Reverse Channel order (chan 1, 2, 3 left-to-right when facing the front of unit)
 	TensInitTensChannel(&tens, tens.numChans++, TENS_POL_CH3_GPIO_Port, TENS_POL_CH3_Pin, &htim4, &TIM4->CCR4, TIM_CHANNEL_4, &hdac1, DAC_CHANNEL_2, 800, 1300, 300, speedSlowOutMin, speedFastOutMax);
+	TensInitTensChannel(&tens, tens.numChans++, TENS_POL_CH2_GPIO_Port, TENS_POL_CH2_Pin, &htim4, &TIM4->CCR2, TIM_CHANNEL_2, &hdac1, DAC_CHANNEL_2, 800, 1300, 300, speedSlowOutMin, speedFastOutMax);
+	TensInitTensChannel(&tens, tens.numChans++, TENS_POL_CH1_GPIO_Port, TENS_POL_CH1_Pin, &htim17, &TIM17->CCR1, TIM_CHANNEL_1, &hdac1, DAC_CHANNEL_1, 800, 1300, 300, speedSlowOutMin, speedFastOutMax); //800, 1400, 300
+
+
 #endif
 	//init the Aux channels
 	for(uint8_t n = 0; n<NUM_AUX_CHANNELS; n++){
@@ -3907,7 +3940,7 @@ void pushButtonEvent(uint8_t pbId, uint8_t eventId){
 
 	if( (pbId == 6) || (pbId == 9) ){ 	//Board E, PB7 or PB10
 		//turn down intensity for one of the two Tens DAC's
-		uint8_t tmpChan = (pbId == 6 ? TENS_INDEX_START : TENS_INDEX_START + 1);
+		uint8_t tmpChan = (pbId == 6 ? TENS_INDEX_START : TENS_INDEX_START + 2);
 
 		bool doUpdate = false;
 		uint8_t stepVal = 1;
@@ -3933,7 +3966,7 @@ void pushButtonEvent(uint8_t pbId, uint8_t eventId){
 
 	if( (pbId == 5) || (pbId == 8) ){ 	//Board E, PB6 or PB9
 		//turn up intensity for one of the two Tens DAC's
-		uint8_t tmpChan = (pbId == 5 ? TENS_INDEX_START : TENS_INDEX_START + 1);
+		uint8_t tmpChan = (pbId == 5 ? TENS_INDEX_START : TENS_INDEX_START + 2);
 
 		bool doUpdate = false;
 		uint8_t newVal = 0;

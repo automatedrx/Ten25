@@ -115,6 +115,7 @@ Module comDef
         dscsCurProgNum = 21
         dscsCurLineNum = 22
         dscsCurChanNum = 23
+        dscsOutputPulsewidthMaxPercent = 24
     End Enum
 
     Public Enum DataSourceSysSettingEnum As Integer
@@ -205,6 +206,7 @@ Module comDef
         MinIntensity = AscW("t")
         MaxIntensity = AscW("u")
         SwapPolarity = AscW("v")
+        MaxPulsewidthOutputPct = AscW("w")
 
         NumberOfPrograms = AscW("A")    'Includes chanProgs and sysProgs
         ProgramLength = AscW("B")       'Index Required for program number
@@ -257,7 +259,7 @@ Module comDef
                                                         "Rem OpTime", "Rem PdTime", "Rem TotTime", "% Complete",
                                                         "Start Val", "End Val", "Cur Val", "Polarity",
                                                         "Intensity", "Intens Min", "Intens Max",
-                                                        "CurProg Num", "CurLine Num", "CurChan Num"}
+                                                        "CurProg Num", "CurLine Num", "CurChan Num", "PW Out Max"}
 
     Public dataSourceSysSettingString As String() = {"Z Rotation", "Up Direction", "Step Count", "Audio-Total", "Audio-Low", "Audio-Mid", "Audio-High"}
 

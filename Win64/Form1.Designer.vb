@@ -325,77 +325,77 @@ Partial Class Form1
         cmsPrograms.ImageScalingSize = New Size(32, 32)
         cmsPrograms.Items.AddRange(New ToolStripItem() {cmsProgAddBlankProgramToEnd, cmsProgInsertBlankProgram, cmsProgImportProgram, cmsProgDuplicateProgram, ToolStripSeparator3, cmsProgMoveProgramTowardsBeginning, cmsProgMoveProgramTowardsEnd, ToolStripSeparator4, cmsProgEditVarNames, cmsProgEditTimerNames, ToolStripSeparator13, cmsProgDeleteProgram})
         cmsPrograms.Name = "cmsProgSentences"
-        cmsPrograms.Size = New Size(305, 220)
+        cmsPrograms.Size = New Size(306, 220)
         ' 
         ' cmsProgAddBlankProgramToEnd
         ' 
         cmsProgAddBlankProgramToEnd.Name = "cmsProgAddBlankProgramToEnd"
-        cmsProgAddBlankProgramToEnd.Size = New Size(304, 22)
+        cmsProgAddBlankProgramToEnd.Size = New Size(305, 22)
         cmsProgAddBlankProgramToEnd.Text = "Add Blank Program to then End"
         ' 
         ' cmsProgInsertBlankProgram
         ' 
         cmsProgInsertBlankProgram.Name = "cmsProgInsertBlankProgram"
-        cmsProgInsertBlankProgram.Size = New Size(304, 22)
+        cmsProgInsertBlankProgram.Size = New Size(305, 22)
         cmsProgInsertBlankProgram.Text = "Insert Blank Program"
         ' 
         ' cmsProgImportProgram
         ' 
         cmsProgImportProgram.Name = "cmsProgImportProgram"
-        cmsProgImportProgram.Size = New Size(304, 22)
+        cmsProgImportProgram.Size = New Size(305, 22)
         cmsProgImportProgram.Text = "Import Existing Program"
         ' 
         ' cmsProgDuplicateProgram
         ' 
         cmsProgDuplicateProgram.Name = "cmsProgDuplicateProgram"
-        cmsProgDuplicateProgram.Size = New Size(304, 22)
+        cmsProgDuplicateProgram.Size = New Size(305, 22)
         cmsProgDuplicateProgram.Text = "Duplicate Program"
         ' 
         ' ToolStripSeparator3
         ' 
         ToolStripSeparator3.Name = "ToolStripSeparator3"
-        ToolStripSeparator3.Size = New Size(301, 6)
+        ToolStripSeparator3.Size = New Size(302, 6)
         ' 
         ' cmsProgMoveProgramTowardsBeginning
         ' 
         cmsProgMoveProgramTowardsBeginning.Name = "cmsProgMoveProgramTowardsBeginning"
         cmsProgMoveProgramTowardsBeginning.ShortcutKeys = Keys.Control Or Keys.Left
-        cmsProgMoveProgramTowardsBeginning.Size = New Size(304, 22)
+        cmsProgMoveProgramTowardsBeginning.Size = New Size(305, 22)
         cmsProgMoveProgramTowardsBeginning.Text = "Move Program Towards Start"
         ' 
         ' cmsProgMoveProgramTowardsEnd
         ' 
         cmsProgMoveProgramTowardsEnd.Name = "cmsProgMoveProgramTowardsEnd"
         cmsProgMoveProgramTowardsEnd.ShortcutKeys = Keys.Control Or Keys.Right
-        cmsProgMoveProgramTowardsEnd.Size = New Size(304, 22)
+        cmsProgMoveProgramTowardsEnd.Size = New Size(305, 22)
         cmsProgMoveProgramTowardsEnd.Text = "Move Program Towards the End"
         ' 
         ' ToolStripSeparator4
         ' 
         ToolStripSeparator4.Name = "ToolStripSeparator4"
-        ToolStripSeparator4.Size = New Size(301, 6)
+        ToolStripSeparator4.Size = New Size(302, 6)
         ' 
         ' cmsProgEditVarNames
         ' 
         cmsProgEditVarNames.Name = "cmsProgEditVarNames"
-        cmsProgEditVarNames.Size = New Size(304, 22)
+        cmsProgEditVarNames.Size = New Size(305, 22)
         cmsProgEditVarNames.Text = "Prog Variable Names..."
         ' 
         ' cmsProgEditTimerNames
         ' 
         cmsProgEditTimerNames.Name = "cmsProgEditTimerNames"
-        cmsProgEditTimerNames.Size = New Size(304, 22)
+        cmsProgEditTimerNames.Size = New Size(305, 22)
         cmsProgEditTimerNames.Text = "Prog Timer Names..."
         ' 
         ' ToolStripSeparator13
         ' 
         ToolStripSeparator13.Name = "ToolStripSeparator13"
-        ToolStripSeparator13.Size = New Size(301, 6)
+        ToolStripSeparator13.Size = New Size(302, 6)
         ' 
         ' cmsProgDeleteProgram
         ' 
         cmsProgDeleteProgram.Name = "cmsProgDeleteProgram"
-        cmsProgDeleteProgram.Size = New Size(304, 22)
+        cmsProgDeleteProgram.Size = New Size(305, 22)
         cmsProgDeleteProgram.Text = "Delete Program"
         ' 
         ' cmdMoveDown
@@ -647,7 +647,7 @@ Partial Class Form1
         chkLiveTrackLines.AutoSize = True
         chkLiveTrackLines.Location = New Point(135, 16)
         chkLiveTrackLines.Name = "chkLiveTrackLines"
-        chkLiveTrackLines.Size = New Size(109, 19)
+        chkLiveTrackLines.Size = New Size(110, 19)
         chkLiveTrackLines.TabIndex = 12
         chkLiveTrackLines.Text = "Live Track Line#"
         chkLiveTrackLines.UseVisualStyleBackColor = True
@@ -790,53 +790,53 @@ Partial Class Form1
         ' CreateNewProjectToolStripMenuItem
         ' 
         CreateNewProjectToolStripMenuItem.Name = "CreateNewProjectToolStripMenuItem"
-        CreateNewProjectToolStripMenuItem.Size = New Size(221, 22)
+        CreateNewProjectToolStripMenuItem.Size = New Size(222, 22)
         CreateNewProjectToolStripMenuItem.Text = "Create New Project"
         ' 
         ' tsmDeviceType
         ' 
         tsmDeviceType.Name = "tsmDeviceType"
-        tsmDeviceType.Size = New Size(221, 22)
+        tsmDeviceType.Size = New Size(222, 22)
         tsmDeviceType.Text = "Default Device Type..."
         ' 
         ' ToolStripSeparator11
         ' 
         ToolStripSeparator11.Name = "ToolStripSeparator11"
-        ToolStripSeparator11.Size = New Size(218, 6)
+        ToolStripSeparator11.Size = New Size(219, 6)
         ' 
         ' OpenProjectFromFileToolStripMenuItem
         ' 
         OpenProjectFromFileToolStripMenuItem.Name = "OpenProjectFromFileToolStripMenuItem"
-        OpenProjectFromFileToolStripMenuItem.Size = New Size(221, 22)
+        OpenProjectFromFileToolStripMenuItem.Size = New Size(222, 22)
         OpenProjectFromFileToolStripMenuItem.Text = "Open Project From File"
         ' 
         ' SaveProjectToolStripMenuItem
         ' 
         SaveProjectToolStripMenuItem.Name = "SaveProjectToolStripMenuItem"
-        SaveProjectToolStripMenuItem.Size = New Size(221, 22)
+        SaveProjectToolStripMenuItem.Size = New Size(222, 22)
         SaveProjectToolStripMenuItem.Text = "Save Project"
         ' 
         ' SaveProjectAsToolStripMenuItem
         ' 
         SaveProjectAsToolStripMenuItem.Name = "SaveProjectAsToolStripMenuItem"
-        SaveProjectAsToolStripMenuItem.Size = New Size(221, 22)
+        SaveProjectAsToolStripMenuItem.Size = New Size(222, 22)
         SaveProjectAsToolStripMenuItem.Text = "Save Project As..."
         ' 
         ' ToolStripSeparator12
         ' 
         ToolStripSeparator12.Name = "ToolStripSeparator12"
-        ToolStripSeparator12.Size = New Size(218, 6)
+        ToolStripSeparator12.Size = New Size(219, 6)
         ' 
         ' OpenProjectFromDeviceToolStripMenuItem
         ' 
         OpenProjectFromDeviceToolStripMenuItem.Name = "OpenProjectFromDeviceToolStripMenuItem"
-        OpenProjectFromDeviceToolStripMenuItem.Size = New Size(221, 22)
+        OpenProjectFromDeviceToolStripMenuItem.Size = New Size(222, 22)
         OpenProjectFromDeviceToolStripMenuItem.Text = "Get Project From Device"
         ' 
         ' DownloadProjectToDeviceToolStripMenuItem
         ' 
         DownloadProjectToDeviceToolStripMenuItem.Name = "DownloadProjectToDeviceToolStripMenuItem"
-        DownloadProjectToDeviceToolStripMenuItem.Size = New Size(221, 22)
+        DownloadProjectToDeviceToolStripMenuItem.Size = New Size(222, 22)
         DownloadProjectToDeviceToolStripMenuItem.Text = "Download Project To Device"
         ' 
         ' mnuMainPrograms
@@ -850,7 +850,7 @@ Partial Class Form1
         ' 
         AddNewBlankProgramToolStripMenuItem.DropDownItems.AddRange(New ToolStripItem() {mnuAddBlankProgramAtIndex, mnuAddBlankProgramAtEnd})
         AddNewBlankProgramToolStripMenuItem.Name = "AddNewBlankProgramToolStripMenuItem"
-        AddNewBlankProgramToolStripMenuItem.Size = New Size(256, 22)
+        AddNewBlankProgramToolStripMenuItem.Size = New Size(257, 22)
         AddNewBlankProgramToolStripMenuItem.Text = "Add New (Blank) Program To End"
         ' 
         ' mnuAddBlankProgramAtIndex
@@ -868,41 +868,41 @@ Partial Class Form1
         ' ImportExistingProgramToolStripMenuItem
         ' 
         ImportExistingProgramToolStripMenuItem.Name = "ImportExistingProgramToolStripMenuItem"
-        ImportExistingProgramToolStripMenuItem.Size = New Size(256, 22)
+        ImportExistingProgramToolStripMenuItem.Size = New Size(257, 22)
         ImportExistingProgramToolStripMenuItem.Text = "Import Existing Program"
         ' 
         ' mnuDuplicateProgram
         ' 
         mnuDuplicateProgram.Name = "mnuDuplicateProgram"
-        mnuDuplicateProgram.Size = New Size(256, 22)
+        mnuDuplicateProgram.Size = New Size(257, 22)
         mnuDuplicateProgram.Text = "Duplicate Program"
         ' 
         ' ToolStripSeparator5
         ' 
         ToolStripSeparator5.Name = "ToolStripSeparator5"
-        ToolStripSeparator5.Size = New Size(253, 6)
+        ToolStripSeparator5.Size = New Size(254, 6)
         ' 
         ' MoveProgramTowardsBeginningToolStripMenuItem
         ' 
         MoveProgramTowardsBeginningToolStripMenuItem.Name = "MoveProgramTowardsBeginningToolStripMenuItem"
-        MoveProgramTowardsBeginningToolStripMenuItem.Size = New Size(256, 22)
+        MoveProgramTowardsBeginningToolStripMenuItem.Size = New Size(257, 22)
         MoveProgramTowardsBeginningToolStripMenuItem.Text = "Move Program Towards Beginning"
         ' 
         ' MoveProgramTowardsEndToolStripMenuItem
         ' 
         MoveProgramTowardsEndToolStripMenuItem.Name = "MoveProgramTowardsEndToolStripMenuItem"
-        MoveProgramTowardsEndToolStripMenuItem.Size = New Size(256, 22)
+        MoveProgramTowardsEndToolStripMenuItem.Size = New Size(257, 22)
         MoveProgramTowardsEndToolStripMenuItem.Text = "Move Program Towards End"
         ' 
         ' ToolStripSeparator6
         ' 
         ToolStripSeparator6.Name = "ToolStripSeparator6"
-        ToolStripSeparator6.Size = New Size(253, 6)
+        ToolStripSeparator6.Size = New Size(254, 6)
         ' 
         ' DeleteProgramToolStripMenuItem
         ' 
         DeleteProgramToolStripMenuItem.Name = "DeleteProgramToolStripMenuItem"
-        DeleteProgramToolStripMenuItem.Size = New Size(256, 22)
+        DeleteProgramToolStripMenuItem.Size = New Size(257, 22)
         DeleteProgramToolStripMenuItem.Text = "Delete Program"
         ' 
         ' mnuProgLines
@@ -961,7 +961,7 @@ Partial Class Form1
         ' ToolStripMenuItem2
         ' 
         ToolStripMenuItem2.Name = "ToolStripMenuItem2"
-        ToolStripMenuItem2.Size = New Size(126, 20)
+        ToolStripMenuItem2.Size = New Size(127, 20)
         ToolStripMenuItem2.Text = "ToolStripMenuItem2"
         ' 
         ' TabPage2
@@ -1128,7 +1128,7 @@ Partial Class Form1
         ' lblDevStatus
         ' 
         lblDevStatus.Name = "lblDevStatus"
-        lblDevStatus.Size = New Size(87, 22)
+        lblDevStatus.Size = New Size(88, 22)
         lblDevStatus.Text = "ToolStripLabel1"
         ' 
         ' cmdStop
@@ -1151,7 +1151,7 @@ Partial Class Form1
         UcChanControl1.Duration = -1
         UcChanControl1.LineNum = -1
         UcChanControl1.Location = New Point(5, 5)
-        UcChanControl1.Margin = New Padding(6)
+        UcChanControl1.MaxOutputPulsewidthPct = 10
         UcChanControl1.MaxSpeed = 0
         UcChanControl1.MinSpeed = 0
         UcChanControl1.Name = "UcChanControl1"
@@ -1169,7 +1169,8 @@ Partial Class Form1
         UcChanControl1.RepeatsRemaining = -1
         UcChanControl1.Size = New Size(177, 270)
         UcChanControl1.Speed = 0
-        UcChanControl1.TabIndex = 0
+        UcChanControl1.TabIndex = 1
+        UcChanControl1.TabStop = False
         UcChanControl1.Visible = False
         ' 
         ' cmdAutostatus
@@ -1210,12 +1211,12 @@ Partial Class Form1
         ' ssmProgressBar
         ' 
         ssmProgressBar.Name = "ssmProgressBar"
-        ssmProgressBar.Size = New Size(100, 17)
+        ssmProgressBar.Size = New Size(100, 19)
         ' 
         ' ssmStatusText
         ' 
         ssmStatusText.Name = "ssmStatusText"
-        ssmStatusText.Size = New Size(81, 18)
+        ssmStatusText.Size = New Size(81, 20)
         ssmStatusText.Text = "ssmStatusText"
         ' 
         ' bwDLProgFromDevice
@@ -1420,7 +1421,6 @@ Partial Class Form1
     Friend WithEvents cmdtsChanMonAutoStatusOn As ToolStripButton
     Friend WithEvents ToolStripSeparator10 As ToolStripSeparator
     Friend WithEvents ToolStripSeparator9 As ToolStripSeparator
-    Friend WithEvents UcChanControl1 As ucChanControl
     Friend WithEvents UcProgLineEdit1 As ucProgLineEdit
     Friend WithEvents ToolStripSeparator11 As ToolStripSeparator
     Friend WithEvents ToolStripSeparator12 As ToolStripSeparator
@@ -1457,5 +1457,6 @@ Partial Class Form1
     Friend WithEvents cmdResetDevice As ToolStripMenuItem
     Friend WithEvents cmdEraseDevice As ToolStripMenuItem
     Friend WithEvents SplitContainer9 As SplitContainer
+    Friend WithEvents UcChanControl1 As ucChanControl
 
 End Class

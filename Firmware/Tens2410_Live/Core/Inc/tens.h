@@ -233,6 +233,9 @@ typedef struct {
 	uint32_t			origDelayDuration;		// This is the original duration specified in the program for a delay (or postDelay), based on 100% normal speed.
 	uint16_t			repeatCounter;			// Number of times to repeat an output line.
 
+	uint8_t				outputMaxPct;			// 0-100% of actual pulsewidth output.  Allows a level control for 0-100% of the pulsewidth time to be applied to the curVal value.  Essentially an output level control on the pulsewidth rather than on the voltage (like intensity is).
+	float				mappedCurVal;			// This is the actual output-- it's the curVal after the mapping function.
+
 	uint8_t				startVal;
 	uint8_t				endVal;
 	float				deltaVal;		//delta val can be negative if the startVal is higher than the endVal.  Could make it int32, but going with float to avoid conversions during ISR math.
@@ -389,6 +392,8 @@ void TensStop(Tens_HandleTypeDef* dev, uint8_t chanNum, enumProgState newState);
 void TensSetPolarity(TensChannel_HandleTypeDef* chan, enumPolarity newVal);
 void TensSwapPolarity(TensChannel_HandleTypeDef* chan, bool SwapPolarity);
 void TensChangePolarityOutputs(TensChannel_HandleTypeDef* chan, enumPolarity newVal);
+
+uint8_t TensGetScaledCurVal(TensChannel_HandleTypeDef* chan, float curVal);
 
 void TensSetTensOrMotorOutput(TensChannel_HandleTypeDef* chan, uint8_t newVal);
 void TensEnableChannel(Tens_HandleTypeDef* dev, uint8_t index, bool EnableVal);

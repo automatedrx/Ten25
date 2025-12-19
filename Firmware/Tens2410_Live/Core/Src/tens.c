@@ -26,6 +26,8 @@ void TensInit(Tens_HandleTypeDef* dev, TIM_HandleTypeDef* TensLoopTimer, GPIO_Ty
 	dev->tensChan[0].chanMinSpeed = ChanMinSpeed; //20;
 	dev->tensChan[0].chanMaxSpeed = ChanMaxSpeed; //5000;
 
+	dev->tensChan[0].outputMaxPct = 100;	//no mapping on master channel
+
 
 	//testing==
 	for(uint8_t n=0; n<NUM_CHANNELS; n++){
@@ -527,6 +529,9 @@ void TensInitTensChannel(Tens_HandleTypeDef* dev, uint8_t chanIndex, GPIO_TypeDe
 	chan->chanMinSpeed = ChanMinSpeed;
 	chan->chanMaxSpeed = ChanMaxSpeed;
 
+	chan->outputMaxPct = 0;
+	chan->mappedCurVal = 0;
+
 	chan->intensityMin = 0;
 	chan->intensityMax = 30;	//setting this low during init.  The user's program can always increase it.
 
@@ -534,7 +539,7 @@ void TensInitTensChannel(Tens_HandleTypeDef* dev, uint8_t chanIndex, GPIO_TypeDe
 	TensSetPolarity(chan, polForward);
 	//TensSetDacVal(chan, 0);
 	TensSetTensIntensity(dev, chanIndex, 0);
-	TensSetTensOrMotorOutput(chan, 0); //TensSetPulseWidth(chan, 0);
+	TensSetTensOrMotorOutput(chan, 0);
 
 	HAL_TIM_Base_Start_IT(PulseOutTimerHandle);
 	HAL_TIM_PWM_Start(PulseOutTimerHandle, PulseOutTimChan);
@@ -742,44 +747,6 @@ void TensCheckProgLine(Tens_HandleTypeDef* dev, uint8_t chanNum){
 	}
 }
 
-/*
-void TensStartTensOrPwmOutput(Tens_HandleTypeDef* dev, uint8_t chanNum, structProgLine *curLine){
-	if(chanNum >= NUM_CHANNELS) return;
-	TensChannel_HandleTypeDef *chan = &dev->tensChan[chanNum];
-
-	//Make sure the vBoost is active:
-	if( (chan->chanType == chanType_Tens) && (dev->_vBoostCurState == false) ){
-		TensvBoostEnable(dev, true);
-	}
-
-	//Note: All speed and output values are based on 0-100%, NOT based on the corresponding timer channel pwm values for those percentages.
-
-	chan->startTime = HAL_GetTick();
-	chan->origDuration = TensGetValue(dev, curLine->pi321S, curLine->pi321V1, curLine->pi321V2, chanNum, 0);
-	chan->startVal = (uint8_t)TensGetValue(dev, curLine->pi81S, curLine->pi81V1, curLine->pi81V2, chanNum, 100);
-	chan->endVal = (uint8_t)TensGetValue(dev, curLine->pi82S, curLine->pi82V1, curLine->pi82V2, chanNum, 100);
-	chan->deltaVal = chan->endVal - chan->startVal;
-	chan->repeatCounter = (uint16_t)TensGetValue(dev, curLine->pi322S, curLine->pi322V1, curLine->pi322V2, chanNum, 65535);
-
-	dev->curProgStatus[chanNum].modDuration = TensCalculateModDurationVal(dev->masterSpeed, chan->chanSpeed, chan->origDuration);
-	chan->pctComplete = 0;
-	TensCalculateTensMotorStepVals(chan, dev->curProgStatus[chanNum].modDuration);
-
-	//Set polarity:
-	TensSetPolarity(chan, curLine->polarity);
-
-	chan->curVal = chan->startVal;  //startVal is a uint32 and curVal is a float-- check this in operation.
-	TensSetTensOrMotorOutput(chan, (chan->startVal));
-	chan->isActive = true;
-}
-*/
-
-//void TensStartDelay(Tens_HandleTypeDef* dev, uint8_t chanNum, structProgLine *curLine){
-//	uint16_t tmpSpeed = (chanNum > 0) ? dev->tensChan[chanNum].chanSpeed : 100;
-//	uint32_t tmpDuration = TensGetValue(dev, curLine->pi323S, curLine->pi323V1, curLine->pi323V2, chanNum, 0);
-//	//curProg->modDuration = TensCalculateModDurationVal(dev->masterSpeed, tmpSpeed, tmpDuration);	//grab the original
-//	dev->curProgStatus[chanNum].modDelayDuration = TensCalculateModDurationVal(dev->masterSpeed, tmpSpeed, tmpDuration);	//grab the original
-//}
 
 void TensStartTensOrPwmOutput(Tens_HandleTypeDef* dev, uint8_t chanNum, structProgLine *curLine){
 	if(chanNum >= NUM_CHANNELS) return;
@@ -827,8 +794,8 @@ void TensStartTensOrPwmOutput(Tens_HandleTypeDef* dev, uint8_t chanNum, structPr
 	TensSetPolarity(chan, curLine->polarity);
 
 	chan->curVal = chan->startVal;  //startVal is a uint32 and curVal is a float-- check this in operation.
-	TensSetTensOrMotorOutput(chan, (chan->startVal));
-	//chan->isActive = true;
+	//TensSetTensOrMotorOutput(chan, (chan->startVal));
+	TensSetTensOrMotorOutput(chan, TensGetScaledCurVal(chan, chan->curVal));
 	chan->activeState = Active;
 
 
@@ -853,7 +820,8 @@ void TensRepeatTenMotLine(Tens_HandleTypeDef* dev, uint8_t chanNum){
 		//setup and start the output from the beginning:
 		chan->curVal = chan->startVal;
 		chan->pctComplete = 0;
-		TensSetTensOrMotorOutput(chan, chan->startVal); //TensSetPulseWidth(chan, (chan->curVal1000 / 1000) );
+		//TensSetTensOrMotorOutput(chan, chan->startVal);
+		TensSetTensOrMotorOutput(chan, TensGetScaledCurVal(chan, chan->curVal));
 	}else{
 		//Operation is complete, no repeats left.  Shut off the output and mark it complete.
 		TensSetTensOrMotorOutput(chan, 0);
@@ -1098,6 +1066,16 @@ void TensChangePolarityOutputs(TensChannel_HandleTypeDef* chan, enumPolarity new
 	}
 }
 
+uint8_t TensGetScaledCurVal(TensChannel_HandleTypeDef* chan, float curVal){
+	//Apply the outputMaxPercent scaling to the output.  This is essentially our volume control for the pulsewidth.
+		//Map function: return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+	uint32_t newValLong = (uint32_t)(floor)(curVal);
+	//newValLong = (newValLong - 0) * (chan->outputMaxPct - 0) / (100-0) + 0;
+	newValLong = newValLong * chan->outputMaxPct / 100;
+	//Limit to 8-bit:
+	return (uint8_t)(newValLong &= 0xFF);
+}
+
 void TensSetTensOrMotorOutput(TensChannel_HandleTypeDef* chan, uint8_t newVal){
 	//Note1: the direction (polarity) should have already been set before calling this function.
 
@@ -1337,210 +1315,6 @@ void TensInitMotorChannel(TensChannel_HandleTypeDef* chan, GPIO_TypeDef* MotorDi
 }
 
 
-
-/*
-void TensTurnOffIdleMotors(Tens_HandleTypeDef* dev){
-	for(uint8_t n=0; n< dev->numChans; n++){
-		TensChannel_HandleTypeDef* chan = &dev->tensChan[n];
-		if(chan->chanType == chanType_Motor){
-			if( (chan->motorEnabled == true) && (chan->motorSpeed == 0) ){
-				if(HAL_GetTick() - chan->motorStoppedMovingTime > 1000){
-					//motor has been idle for > 1 second.
-					TensMotorEnable(chan, false);
-				}
-			}
-		}
-	}
-}
-*/
-
-/*
-void TensTimerPeriodElapsed(Tens_HandleTypeDef* dev, uint8_t index){
-	TensChannel_HandleTypeDef* chan = &dev->tensChan[index];
-	if(chan->isActive){
-		if(index == 3){
-			__NOP();
-		}
-		if(chan->pctComplete >= 100){
-			//This output operation is complete.  Are there any repeats left?
-			if(chan->repeatCounter > 0){
-				chan->repeatCounter--;
-				//reset the start time
-				chan->startTime = HAL_GetTick();
-				//handle polarity:
-				if(!( (chan->polarity == polForward) || (chan->polarity == polReverse) )){
-					//Toggle polarity:
-					TensChangePolarityOutputs(chan, (chan->lastPolarity == polForward) ? polReverse : polForward);
-				}
-				//setup and start the output from the beginning:
-				chan->curVal = chan->startVal;
-				chan->pctComplete = 0;
-				TensSetTensOrMotorOutput(chan, chan->startVal); //TensSetPulseWidth(chan, (chan->curVal1000 / 1000) );
-			}else{
-				//Operation is complete, no repeats left.  Shut off the output and mark it complete.
-				TensSetTensOrMotorOutput(chan, 0);
-				chan->isActive = false;
-				dev->curProgStatus[index].progState = progState_LineComplete;
-			}
-		}else{
-			//Operation not complete.  Toggle polarity if needed and add the stepVal:
-			//Need to toggle polarity?
-			if( (chan->polarity == polForward_TogglePulse) || (chan->polarity == polReverse_TogglePulse) ){
-				TensChangePolarityOutputs(chan, (chan->lastPolarity == polForward) ? polReverse : polForward);
-			}
-
-			chan->pctComplete += chan->pctStep;
-			if(chan->pctComplete > 100){
-				chan->pctComplete = 100;
-			}
-			chan->curVal = chan->startVal + ((chan->pctComplete / 100) * chan->deltaVal);
-			if(chan->curVal > 100){
-				chan->curVal = 100;
-			}
-			TensSetTensOrMotorOutput(chan, (uint8_t)(floor)(chan->curVal));
-		}
-	}
-}
-*/
-/*
-void TensTimerPeriodElapsed(Tens_HandleTypeDef* dev, uint8_t index){
-	TensChannel_HandleTypeDef* chan = &dev->tensChan[index];
-	//if(chan->isActive){
-	if(chan->activeState == Active){
-		if(chan->pctComplete >= 100){
-			//This output operation is complete.  Are there any repeats left?
-			if(chan->repeatCounter > 0){
-				chan->repeatCounter--;
-				//reset the start time
-				chan->startTime = HAL_GetTick();
-				//handle polarity:
-				if(!( (chan->polarity == polForward) || (chan->polarity == polReverse) )){
-					//Toggle polarity:
-					TensChangePolarityOutputs(chan, (chan->lastPolarity == polForward) ? polReverse : polForward);
-				}
-				//setup and start the output from the beginning:
-				chan->curVal = chan->startVal;
-				chan->pctComplete = 0;
-				TensSetTensOrMotorOutput(chan, chan->startVal); //TensSetPulseWidth(chan, (chan->curVal1000 / 1000) );
-			}else{
-				//Operation is complete, no repeats left.  Shut off the output and mark it complete.
-				TensSetTensOrMotorOutput(chan, 0);
-				chan->isActive = false;
-				dev->curProgStatus[index].progState = progState_LineComplete;
-			}
-		}else{
-			//Operation not complete.  Toggle polarity if needed and add the stepVal:
-			//Need to toggle polarity?
-			if( (chan->polarity == polForward_TogglePulse) || (chan->polarity == polReverse_TogglePulse) ){
-				TensChangePolarityOutputs(chan, (chan->lastPolarity == polForward) ? polReverse : polForward);
-			}
-
-			chan->pctComplete += chan->pctCompletePerStep;
-			if(chan->pctComplete > 100){
-				chan->pctComplete = 100;
-			}
-
-			//chan->curVal = chan->startVal + ((chan->pctComplete / 100) * chan->deltaVal);
-			structProgLine *curLine = &dev->curProgLine[index];
-			if(curLine->command == tensCommand_TenMotOutput){
-				enumWaveForm curWave = curLine->gotoTrue;
-				if(curWave == wfRamp){
-					chan->curVal = chan->startVal + ((chan->pctComplete / 100) * chan->deltaVal);
-				}else if(curWave == wfTriangle){
-					uint8_t tmpDutyCycle = curLine->gotoFalse;
-					//Are we going up or down?
-					if(chan->pctComplete <= tmpDutyCycle){
-						//Still going up.
-						chan->curVal = chan->startVal + ((chan->pctComplete / tmpDutyCycle) * chan->deltaVal);
-					}else{
-						//Going down
-						chan->curVal = chan->endVal - ( ((100 - chan->pctComplete) / (100 - tmpDutyCycle)) * chan->deltaVal);
-					}
-				}else if(curWave == wfSine){
-					enumQuadrant tmpQuad = curLine->gotoFalse;
-					float startRad = 0.0f;
-					float endRad = 0.0f;
-					float curRad = 0.0f;
-					float curSin = 0.0f;
-
-					switch(tmpQuad){
-					case quadMidHi:
-						startRad = 0;
-						endRad = M_PI / 2.0;
-						//curRad = (endRad - startRad) * (chan->pctComplete / 100);
-						//curSin = sin(curRad);
-						//chan->curVal = chan->startVal + (curSin * (chan->endVal - chan->startVal));
-						break;
-					case quadMidHiMid:
-						startRad = 0;
-						endRad = M_PI;
-						break;
-					case quadHiMid:
-						startRad = M_PI / 2.0;
-						endRad = M_PI;
-						break;
-					case quadMidLow:
-						startRad = M_PI;
-						endRad = M_PI * 1.5;
-						break;
-					case quadMidLowMid:
-						startRad = M_PI;
-						endRad = M_PI * 2.0;
-						break;
-					case quadLowMid:
-						startRad = M_PI * 1.5;
-						endRad = M_PI * 2.0;
-						break;
-					case quadLowHi:
-						startRad = M_PI * 1.5;
-						endRad = M_PI / 2.0;
-						break;
-					case quadLowHiLow:
-						startRad = M_PI * 1.5;
-						endRad = (M_PI * 1.5) + (M_PI * 2.0);
-						break;
-					case quadHiLowHi:
-						startRad = M_PI / 2.0;
-						endRad = (M_PI / 2.0) + (M_PI * 2.0);
-						break;
-
-					case quadHiLow:
-						startRad = M_PI / 2.0;
-						endRad = M_PI * 1.5;
-						break;
-					case quadMidHiLowMid:
-						startRad = 0;
-						endRad = M_PI * 2;
-						break;
-					case quadMidLowHiMid:
-						startRad = M_PI;
-						endRad = M_PI * 3;
-						break;
-					default:
-						startRad = 0;
-						endRad = 0;
-					}
-
-					curRad = (endRad - startRad) * (chan->pctComplete / 100);
-					curSin = sin(curRad);
-					chan->curVal = chan->startVal + (curSin * (chan->endVal - chan->startVal));
-					chan->curVal = (chan->curVal < 0 ? 0 : (chan->curVal > 100 ? 100 : chan->curVal));
-
-//Todo: Finish this.
-				}else{
-					//We shouldn't be here, but here we are...
-					chan->curVal = 0;
-				}
-			}
-
-			if(chan->curVal > 100){
-				chan->curVal = 100;
-			}
-			TensSetTensOrMotorOutput(chan, (uint8_t)(floor)(chan->curVal));
-		}
-	}
-}
-*/
 void TensTimerPeriodElapsed(Tens_HandleTypeDef* dev, uint8_t index){
 	TensChannel_HandleTypeDef* chan = &dev->tensChan[index];
 	structProgLine *curLine = &dev->curProgLine[index];
@@ -1677,7 +1451,8 @@ void TensTimerPeriodElapsed(Tens_HandleTypeDef* dev, uint8_t index){
 			if(chan->curVal > 100){
 				chan->curVal = 100;
 			}
-			TensSetTensOrMotorOutput(chan, (uint8_t)(floor)(chan->curVal));
+			//TensSetTensOrMotorOutput(chan, (uint8_t)(floor)(chan->curVal));
+			TensSetTensOrMotorOutput(chan, TensGetScaledCurVal(chan, chan->curVal));
 		}
 	}
 }
@@ -1840,6 +1615,8 @@ uint32_t TensGetValue(Tens_HandleTypeDef* dev, enumDataSource dataSource, uint32
 		case dscSetting_CurChanNum:
 			retVal = chanNum;
 			break;
+		case dscSetting_OutputPulseWidthMaxPercent:
+			retVal = dev->tensChan[targetChan].outputMaxPct;
 		default:
 			retVal = 0;
 		}
@@ -1853,13 +1630,14 @@ uint32_t TensGetValue(Tens_HandleTypeDef* dev, enumDataSource dataSource, uint32
 
 		switch(dataVal1){
 		case dssSetting_ZRotation:
-			retVal = dev->imuRef->globalZRotation;
+			//retVal = dev->imuRef->globalZRotation;
+			retVal = (uint32_t)(floor)(dev->imuRef->globalZRotation);
 			break;
 		case dssSetting_UpDirection:
-			retVal = dev->imuRef->upDirection;
+			retVal = (uint8_t)(dev->imuRef->upDirection);
 			break;
 		case dssSetting_StepCount:
-			retVal = dev->imuRef->stepCount;
+			retVal = (uint32_t)(dev->imuRef->stepCount);
 			break;
 		case dssSetting_AudioTotal:
 			//retVal = dev->audioValTotal;
@@ -2216,6 +1994,9 @@ void TensSetCommand(Tens_HandleTypeDef* dev, uint8_t chanNum, structProgLine *cu
 		case dscSetting_CurProgNum:
 		case dscSetting_CurLineNum:
 		case dscSetting_CurChanNum:
+			break;
+		case dscSetting_OutputPulseWidthMaxPercent:	//Set the max pulsewidth (output volume control) for scaling:
+			dev->tensChan[targetChan].outputMaxPct = (uint8_t)(setResult);
 		default:
 			break;
 		}

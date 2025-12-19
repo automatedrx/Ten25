@@ -49,6 +49,7 @@ Partial Class ucChanControl
         sldSpeed = New TrackBar()
         lblSpeed = New Label()
         grpPulseWidth = New GroupBox()
+        sldMaxOutputPulseWidthPct = New TrackBar()
         sldPulseWidth = New TrackBar()
         lblPulseWidth = New Label()
         grpIntensity.SuspendLayout()
@@ -59,6 +60,7 @@ Partial Class ucChanControl
         grpSpeed.SuspendLayout()
         CType(sldSpeed, ComponentModel.ISupportInitialize).BeginInit()
         grpPulseWidth.SuspendLayout()
+        CType(sldMaxOutputPulseWidthPct, ComponentModel.ISupportInitialize).BeginInit()
         CType(sldPulseWidth, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
         ' 
@@ -76,7 +78,7 @@ Partial Class ucChanControl
         ' 
         ' lblProgName
         ' 
-        lblProgName.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblProgName.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblProgName.Location = New Point(5, 23)
         lblProgName.Name = "lblProgName"
         lblProgName.Size = New Size(119, 15)
@@ -86,7 +88,7 @@ Partial Class ucChanControl
         ' 
         ' lblProgState
         ' 
-        lblProgState.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblProgState.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblProgState.Location = New Point(5, 39)
         lblProgState.Name = "lblProgState"
         lblProgState.Size = New Size(119, 15)
@@ -96,7 +98,7 @@ Partial Class ucChanControl
         ' 
         ' lblCommand
         ' 
-        lblCommand.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblCommand.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblCommand.Location = New Point(5, 55)
         lblCommand.Name = "lblCommand"
         lblCommand.Size = New Size(119, 15)
@@ -129,7 +131,7 @@ Partial Class ucChanControl
         ' Label2
         ' 
         Label2.AutoSize = True
-        Label2.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        Label2.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         Label2.Location = New Point(6, 51)
         Label2.Name = "Label2"
         Label2.Size = New Size(28, 13)
@@ -148,7 +150,7 @@ Partial Class ucChanControl
         ' Label1
         ' 
         Label1.AutoSize = True
-        Label1.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        Label1.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         Label1.Location = New Point(6, 14)
         Label1.Name = "Label1"
         Label1.Size = New Size(27, 13)
@@ -179,7 +181,7 @@ Partial Class ucChanControl
         ' 
         ' lblOutputIntensityPct
         ' 
-        lblOutputIntensityPct.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblOutputIntensityPct.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblOutputIntensityPct.Location = New Point(6, 20)
         lblOutputIntensityPct.Margin = New Padding(0)
         lblOutputIntensityPct.Name = "lblOutputIntensityPct"
@@ -219,7 +221,7 @@ Partial Class ucChanControl
         ' 
         lblPolarityLabel.AutoSize = True
         lblPolarityLabel.BackColor = SystemColors.Control
-        lblPolarityLabel.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblPolarityLabel.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblPolarityLabel.ForeColor = SystemColors.ControlText
         lblPolarityLabel.Location = New Point(5, 2)
         lblPolarityLabel.Name = "lblPolarityLabel"
@@ -229,7 +231,7 @@ Partial Class ucChanControl
         ' 
         ' lblPolarityVal
         ' 
-        lblPolarityVal.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblPolarityVal.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblPolarityVal.ForeColor = SystemColors.ControlText
         lblPolarityVal.Location = New Point(61, 2)
         lblPolarityVal.Name = "lblPolarityVal"
@@ -251,7 +253,7 @@ Partial Class ucChanControl
         ' 
         ' lblRepeatsRemaining
         ' 
-        lblRepeatsRemaining.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblRepeatsRemaining.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblRepeatsRemaining.Location = New Point(61, 46)
         lblRepeatsRemaining.Name = "lblRepeatsRemaining"
         lblRepeatsRemaining.Size = New Size(48, 15)
@@ -261,7 +263,7 @@ Partial Class ucChanControl
         ' Label7
         ' 
         Label7.AutoSize = True
-        Label7.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        Label7.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         Label7.Location = New Point(5, 46)
         Label7.Name = "Label7"
         Label7.Size = New Size(51, 13)
@@ -270,7 +272,7 @@ Partial Class ucChanControl
         ' 
         ' lblDuration
         ' 
-        lblDuration.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblDuration.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblDuration.Location = New Point(61, 32)
         lblDuration.Name = "lblDuration"
         lblDuration.Size = New Size(48, 15)
@@ -280,7 +282,7 @@ Partial Class ucChanControl
         ' Label5
         ' 
         Label5.AutoSize = True
-        Label5.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        Label5.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         Label5.Location = New Point(5, 32)
         Label5.Name = "Label5"
         Label5.Size = New Size(56, 13)
@@ -289,7 +291,7 @@ Partial Class ucChanControl
         ' 
         ' lblLineNum
         ' 
-        lblLineNum.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        lblLineNum.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         lblLineNum.Location = New Point(61, 18)
         lblLineNum.Name = "lblLineNum"
         lblLineNum.Size = New Size(48, 15)
@@ -299,7 +301,7 @@ Partial Class ucChanControl
         ' Label3
         ' 
         Label3.AutoSize = True
-        Label3.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
+        Label3.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         Label3.Location = New Point(5, 18)
         Label3.Name = "Label3"
         Label3.Size = New Size(58, 13)
@@ -310,9 +312,9 @@ Partial Class ucChanControl
         ' 
         grpSpeed.Controls.Add(sldSpeed)
         grpSpeed.Controls.Add(lblSpeed)
-        grpSpeed.Location = New Point(5, 224)
+        grpSpeed.Location = New Point(4, 231)
         grpSpeed.Name = "grpSpeed"
-        grpSpeed.Size = New Size(115, 45)
+        grpSpeed.Size = New Size(115, 35)
         grpSpeed.TabIndex = 7
         grpSpeed.TabStop = False
         grpSpeed.Text = "Speed"
@@ -320,18 +322,18 @@ Partial Class ucChanControl
         ' sldSpeed
         ' 
         sldSpeed.AutoSize = False
-        sldSpeed.Location = New Point(34, 14)
+        sldSpeed.Location = New Point(34, 13)
         sldSpeed.Maximum = 100
         sldSpeed.Name = "sldSpeed"
-        sldSpeed.Size = New Size(80, 25)
+        sldSpeed.Size = New Size(80, 20)
         sldSpeed.TabIndex = 8
         sldSpeed.TickFrequency = 25
         sldSpeed.Value = 50
         ' 
         ' lblSpeed
         ' 
-        lblSpeed.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
-        lblSpeed.Location = New Point(1, 17)
+        lblSpeed.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        lblSpeed.Location = New Point(1, 16)
         lblSpeed.Margin = New Padding(0)
         lblSpeed.Name = "lblSpeed"
         lblSpeed.Size = New Size(40, 15)
@@ -340,30 +342,42 @@ Partial Class ucChanControl
         ' 
         ' grpPulseWidth
         ' 
+        grpPulseWidth.Controls.Add(sldMaxOutputPulseWidthPct)
         grpPulseWidth.Controls.Add(sldPulseWidth)
         grpPulseWidth.Controls.Add(lblPulseWidth)
-        grpPulseWidth.Location = New Point(4, 177)
+        grpPulseWidth.Location = New Point(4, 172)
         grpPulseWidth.Name = "grpPulseWidth"
-        grpPulseWidth.Size = New Size(115, 45)
+        grpPulseWidth.Size = New Size(115, 60)
         grpPulseWidth.TabIndex = 8
         grpPulseWidth.TabStop = False
         grpPulseWidth.Text = "PulseWidth"
         ' 
+        ' sldMaxOutputPulseWidthPct
+        ' 
+        sldMaxOutputPulseWidthPct.AutoSize = False
+        sldMaxOutputPulseWidthPct.Location = New Point(3, 16)
+        sldMaxOutputPulseWidthPct.Maximum = 100
+        sldMaxOutputPulseWidthPct.Name = "sldMaxOutputPulseWidthPct"
+        sldMaxOutputPulseWidthPct.Size = New Size(109, 20)
+        sldMaxOutputPulseWidthPct.TabIndex = 9
+        sldMaxOutputPulseWidthPct.TickFrequency = 25
+        sldMaxOutputPulseWidthPct.Value = 50
+        ' 
         ' sldPulseWidth
         ' 
         sldPulseWidth.AutoSize = False
-        sldPulseWidth.Location = New Point(34, 14)
+        sldPulseWidth.Location = New Point(34, 38)
         sldPulseWidth.Maximum = 100
         sldPulseWidth.Name = "sldPulseWidth"
-        sldPulseWidth.Size = New Size(80, 25)
+        sldPulseWidth.Size = New Size(80, 20)
         sldPulseWidth.TabIndex = 8
         sldPulseWidth.TickFrequency = 25
         sldPulseWidth.Value = 50
         ' 
         ' lblPulseWidth
         ' 
-        lblPulseWidth.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0)
-        lblPulseWidth.Location = New Point(1, 17)
+        lblPulseWidth.Font = New Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        lblPulseWidth.Location = New Point(1, 39)
         lblPulseWidth.Margin = New Padding(0)
         lblPulseWidth.Name = "lblPulseWidth"
         lblPulseWidth.Size = New Size(40, 15)
@@ -398,6 +412,7 @@ Partial Class ucChanControl
         grpSpeed.ResumeLayout(False)
         CType(sldSpeed, ComponentModel.ISupportInitialize).EndInit()
         grpPulseWidth.ResumeLayout(False)
+        CType(sldMaxOutputPulseWidthPct, ComponentModel.ISupportInitialize).EndInit()
         CType(sldPulseWidth, ComponentModel.ISupportInitialize).EndInit()
         ResumeLayout(False)
     End Sub
@@ -431,5 +446,6 @@ Partial Class ucChanControl
     Friend WithEvents lblPulseWidth As Label
     Friend WithEvents sbarComplete As ucSBar
     Friend WithEvents pnlPolarity As Panel
+    Friend WithEvents sldMaxOutputPulseWidthPct As TrackBar
 
 End Class

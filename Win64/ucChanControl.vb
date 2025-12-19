@@ -6,6 +6,7 @@ Public Class ucChanControl
     Public Event Enabled_Click(ByVal index As Integer, ByVal NewState As Boolean)
     Public Event Speed_Changed(ByVal index As Integer, ByVal NewSpeed As Integer)
     Public Event OutputIntensity_Changed(ByVal index As Integer, ByVal NewOutput As Integer)
+    Public Event MaxPulseWidthOutputPct_Changed(ByVal index As Integer, ByVal NewMax As Integer)
     Public Event PulseWidth_Changed(ByVal index As Integer, ByVal NewOutput As Integer)
     Public Event IntensityMin_Changed(ByVal index As Integer, ByVal newMin As Integer)
     Public Event IntensityMax_Changed(ByVal index As Integer, ByVal newMax As Integer)
@@ -46,6 +47,8 @@ Public Class ucChanControl
     Dim _outputIntensityMinPct As Integer = 0
     Dim _outputIntensityMaxPct As Integer = 0
     Dim _outputIntensityPct As Integer = 0
+
+    Dim _maxOutputPulsewidthPct As Integer = 10
 
     Dim _pulseWidthPct As Integer = 0
     Dim _startPulseWidth As Integer = -1
@@ -291,6 +294,22 @@ Public Class ucChanControl
         AddHandler cboIntensityMin.SelectedIndexChanged, AddressOf cboIntensityMin_SelectedIndexChanged
         AddHandler cboIntensityMax.SelectedIndexChanged, AddressOf cboIntensityMin_SelectedIndexChanged
     End Sub
+
+    Public Property MaxOutputPulsewidthPct() As Integer
+        Get
+            Return _maxOutputPulsewidthPct
+        End Get
+        Set(value As Integer)
+            Dim tmpVal As Integer = If(value > 0, If(value <= 100, value, 100), 0)
+            _maxOutputPulsewidthPct = tmpVal
+            If sldMaxOutputPulseWidthPct.Value <> _maxOutputPulsewidthPct Then
+                RemoveHandler sldMaxOutputPulseWidthPct.ValueChanged, AddressOf sldMaxOutputPulseWidthPct_ValueChanged
+                sldMaxOutputPulseWidthPct.Value = _maxOutputPulsewidthPct
+                grpPulseWidth.Text = "PulseWidth " & _maxOutputPulsewidthPct & "%"
+                AddHandler sldMaxOutputPulseWidthPct.ValueChanged, AddressOf sldMaxOutputPulseWidthPct_ValueChanged
+            End If
+        End Set
+    End Property
 
     Public Property OutputIntensityMax As Integer
         Get
@@ -563,6 +582,7 @@ Public Class ucChanControl
         AddHandler sldSpeed.ValueChanged, AddressOf sldSpeed_ValueChanged
         AddHandler sldPulseWidth.ValueChanged, AddressOf sldPulseWidth_ValueChanged
         AddHandler sldOutputIntensityPct.ValueChanged, AddressOf sldOutputIntensityPct_ValueChanged
+        AddHandler sldMaxOutputPulseWidthPct.ValueChanged, AddressOf sldMaxOutputPulseWidthPct_ValueChanged
 
     End Sub
 
@@ -630,6 +650,12 @@ Public Class ucChanControl
         '    End If
         'End If
         UpdateOutputIntensitySliderColor()
+    End Sub
+
+    Private Sub sldMaxOutputPulseWidthPct_ValueChanged(sender As Object, e As EventArgs)
+        _maxOutputPulsewidthPct = sldMaxOutputPulseWidthPct.Value
+        grpPulseWidth.Text = "PulseWidth " & _maxOutputPulsewidthPct & "%"
+        RaiseEvent MaxPulseWidthOutputPct_Changed(_chanIndex, _maxOutputPulsewidthPct)
     End Sub
 
     Private Sub UpdateOutputIntensitySliderColor()
