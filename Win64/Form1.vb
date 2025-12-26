@@ -12,10 +12,17 @@ Imports System.Runtime.Intrinsics
 
 Public Class Form1
 
-    Public Enum AutoStatusenum As Integer
+    Public Enum eAutoStatus As Integer
         asOff = 0
         asOn = 1
         asPaused = 2
+    End Enum
+
+    Private Enum eDebugMode
+        Off
+        Running
+        Paused
+        Stepping
     End Enum
 
 
@@ -44,8 +51,8 @@ Public Class Form1
     Dim rxBuff As String = ""
     Dim newMsgReceived As Boolean = False
 
-    Dim autoStatus As AutoStatusenum = AutoStatusenum.asOff
-    Dim autoStatusLast As AutoStatusenum = AutoStatusenum.asOff
+    Dim autoStatus As eAutoStatus = eAutoStatus.asOff
+    Dim autoStatusLast As eAutoStatus = eAutoStatus.asOff
     Dim nextParamArrayAutoStatus = 0
     Dim lastChanStatsReceivedTime As DateTime = Now
 
@@ -70,9 +77,28 @@ Public Class Form1
     '==Programs==
     Friend Event UnsavedProgramChanges(ByRef Dev As Device_t, ByVal newState As Boolean)
     Private Event UndownloadedProgramChanges(ByRef Dev As Device_t, ByVal newState As Boolean)
-    Private Event RequestAutostatusStateChange(newState As AutoStatusenum)
+    Private Event RequestAutostatusStateChange(newState As eAutoStatus)
 
     Dim progLineEditEnabled As Boolean = True
+
+    Friend WithEvents tsDebug As ToolStrip
+    Friend WithEvents btnDebugRun As ToolStripButton
+    Friend WithEvents btnDebugPause As ToolStripButton
+    Friend WithEvents btnDebugStep As ToolStripButton
+    Friend WithEvents btnDebugBreakpoint As ToolStripButton
+    Friend WithEvents chkOnlineDebug As ToolStripButton
+    Friend WithEvents splitVars As SplitContainer
+    Friend WithEvents dgvVarsTimers As DataGridView
+
+    Private debugMode As eDebugMode = eDebugMode.Off
+    Private currentDebugChannel As Integer = 0  ' We'll start with Master or selected
+    Private currentDebugLine As Integer = 0
+    Private breakpoints As New HashSet(Of Integer)()
+    Private simVariables As New Dictionary(Of String, Integer)()  ' Key: "Chan0.Var5" or "System.Timer2"
+    Private simTimers As New Dictionary(Of String, Integer)()
+    Private debugTimer As New Timer() With {.Interval = 100}  ' For offline run mode
+
+
 
     'Private Class JsonData
     '    Public Property ProjectName As String
@@ -265,10 +291,10 @@ Public Class Form1
             Catch ex As Exception
                 MsgBox("Error!  " & ex.Message)
                 CloseComPort()
-                SetAutoStatusMode(AutoStatusenum.asOff)
+                SetAutoStatusMode(eAutoStatus.asOff)
             End Try
         Else
-            RaiseEvent RequestAutostatusStateChange(AutoStatusenum.asOff)
+            RaiseEvent RequestAutostatusStateChange(eAutoStatus.asOff)
         End If
     End Sub
 
@@ -293,25 +319,25 @@ Public Class Form1
 #End Region
 
 #Region "AutoStatus"
-    Private Sub SetAutoStatusMode(ByVal newMode As AutoStatusenum)
+    Private Sub SetAutoStatusMode(ByVal newMode As eAutoStatus)
         If Me.InvokeRequired Then
             Me.Invoke(Sub()
                           SetAutoStatusMode(newMode)
                       End Sub)
         Else
-            If newMode = AutoStatusenum.asOff Then
-                autoStatus = AutoStatusenum.asOff
+            If newMode = eAutoStatus.asOff Then
+                autoStatus = eAutoStatus.asOff
             ElseIf validDevice = True Then
                 autoStatus = newMode
             Else
-                autoStatus = AutoStatusenum.asOff
+                autoStatus = eAutoStatus.asOff
             End If
 
             Select Case autoStatus
-                Case AutoStatusenum.asOff
+                Case eAutoStatus.asOff
                     cmdtsChanMonAutoStatusOff.Checked = True
                     cmdtsChanMonAutoStatusOn.Checked = False
-                Case AutoStatusenum.asOn
+                Case eAutoStatus.asOn
                     cmdtsChanMonAutoStatusOff.Checked = False
                     cmdtsChanMonAutoStatusOn.Checked = True
                     nextParamArrayAutoStatus = 0
@@ -320,13 +346,13 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub Form1_RequestAutostatusStateChange(newState As AutoStatusenum) Handles Me.RequestAutostatusStateChange
+    Private Sub Form1_RequestAutostatusStateChange(newState As eAutoStatus) Handles Me.RequestAutostatusStateChange
         SetAutoStatusMode(newState)
     End Sub
 
     Private Sub cmdtsChanMonAutoStatusOff_Click_1(sender As Object, e As EventArgs) Handles cmdtsChanMonAutoStatusOff.Click
-        SetAutoStatusMode(AutoStatusenum.asOff)
-        My.Settings.Item("lastAutoStatus") = CInt(AutoStatusenum.asOff)
+        SetAutoStatusMode(eAutoStatus.asOff)
+        My.Settings.Item("lastAutoStatus") = CInt(eAutoStatus.asOff)
         tmrCheckAutostatus.Enabled = False
     End Sub
 
@@ -335,15 +361,15 @@ Public Class Form1
             cmdtsChanMonAutoStatusOff.PerformClick()
             Exit Sub
         End If
-        SetAutoStatusMode(AutoStatusenum.asOn)
-        My.Settings.Item("lastAutoStatus") = CInt(AutoStatusenum.asOn)
+        SetAutoStatusMode(eAutoStatus.asOn)
+        My.Settings.Item("lastAutoStatus") = CInt(eAutoStatus.asOn)
         tmrCheckAutostatus.Enabled = True
     End Sub
 
     Private Sub tmrCheckAutostatus_Tick(sender As Object, e As EventArgs) Handles tmrCheckAutostatus.Tick
         'This timer checks to see if autostatus has stalled out.  If so, it sends a paramArray request to the device to try
         'to restart communications.
-        If autoStatus = AutoStatusenum.asOn Then
+        If autoStatus = eAutoStatus.asOn Then
             If Now > lastChanStatsReceivedTime.AddSeconds(2) Then
                 nextParamArrayAutoStatus = 0
                 requestParamArray(paramArrayEnum.chanStats, nextParamArrayAutoStatus)
@@ -569,7 +595,7 @@ Public Class Form1
                 chanControls(paramIndex(0)).MaxOutputPulsewidthPct = CInt(valArray(16))
 
                 lastChanStatsReceivedTime = Now
-                If autoStatus = AutoStatusenum.asOn Then
+                If autoStatus = eAutoStatus.asOn Then
                     nextParamArrayAutoStatus = paramIndex(0) + 1
                     If nextParamArrayAutoStatus >= monitorDev.Channel.Count Then
                         nextParamArrayAutoStatus = 0
@@ -1751,7 +1777,7 @@ Public Class Form1
 
         'Make sure autostatus is off
         autoStatusLast = autoStatus
-        autoStatus = AutoStatusenum.asOff
+        autoStatus = eAutoStatus.asOff
 
         currentDownloadingDevice = Dev
 
@@ -1775,7 +1801,7 @@ Public Class Form1
 
         'Restore autostatus mode:
         Select Case My.Settings.lastAutoStatus
-            Case AutoStatusenum.asOn
+            Case eAutoStatus.asOn
                 cmdtsChanMonAutoStatusOn.PerformClick()
             Case Else
                 'leave autostatus off
@@ -2086,7 +2112,7 @@ Public Class Form1
 
             uploadInProgress = False
             'Restore autostatus
-            If autoStatusLast = AutoStatusenum.asOn Then
+            If autoStatusLast = eAutoStatus.asOn Then
                 cmdtsChanMonAutoStatusOn.PerformClick()
             End If
 

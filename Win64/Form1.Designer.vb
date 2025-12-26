@@ -666,7 +666,8 @@ Partial Class Form1
         ' 
         ' SplitContainer4.Panel2
         ' 
-        SplitContainer4.Panel2.Controls.Add(UcProgLineEdit1)
+        'SplitContainer4.Panel2.Controls.Add(UcProgLineEdit1)
+        SplitContainer4.Panel2.Controls.Add(Me.splitVars)
         SplitContainer4.Panel2MinSize = 410
         SplitContainer4.Size = New Size(1160, 338)
         SplitContainer4.SplitterDistance = 730
@@ -1328,6 +1329,105 @@ Partial Class Form1
         SplitContainer9.Panel2.PerformLayout()
         CType(SplitContainer9, ComponentModel.ISupportInitialize).EndInit()
         SplitContainer9.ResumeLayout(False)
+
+        ' 
+        ' tsDebug
+        ' 
+        Me.tsDebug = New System.Windows.Forms.ToolStrip()
+        Me.tsDebug.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden
+        Me.tsDebug.Location = New System.Drawing.Point(0, 340)  ' Adjust Y if your lstProgDisplay height differs
+        Me.tsDebug.Name = "tsDebug"
+        Me.tsDebug.Size = New System.Drawing.Size(800, 25)
+        Me.tsDebug.TabIndex = 50
+        Me.tsDebug.Visible = True
+
+        ' 
+        ' btnDebugRun
+        ' 
+        Me.btnDebugRun = New System.Windows.Forms.ToolStripButton()
+        'Me.btnDebugRun.Image = My.Resources.PlayIcon  ' Optional: add a play icon to resources
+        'Me.btnDebugRun.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.ImageAndText
+        Me.btnDebugRun.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.btnDebugRun.Text = "Run"
+        Me.btnDebugRun.ToolTipText = "Run program (F5)"
+
+        ' 
+        ' btnDebugPause
+        ' 
+        Me.btnDebugPause = New System.Windows.Forms.ToolStripButton()
+        Me.btnDebugPause.Text = "Pause"
+        Me.btnDebugPause.Enabled = False
+        Me.btnDebugPause.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+
+        ' 
+        ' btnDebugStep
+        ' 
+        Me.btnDebugStep = New System.Windows.Forms.ToolStripButton()
+        Me.btnDebugStep.Text = "Step"
+        Me.btnDebugStep.ToolTipText = "Step one line (F10)"
+        Me.btnDebugStep.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+
+        ' 
+        ' btnDebugBreakpoint
+        ' 
+        Me.btnDebugBreakpoint = New System.Windows.Forms.ToolStripButton()
+        Me.btnDebugBreakpoint.Text = "Toggle BP"
+        Me.btnDebugBreakpoint.ToolTipText = "Toggle breakpoint on selected line"
+        Me.btnDebugBreakpoint.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+
+        ' 
+        ' chkOnlineDebug
+        ' 
+        Me.chkOnlineDebug = New System.Windows.Forms.ToolStripButton()
+        Me.chkOnlineDebug.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text
+        Me.chkOnlineDebug.CheckOnClick = True
+        Me.chkOnlineDebug.Text = "Online (Device)"
+        Me.chkOnlineDebug.ToolTipText = "When checked, debugging controls the real device"
+
+        Me.tsDebug.Items.AddRange(New System.Windows.Forms.ToolStripItem() {
+            Me.btnDebugRun, Me.btnDebugPause, Me.btnDebugStep, Me.btnDebugBreakpoint, New ToolStripSeparator(), Me.chkOnlineDebug})
+
+        ' 
+        ' splitVars (new SplitContainer for editor + variables)
+        ' 
+        Me.splitVars = New System.Windows.Forms.SplitContainer()
+        Me.splitVars.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.splitVars.Orientation = System.Windows.Forms.Orientation.Horizontal  ' Or Vertical if you prefer side-by-side
+        Me.splitVars.SplitterDistance = 300
+        Me.splitVars.Panel1.Controls.Add(Me.UcProgLineEdit1)  ' Move existing editor here
+        Me.splitVars.Name = "splitVars"
+
+        ' 
+        ' dgvVarsTimers
+        ' 
+        Me.dgvVarsTimers = New System.Windows.Forms.DataGridView()
+        Me.dgvVarsTimers.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.dgvVarsTimers.AllowUserToAddRows = False
+        Me.dgvVarsTimers.AllowUserToDeleteRows = False
+        Me.dgvVarsTimers.ReadOnly = True
+        Me.dgvVarsTimers.RowHeadersVisible = False
+        Me.dgvVarsTimers.Columns.Add("ColName", "Name")
+        Me.dgvVarsTimers.Columns.Add("ColValue", "Value")
+        Me.dgvVarsTimers.Columns.Add("ColType", "Type")
+        Me.dgvVarsTimers.Columns(0).Width = 150
+        Me.dgvVarsTimers.Columns(1).Width = 80
+        Me.dgvVarsTimers.Columns(2).Width = 80
+        Me.splitVars.Panel2.Controls.Add(Me.dgvVarsTimers)
+
+        ' Now replace UcProgLineEdit1's parent with splitVars
+        ' Remove the old line: SplitContainer4.Panel2.Controls.Add(Me.UcProgLineEdit1)
+        ' Add instead:
+        'SplitContainer4.Panel2.Controls.Add(Me.splitVars)
+
+        ' Finally add the debug toolbar to the correct panel (below lstProgDisplay)
+        SplitContainer4.Panel1.Controls.Add(Me.tsDebug)
+
+
+
+
+
+
+
         ResumeLayout(False)
     End Sub
 
