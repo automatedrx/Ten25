@@ -143,6 +143,26 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
+        Friend ReadOnly Property pauseOrange() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("pauseOrange", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property playGreen() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("playGreen", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
         Friend ReadOnly Property Sin_HiLow() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("Sin-HiLow", resourceCulture)
@@ -176,6 +196,16 @@ Namespace My.Resources
         Friend ReadOnly Property Sine_Full() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("Sine-Full", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property skipBlack() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("skipBlack", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property

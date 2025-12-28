@@ -70,12 +70,27 @@ Partial Class Form1
         ToolStripSeparator15 = New ToolStripSeparator()
         tscmdOpenProgramFromDevice = New ToolStripButton()
         tscmdSaveProgramToDevice = New ToolStripButton()
+        ToolStripSeparator16 = New ToolStripSeparator()
+        ToolStripSeparator17 = New ToolStripSeparator()
+        tsbtnDebugRun = New ToolStripButton()
+        tsbtnDebugPause = New ToolStripButton()
+        tsbtnDebugStep = New ToolStripButton()
         Panel1 = New Panel()
         SplitContainer1 = New SplitContainer()
         SplitContainer5 = New SplitContainer()
         chkLiveTrackLines = New CheckBox()
         SplitContainer4 = New SplitContainer()
+        TabControl1 = New TabControl()
+        tabpageLineDetails = New TabPage()
         UcProgLineEdit1 = New ucProgLineEdit()
+        tabpageVariables = New TabPage()
+        SplitContainerVariables = New SplitContainer()
+        cboVariablesChannel = New ComboBox()
+        dgvVariables = New DataGridView()
+        tabpageTimers = New TabPage()
+        SplitContainerTimers = New SplitContainer()
+        cboTimersChannel = New ComboBox()
+        dgvTimers = New DataGridView()
         pnlProgramList = New Panel()
         SplitContainer2 = New SplitContainer()
         txtDeviceName = New TextBox()
@@ -172,6 +187,20 @@ Partial Class Form1
         SplitContainer4.Panel1.SuspendLayout()
         SplitContainer4.Panel2.SuspendLayout()
         SplitContainer4.SuspendLayout()
+        TabControl1.SuspendLayout()
+        tabpageLineDetails.SuspendLayout()
+        tabpageVariables.SuspendLayout()
+        CType(SplitContainerVariables, ComponentModel.ISupportInitialize).BeginInit()
+        SplitContainerVariables.Panel1.SuspendLayout()
+        SplitContainerVariables.Panel2.SuspendLayout()
+        SplitContainerVariables.SuspendLayout()
+        CType(dgvVariables, ComponentModel.ISupportInitialize).BeginInit()
+        tabpageTimers.SuspendLayout()
+        CType(SplitContainerTimers, ComponentModel.ISupportInitialize).BeginInit()
+        SplitContainerTimers.Panel1.SuspendLayout()
+        SplitContainerTimers.Panel2.SuspendLayout()
+        SplitContainerTimers.SuspendLayout()
+        CType(dgvTimers, ComponentModel.ISupportInitialize).BeginInit()
         pnlProgramList.SuspendLayout()
         CType(SplitContainer2, ComponentModel.ISupportInitialize).BeginInit()
         SplitContainer2.Panel1.SuspendLayout()
@@ -210,7 +239,7 @@ Partial Class Form1
         lstProgDisplay.Location = New Point(0, 0)
         lstProgDisplay.Name = "lstProgDisplay"
         lstProgDisplay.ScrollAlwaysVisible = True
-        lstProgDisplay.Size = New Size(730, 338)
+        lstProgDisplay.Size = New Size(730, 442)
         lstProgDisplay.TabIndex = 3
         ' 
         ' cmsProgSentences
@@ -317,7 +346,7 @@ Partial Class Form1
         lstPrograms.Location = New Point(0, 0)
         lstPrograms.Name = "lstPrograms"
         lstPrograms.ScrollAlwaysVisible = True
-        lstPrograms.Size = New Size(136, 236)
+        lstPrograms.Size = New Size(136, 340)
         lstPrograms.TabIndex = 8
         ' 
         ' cmsPrograms
@@ -459,7 +488,7 @@ Partial Class Form1
         tabBottom.Location = New Point(0, 0)
         tabBottom.Name = "tabBottom"
         tabBottom.SelectedIndex = 0
-        tabBottom.Size = New Size(1310, 489)
+        tabBottom.Size = New Size(1310, 593)
         tabBottom.TabIndex = 16
         ' 
         ' TabBottomProgram
@@ -469,7 +498,7 @@ Partial Class Form1
         TabBottomProgram.Location = New Point(4, 24)
         TabBottomProgram.Name = "TabBottomProgram"
         TabBottomProgram.Padding = New Padding(3)
-        TabBottomProgram.Size = New Size(1302, 461)
+        TabBottomProgram.Size = New Size(1302, 565)
         TabBottomProgram.TabIndex = 0
         TabBottomProgram.Text = "Program"
         TabBottomProgram.UseVisualStyleBackColor = True
@@ -490,7 +519,7 @@ Partial Class Form1
         ' SplitContainer8.Panel2
         ' 
         SplitContainer8.Panel2.Controls.Add(Panel1)
-        SplitContainer8.Size = New Size(1296, 431)
+        SplitContainer8.Size = New Size(1296, 535)
         SplitContainer8.SplitterDistance = 35
         SplitContainer8.TabIndex = 21
         ' 
@@ -518,10 +547,11 @@ Partial Class Form1
         ' 
         ToolStrip2.Dock = DockStyle.None
         ToolStrip2.ImageScalingSize = New Size(25, 25)
-        ToolStrip2.Items.AddRange(New ToolStripItem() {tscmdNewProject, ToolStripSeparator14, tscmdOpenProjectFromFile, tscmdSaveProjectToFile, ToolStripSeparator15, tscmdOpenProgramFromDevice, tscmdSaveProgramToDevice})
+        ToolStrip2.Items.AddRange(New ToolStripItem() {tscmdNewProject, ToolStripSeparator14, tscmdOpenProjectFromFile, tscmdSaveProjectToFile, ToolStripSeparator15, tscmdOpenProgramFromDevice, tscmdSaveProgramToDevice, ToolStripSeparator16, ToolStripSeparator17, tsbtnDebugRun, tsbtnDebugPause, tsbtnDebugStep})
+        ToolStrip2.LayoutStyle = ToolStripLayoutStyle.Flow
         ToolStrip2.Location = New Point(3, 0)
         ToolStrip2.Name = "ToolStrip2"
-        ToolStrip2.Size = New Size(169, 32)
+        ToolStrip2.Size = New Size(257, 32)
         ToolStrip2.TabIndex = 0
         ToolStrip2.Text = "Project"
         ' 
@@ -538,7 +568,7 @@ Partial Class Form1
         ' ToolStripSeparator14
         ' 
         ToolStripSeparator14.Name = "ToolStripSeparator14"
-        ToolStripSeparator14.Size = New Size(6, 32)
+        ToolStripSeparator14.Size = New Size(6, 23)
         ' 
         ' tscmdOpenProjectFromFile
         ' 
@@ -563,7 +593,7 @@ Partial Class Form1
         ' ToolStripSeparator15
         ' 
         ToolStripSeparator15.Name = "ToolStripSeparator15"
-        ToolStripSeparator15.Size = New Size(6, 32)
+        ToolStripSeparator15.Size = New Size(6, 23)
         ' 
         ' tscmdOpenProgramFromDevice
         ' 
@@ -585,6 +615,48 @@ Partial Class Form1
         tscmdSaveProgramToDevice.Text = "ToolStripButton1"
         tscmdSaveProgramToDevice.ToolTipText = "Upload Project TO Device"
         ' 
+        ' ToolStripSeparator16
+        ' 
+        ToolStripSeparator16.Name = "ToolStripSeparator16"
+        ToolStripSeparator16.Size = New Size(6, 23)
+        ' 
+        ' ToolStripSeparator17
+        ' 
+        ToolStripSeparator17.Name = "ToolStripSeparator17"
+        ToolStripSeparator17.Size = New Size(6, 23)
+        ' 
+        ' tsbtnDebugRun
+        ' 
+        tsbtnDebugRun.DisplayStyle = ToolStripItemDisplayStyle.Image
+        tsbtnDebugRun.Enabled = False
+        tsbtnDebugRun.Image = My.Resources.Resources.playGreen
+        tsbtnDebugRun.ImageTransparentColor = Color.Magenta
+        tsbtnDebugRun.Name = "tsbtnDebugRun"
+        tsbtnDebugRun.Size = New Size(29, 29)
+        tsbtnDebugRun.Text = "Run"
+        tsbtnDebugRun.ToolTipText = "Run"
+        ' 
+        ' tsbtnDebugPause
+        ' 
+        tsbtnDebugPause.DisplayStyle = ToolStripItemDisplayStyle.Image
+        tsbtnDebugPause.Enabled = False
+        tsbtnDebugPause.Image = My.Resources.Resources.pauseOrange
+        tsbtnDebugPause.ImageTransparentColor = Color.Magenta
+        tsbtnDebugPause.Name = "tsbtnDebugPause"
+        tsbtnDebugPause.Size = New Size(29, 29)
+        tsbtnDebugPause.Text = "Pause"
+        ' 
+        ' tsbtnDebugStep
+        ' 
+        tsbtnDebugStep.DisplayStyle = ToolStripItemDisplayStyle.Image
+        tsbtnDebugStep.Enabled = False
+        tsbtnDebugStep.Image = My.Resources.Resources.skipBlack
+        tsbtnDebugStep.ImageTransparentColor = Color.Magenta
+        tsbtnDebugStep.Name = "tsbtnDebugStep"
+        tsbtnDebugStep.Size = New Size(29, 29)
+        tsbtnDebugStep.Text = "Step"
+        tsbtnDebugStep.ToolTipText = "Single Step"
+        ' 
         ' Panel1
         ' 
         Panel1.Controls.Add(SplitContainer1)
@@ -592,7 +664,7 @@ Partial Class Form1
         Panel1.Dock = DockStyle.Fill
         Panel1.Location = New Point(0, 0)
         Panel1.Name = "Panel1"
-        Panel1.Size = New Size(1296, 392)
+        Panel1.Size = New Size(1296, 496)
         Panel1.TabIndex = 19
         ' 
         ' SplitContainer1
@@ -610,7 +682,7 @@ Partial Class Form1
         ' SplitContainer1.Panel2
         ' 
         SplitContainer1.Panel2.Controls.Add(SplitContainer4)
-        SplitContainer1.Size = New Size(1160, 392)
+        SplitContainer1.Size = New Size(1160, 496)
         SplitContainer1.TabIndex = 18
         ' 
         ' SplitContainer5
@@ -666,20 +738,145 @@ Partial Class Form1
         ' 
         ' SplitContainer4.Panel2
         ' 
-        SplitContainer4.Panel2.Controls.Add(UcProgLineEdit1)
+        SplitContainer4.Panel2.Controls.Add(TabControl1)
         SplitContainer4.Panel2MinSize = 410
-        SplitContainer4.Size = New Size(1160, 338)
+        SplitContainer4.Size = New Size(1160, 442)
         SplitContainer4.SplitterDistance = 730
         SplitContainer4.TabIndex = 4
+        ' 
+        ' TabControl1
+        ' 
+        TabControl1.Controls.Add(tabpageLineDetails)
+        TabControl1.Controls.Add(tabpageVariables)
+        TabControl1.Controls.Add(tabpageTimers)
+        TabControl1.Dock = DockStyle.Fill
+        TabControl1.Location = New Point(0, 0)
+        TabControl1.Name = "TabControl1"
+        TabControl1.SelectedIndex = 0
+        TabControl1.Size = New Size(426, 442)
+        TabControl1.TabIndex = 1
+        ' 
+        ' tabpageLineDetails
+        ' 
+        tabpageLineDetails.Controls.Add(UcProgLineEdit1)
+        tabpageLineDetails.Location = New Point(4, 24)
+        tabpageLineDetails.Name = "tabpageLineDetails"
+        tabpageLineDetails.Padding = New Padding(3)
+        tabpageLineDetails.Size = New Size(418, 414)
+        tabpageLineDetails.TabIndex = 0
+        tabpageLineDetails.Text = "Line Details"
+        tabpageLineDetails.UseVisualStyleBackColor = True
         ' 
         ' UcProgLineEdit1
         ' 
         UcProgLineEdit1.Dock = DockStyle.Fill
-        UcProgLineEdit1.Location = New Point(0, 0)
+        UcProgLineEdit1.Location = New Point(3, 3)
         UcProgLineEdit1.Margin = New Padding(6)
         UcProgLineEdit1.Name = "UcProgLineEdit1"
-        UcProgLineEdit1.Size = New Size(426, 338)
+        UcProgLineEdit1.Size = New Size(412, 408)
         UcProgLineEdit1.TabIndex = 0
+        ' 
+        ' tabpageVariables
+        ' 
+        tabpageVariables.Controls.Add(SplitContainerVariables)
+        tabpageVariables.Location = New Point(4, 24)
+        tabpageVariables.Name = "tabpageVariables"
+        tabpageVariables.Padding = New Padding(3)
+        tabpageVariables.Size = New Size(418, 414)
+        tabpageVariables.TabIndex = 1
+        tabpageVariables.Text = "Variables"
+        tabpageVariables.UseVisualStyleBackColor = True
+        ' 
+        ' SplitContainerVariables
+        ' 
+        SplitContainerVariables.Dock = DockStyle.Fill
+        SplitContainerVariables.FixedPanel = FixedPanel.Panel1
+        SplitContainerVariables.Location = New Point(3, 3)
+        SplitContainerVariables.Name = "SplitContainerVariables"
+        SplitContainerVariables.Orientation = Orientation.Horizontal
+        ' 
+        ' SplitContainerVariables.Panel1
+        ' 
+        SplitContainerVariables.Panel1.Controls.Add(cboVariablesChannel)
+        ' 
+        ' SplitContainerVariables.Panel2
+        ' 
+        SplitContainerVariables.Panel2.Controls.Add(dgvVariables)
+        SplitContainerVariables.Size = New Size(412, 408)
+        SplitContainerVariables.SplitterDistance = 36
+        SplitContainerVariables.TabIndex = 0
+        ' 
+        ' cboVariablesChannel
+        ' 
+        cboVariablesChannel.FormattingEnabled = True
+        cboVariablesChannel.Location = New Point(9, 10)
+        cboVariablesChannel.Name = "cboVariablesChannel"
+        cboVariablesChannel.Size = New Size(164, 23)
+        cboVariablesChannel.TabIndex = 0
+        ' 
+        ' dgvVariables
+        ' 
+        dgvVariables.AllowUserToAddRows = False
+        dgvVariables.AllowUserToDeleteRows = False
+        dgvVariables.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        dgvVariables.Dock = DockStyle.Fill
+        dgvVariables.Location = New Point(0, 0)
+        dgvVariables.Name = "dgvVariables"
+        dgvVariables.ReadOnly = True
+        dgvVariables.RowHeadersVisible = False
+        dgvVariables.Size = New Size(412, 368)
+        dgvVariables.TabIndex = 0
+        ' 
+        ' tabpageTimers
+        ' 
+        tabpageTimers.Controls.Add(SplitContainerTimers)
+        tabpageTimers.Location = New Point(4, 24)
+        tabpageTimers.Name = "tabpageTimers"
+        tabpageTimers.Padding = New Padding(3)
+        tabpageTimers.Size = New Size(418, 414)
+        tabpageTimers.TabIndex = 2
+        tabpageTimers.Text = "Timers"
+        tabpageTimers.UseVisualStyleBackColor = True
+        ' 
+        ' SplitContainerTimers
+        ' 
+        SplitContainerTimers.Dock = DockStyle.Fill
+        SplitContainerTimers.FixedPanel = FixedPanel.Panel1
+        SplitContainerTimers.Location = New Point(3, 3)
+        SplitContainerTimers.Name = "SplitContainerTimers"
+        SplitContainerTimers.Orientation = Orientation.Horizontal
+        ' 
+        ' SplitContainerTimers.Panel1
+        ' 
+        SplitContainerTimers.Panel1.Controls.Add(cboTimersChannel)
+        ' 
+        ' SplitContainerTimers.Panel2
+        ' 
+        SplitContainerTimers.Panel2.Controls.Add(dgvTimers)
+        SplitContainerTimers.Size = New Size(412, 408)
+        SplitContainerTimers.SplitterDistance = 36
+        SplitContainerTimers.TabIndex = 1
+        ' 
+        ' cboTimersChannel
+        ' 
+        cboTimersChannel.FormattingEnabled = True
+        cboTimersChannel.Location = New Point(9, 10)
+        cboTimersChannel.Name = "cboTimersChannel"
+        cboTimersChannel.Size = New Size(164, 23)
+        cboTimersChannel.TabIndex = 0
+        ' 
+        ' dgvTimers
+        ' 
+        dgvTimers.AllowUserToAddRows = False
+        dgvTimers.AllowUserToDeleteRows = False
+        dgvTimers.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        dgvTimers.Dock = DockStyle.Fill
+        dgvTimers.Location = New Point(0, 0)
+        dgvTimers.Name = "dgvTimers"
+        dgvTimers.ReadOnly = True
+        dgvTimers.RowHeadersVisible = False
+        dgvTimers.Size = New Size(412, 368)
+        dgvTimers.TabIndex = 1
         ' 
         ' pnlProgramList
         ' 
@@ -688,7 +885,7 @@ Partial Class Form1
         pnlProgramList.Location = New Point(0, 0)
         pnlProgramList.MinimumSize = New Size(0, 240)
         pnlProgramList.Name = "pnlProgramList"
-        pnlProgramList.Size = New Size(136, 392)
+        pnlProgramList.Size = New Size(136, 496)
         pnlProgramList.TabIndex = 16
         ' 
         ' SplitContainer2
@@ -713,7 +910,7 @@ Partial Class Form1
         ' 
         SplitContainer2.Panel2.Controls.Add(lstPrograms)
         SplitContainer2.Panel2MinSize = 65
-        SplitContainer2.Size = New Size(136, 392)
+        SplitContainer2.Size = New Size(136, 496)
         SplitContainer2.SplitterDistance = 152
         SplitContainer2.TabIndex = 21
         ' 
@@ -969,7 +1166,7 @@ Partial Class Form1
         TabPage2.Location = New Point(4, 24)
         TabPage2.Name = "TabPage2"
         TabPage2.Padding = New Padding(3)
-        TabPage2.Size = New Size(192, 72)
+        TabPage2.Size = New Size(1302, 565)
         TabPage2.TabIndex = 1
         TabPage2.Text = "TabPage2"
         TabPage2.UseVisualStyleBackColor = True
@@ -990,7 +1187,7 @@ Partial Class Form1
         ' SplitContainer3.Panel2
         ' 
         SplitContainer3.Panel2.Controls.Add(tabBottom)
-        SplitContainer3.Size = New Size(1314, 808)
+        SplitContainer3.Size = New Size(1314, 912)
         SplitContainer3.SplitterDistance = 311
         SplitContainer3.TabIndex = 17
         ' 
@@ -1255,18 +1452,19 @@ Partial Class Form1
         ' SplitContainer9.Panel2
         ' 
         SplitContainer9.Panel2.Controls.Add(StatusStrip1)
-        SplitContainer9.Size = New Size(1314, 837)
-        SplitContainer9.SplitterDistance = 808
+        SplitContainer9.Size = New Size(1314, 941)
+        SplitContainer9.SplitterDistance = 912
         SplitContainer9.TabIndex = 19
         ' 
         ' Form1
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(1314, 837)
+        ClientSize = New Size(1314, 941)
         Controls.Add(SplitContainer9)
         MinimumSize = New Size(840, 507)
         Name = "Form1"
+        StartPosition = FormStartPosition.CenterScreen
         Text = "Tens2503"
         cmsProgSentences.ResumeLayout(False)
         cmsPrograms.ResumeLayout(False)
@@ -1298,6 +1496,20 @@ Partial Class Form1
         SplitContainer4.Panel2.ResumeLayout(False)
         CType(SplitContainer4, ComponentModel.ISupportInitialize).EndInit()
         SplitContainer4.ResumeLayout(False)
+        TabControl1.ResumeLayout(False)
+        tabpageLineDetails.ResumeLayout(False)
+        tabpageVariables.ResumeLayout(False)
+        SplitContainerVariables.Panel1.ResumeLayout(False)
+        SplitContainerVariables.Panel2.ResumeLayout(False)
+        CType(SplitContainerVariables, ComponentModel.ISupportInitialize).EndInit()
+        SplitContainerVariables.ResumeLayout(False)
+        CType(dgvVariables, ComponentModel.ISupportInitialize).EndInit()
+        tabpageTimers.ResumeLayout(False)
+        SplitContainerTimers.Panel1.ResumeLayout(False)
+        SplitContainerTimers.Panel2.ResumeLayout(False)
+        CType(SplitContainerTimers, ComponentModel.ISupportInitialize).EndInit()
+        SplitContainerTimers.ResumeLayout(False)
+        CType(dgvTimers, ComponentModel.ISupportInitialize).EndInit()
         pnlProgramList.ResumeLayout(False)
         SplitContainer2.Panel1.ResumeLayout(False)
         SplitContainer2.Panel1.PerformLayout()
@@ -1458,5 +1670,20 @@ Partial Class Form1
     Friend WithEvents cmdEraseDevice As ToolStripMenuItem
     Friend WithEvents SplitContainer9 As SplitContainer
     Friend WithEvents UcChanControl1 As ucChanControl
+    Friend WithEvents TabControl1 As TabControl
+    Friend WithEvents tabpageLineDetails As TabPage
+    Friend WithEvents tabpageVariables As TabPage
+    Friend WithEvents ToolStripSeparator16 As ToolStripSeparator
+    Friend WithEvents ToolStripSeparator17 As ToolStripSeparator
+    Friend WithEvents tsbtnDebugRun As ToolStripButton
+    Friend WithEvents tsbtnDebugPause As ToolStripButton
+    Friend WithEvents tsbtnDebugStep As ToolStripButton
+    Friend WithEvents tabpageTimers As TabPage
+    Friend WithEvents SplitContainerVariables As SplitContainer
+    Friend WithEvents cboVariablesChannel As ComboBox
+    Friend WithEvents dgvVariables As DataGridView
+    Friend WithEvents SplitContainerTimers As SplitContainer
+    Friend WithEvents cboTimersChannel As ComboBox
+    Friend WithEvents dgvTimers As DataGridView
 
 End Class

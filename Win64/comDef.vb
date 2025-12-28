@@ -19,7 +19,7 @@ Module comDef
     End Structure
 
 
-    Public Enum DataFieldEnum As Integer 'index number for fields in each line of program data
+    Public Enum eDataField As Integer 'index number for fields in each line of program data
         dfCommand = 0
         dfChannel = 1
         dfGotoTrue = 2
@@ -43,7 +43,7 @@ Module comDef
         'dfRepeats = 20
     End Enum
 
-    Public Enum enumChantype As Integer
+    Public Enum eChanType As Integer
         Unknown = 0
         Master = 1
         Motor = 2
@@ -51,7 +51,7 @@ Module comDef
         Aux = 4
     End Enum
 
-    Public Enum ProgStateEnum As Integer
+    Public Enum eProgState As Integer
         progState_Unknown = 0
         progState_Empty = 1
         progState_Stopped = 2
@@ -61,7 +61,7 @@ Module comDef
         progState_End = 6
     End Enum
 
-    Public Enum CommandEnum As Integer
+    Public Enum eCommand As Integer
         cmdNoop = 0
         cmdTenMotOutput = 1
         'cmdMotorOutput = 2
@@ -77,7 +77,7 @@ Module comDef
         cmdLastEntry = 10
     End Enum
 
-    Public Enum DataSourceEnum As Integer
+    Public Enum eDataSource As Integer
         ' = {"Direct", "Prog Var", "Sys Var", "Chan Setting", "Sys Setting", "Dig Input", "Dig Output", "Math"}
         dsDirect = 0
         dsProgramVar = 1
@@ -90,7 +90,7 @@ Module comDef
         dsTimer = 8
     End Enum
 
-    Public Enum DataSourceChanSettingEnum As Integer
+    Public Enum eDataSourceChanSetting As Integer
         dscsSpeed = 0
         dscsOrigOpDuration = 1
         dscsOrigPdDuration = 2
@@ -118,7 +118,7 @@ Module comDef
         dscsOutputPulsewidthMaxPercent = 24
     End Enum
 
-    Public Enum DataSourceSysSettingEnum As Integer
+    Public Enum eDataSourceSysSetting As Integer
         dsssZRotation = 0
         dsssUpDirection
         dsssStepCount
@@ -129,7 +129,7 @@ Module comDef
     End Enum
 
 
-    Public Enum WaveformEnum As Integer
+    Public Enum eWaveform As Integer
         wfNone = 0
         wfRamp = 1
         wfTriangle = 2
@@ -138,7 +138,7 @@ Module comDef
         'wfPulse = 5
     End Enum
 
-    Public Enum QuadrantEnum As Integer
+    Public Enum eQuadrant As Integer
         quadMidHi = 0
         quadMidHiMid = 1
         quadHiMid = 2
@@ -154,7 +154,7 @@ Module comDef
         quadMidLowHiMid = 11
     End Enum
 
-    Public Enum OpTypeEnum As Integer
+    Public Enum eOpType As Integer
         opUnknown = 0
         opLoadProgramAndPause = 1
         opLoadProgramAndRun = 2
@@ -163,7 +163,7 @@ Module comDef
         opPause = 5
     End Enum
 
-    Public Enum commandTypeEnum As Byte
+    Public Enum eCommandType As Byte
         ACK = AscW("A") '65 'A'
         NAK = AscW("n")
         SetParamArray = AscW("b")       '//Followed by an index num
@@ -224,7 +224,7 @@ Module comDef
         Aux = 3
     End Enum
 
-    Public Enum MathOpEnum As Integer
+    Public Enum eMathOp As Integer
         mathOpNone = 0
         mathOpPlus = 1
         mathOpMinus = 2
@@ -285,7 +285,7 @@ Module comDef
 
     Public Structure Channel_t
         Dim Name As String
-        Dim Type As enumChantype
+        Dim Type As eChanType
         Dim SpeedMin As Integer
         Dim SpeedMax As Integer
     End Structure
@@ -350,7 +350,7 @@ Module comDef
         Dev.Channel = New List(Of Channel_t)
         Dim MasterChan As New Channel_t
         MasterChan.Name = "Master"
-        MasterChan.Type = enumChantype.Master
+        MasterChan.Type = eChanType.Master
         Dev.Channel.Add(MasterChan)
 
         If Dev.NumMotorChans > 0 Then
@@ -362,7 +362,7 @@ Module comDef
 
                 Dim tmpChan As New Channel_t
                 tmpChan.Name = Dev.motorChanNameString(m)
-                tmpChan.Type = enumChantype.Motor
+                tmpChan.Type = eChanType.Motor
                 Dev.Channel.Add(tmpChan)
             Next
         End If
@@ -376,7 +376,7 @@ Module comDef
 
                 Dim tmpChan As New Channel_t
                 tmpChan.Name = Dev.tensChanNameString(t)
-                tmpChan.Type = enumChantype.Tens
+                tmpChan.Type = eChanType.Tens
                 Dev.Channel.Add(tmpChan)
             Next
         End If
@@ -390,7 +390,7 @@ Module comDef
 
                 Dim tmpChan As New Channel_t
                 tmpChan.Name = Dev.auxChanNameString(a)
-                tmpChan.Type = enumChantype.Aux
+                tmpChan.Type = eChanType.Aux
                 Dev.Channel.Add(tmpChan)
             Next
         End If

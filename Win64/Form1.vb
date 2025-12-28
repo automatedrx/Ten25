@@ -12,7 +12,7 @@ Imports System.Runtime.Intrinsics
 
 Public Class Form1
 
-    Public Enum AutoStatusenum As Integer
+    Public Enum eAutoStatus As Integer
         asOff = 0
         asOn = 1
         asPaused = 2
@@ -44,8 +44,8 @@ Public Class Form1
     Dim rxBuff As String = ""
     Dim newMsgReceived As Boolean = False
 
-    Dim autoStatus As AutoStatusenum = AutoStatusenum.asOff
-    Dim autoStatusLast As AutoStatusenum = AutoStatusenum.asOff
+    Dim autoStatus As eAutoStatus = eAutoStatus.asOff
+    Dim autoStatusLast As eAutoStatus = eAutoStatus.asOff
     Dim nextParamArrayAutoStatus = 0
     Dim lastChanStatsReceivedTime As DateTime = Now
 
@@ -70,16 +70,49 @@ Public Class Form1
     '==Programs==
     Friend Event UnsavedProgramChanges(ByRef Dev As Device_t, ByVal newState As Boolean)
     Private Event UndownloadedProgramChanges(ByRef Dev As Device_t, ByVal newState As Boolean)
-    Private Event RequestAutostatusStateChange(newState As AutoStatusenum)
+    Private Event RequestAutostatusStateChange(newState As eAutoStatus)
 
     Dim progLineEditEnabled As Boolean = True
 
-    'Private Class JsonData
-    '    Public Property ProjectName As String
-    '    Public Property FileVersion As Integer
-    '    Public Property Programs As List(Of Program)
-    '    Public Property ChannelNames As List(Of String)
-    'End Class
+
+    '=== Offline Simulator ===
+    Private Enum eSimState
+        Stopped
+        Running
+        Paused
+        Stepping  ' One step requested while paused
+    End Enum
+
+    Private simState As eSimState = eSimState.Stopped
+    Private simChannelStates() As ChannelSimState  ' One per channel
+    Private simTimer As New Timer With {.Interval = 50}  ' 20 Hz simulation tick
+    Private simBreakpoints As New HashSet(Of Integer)  ' Line numbers with breakpoints (0-based)
+
+    Private Class ChannelSimState
+        Public CurProgNum As Integer = 0
+        Public CurLineNum As Integer = 0
+        Public Variables() As Integer  ' Size = NumVarsPerProgram
+        Public Timers() As Integer     ' Size = NumTimersPerProgram, in ms
+        Public TimerStartTicks() As Integer  ' When timer started
+        Public TimerRunning() As Boolean
+        Public ProgState As Integer = 0
+        Public RepeatsRemaining As Integer = 0
+        Public OutputActive As Boolean = False
+        Public OutputStartTime As Integer = 0
+        Public OutputDuration As Integer = 0
+        Public OutputStartVal As Integer = 0
+        Public OutputEndVal As Integer = 0
+    End Class
+
+
+
+
+
+
+
+
+
+
     Private Class JsonData
         Public Property Dev As Device_t
     End Class
@@ -124,6 +157,7 @@ Public Class Form1
         RefreshComPortList()
         comportIsOpen(False)
         CreateNewProject(editorDev)
+        InitializeDebugTabs()
     End Sub
 
 
@@ -169,7 +203,7 @@ Public Class Form1
             OpenComPort()
             If ComPort.IsOpen = True Then
                 Dim dataBuff As String
-                dataBuff = Chr(commandTypeEnum.ResetDevice) & "=YES" & Chr(10)
+                dataBuff = Chr(eCommandType.ResetDevice) & "=YES" & Chr(10)
                 dataSend(dataBuff, dataBuff.Length)
                 CloseComPort()
             End If
@@ -181,7 +215,7 @@ Public Class Form1
             OpenComPort()
             If ComPort.IsOpen = True Then
                 Dim dataBuff As String
-                dataBuff = Chr(commandTypeEnum.EraseDevice) & "=YES" & Chr(10)
+                dataBuff = Chr(eCommandType.EraseDevice) & "=YES" & Chr(10)
                 dataSend(dataBuff, dataBuff.Length)
                 CloseComPort()
             End If
@@ -229,6 +263,7 @@ Public Class Form1
             cboComPorts.Enabled = False
             cmdRefreshComportList.Enabled = False
             tmrCheckComportStatus.Enabled = True
+            UpdateDebugButtonStates()
         Else
             'cmdConnect.BackColor = ControlColorNone
             tmrCheckComportStatus.Enabled = False
@@ -240,6 +275,12 @@ Public Class Form1
         End If
     End Sub
 
+    Private Sub UpdateDebugButtonStates()
+        Dim connectedAndValid As Boolean = ComPort.IsOpen AndAlso validDevice
+        tsbtnDebugRun.Enabled = connectedAndValid AndAlso Not tsbtnDebugPause.Enabled
+        tsbtnDebugPause.Enabled = connectedAndValid AndAlso (autoStatus = eAutoStatus.asOn) ' or some running state
+        tsbtnDebugStep.Enabled = connectedAndValid AndAlso tsbtnDebugPause.Enabled
+    End Sub
     Private Sub tmrCheckComportStatus_Tick(sender As Object, e As EventArgs) Handles tmrCheckComportStatus.Tick
         'This timer monitors the comport for any unplanned disconnection (device unplugged, powered off, etc.).
 
@@ -265,10 +306,10 @@ Public Class Form1
             Catch ex As Exception
                 MsgBox("Error!  " & ex.Message)
                 CloseComPort()
-                SetAutoStatusMode(AutoStatusenum.asOff)
+                SetAutoStatusMode(eAutoStatus.asOff)
             End Try
         Else
-            RaiseEvent RequestAutostatusStateChange(AutoStatusenum.asOff)
+            RaiseEvent RequestAutostatusStateChange(eAutoStatus.asOff)
         End If
     End Sub
 
@@ -293,40 +334,42 @@ Public Class Form1
 #End Region
 
 #Region "AutoStatus"
-    Private Sub SetAutoStatusMode(ByVal newMode As AutoStatusenum)
+    Private Sub SetAutoStatusMode(ByVal newMode As eAutoStatus)
         If Me.InvokeRequired Then
             Me.Invoke(Sub()
                           SetAutoStatusMode(newMode)
                       End Sub)
         Else
-            If newMode = AutoStatusenum.asOff Then
-                autoStatus = AutoStatusenum.asOff
+            If newMode = eAutoStatus.asOff Then
+                autoStatus = eAutoStatus.asOff
             ElseIf validDevice = True Then
                 autoStatus = newMode
             Else
-                autoStatus = AutoStatusenum.asOff
+                autoStatus = eAutoStatus.asOff
             End If
 
             Select Case autoStatus
-                Case AutoStatusenum.asOff
+                Case eAutoStatus.asOff
                     cmdtsChanMonAutoStatusOff.Checked = True
                     cmdtsChanMonAutoStatusOn.Checked = False
-                Case AutoStatusenum.asOn
+                Case eAutoStatus.asOn
                     cmdtsChanMonAutoStatusOff.Checked = False
                     cmdtsChanMonAutoStatusOn.Checked = True
                     nextParamArrayAutoStatus = 0
                     requestParamArray(paramArrayEnum.chanStats, nextParamArrayAutoStatus)
             End Select
+
+            UpdateDebugButtonStates()
         End If
     End Sub
 
-    Private Sub Form1_RequestAutostatusStateChange(newState As AutoStatusenum) Handles Me.RequestAutostatusStateChange
+    Private Sub Form1_RequestAutostatusStateChange(newState As eAutoStatus) Handles Me.RequestAutostatusStateChange
         SetAutoStatusMode(newState)
     End Sub
 
     Private Sub cmdtsChanMonAutoStatusOff_Click_1(sender As Object, e As EventArgs) Handles cmdtsChanMonAutoStatusOff.Click
-        SetAutoStatusMode(AutoStatusenum.asOff)
-        My.Settings.Item("lastAutoStatus") = CInt(AutoStatusenum.asOff)
+        SetAutoStatusMode(eAutoStatus.asOff)
+        My.Settings.Item("lastAutoStatus") = CInt(eAutoStatus.asOff)
         tmrCheckAutostatus.Enabled = False
     End Sub
 
@@ -335,15 +378,15 @@ Public Class Form1
             cmdtsChanMonAutoStatusOff.PerformClick()
             Exit Sub
         End If
-        SetAutoStatusMode(AutoStatusenum.asOn)
-        My.Settings.Item("lastAutoStatus") = CInt(AutoStatusenum.asOn)
+        SetAutoStatusMode(eAutoStatus.asOn)
+        My.Settings.Item("lastAutoStatus") = CInt(eAutoStatus.asOn)
         tmrCheckAutostatus.Enabled = True
     End Sub
 
     Private Sub tmrCheckAutostatus_Tick(sender As Object, e As EventArgs) Handles tmrCheckAutostatus.Tick
         'This timer checks to see if autostatus has stalled out.  If so, it sends a paramArray request to the device to try
         'to restart communications.
-        If autoStatus = AutoStatusenum.asOn Then
+        If autoStatus = eAutoStatus.asOn Then
             If Now > lastChanStatsReceivedTime.AddSeconds(2) Then
                 nextParamArrayAutoStatus = 0
                 requestParamArray(paramArrayEnum.chanStats, nextParamArrayAutoStatus)
@@ -363,7 +406,7 @@ Public Class Form1
         Dim val As String = ""
         rxBuff = rxBuff.Remove(0, eomIndx + 1)
 
-        Dim cmd As commandTypeEnum = Asc(msg.Chars(0))
+        Dim cmd As eCommandType = Asc(msg.Chars(0))
         Dim param As pStatEnum = pStatEnum.None
         If msg.Length > 1 Then
             param = Asc(msg.Chars(1))
@@ -398,25 +441,25 @@ Public Class Form1
         lastCommandTypeReceived = cmd
 
         Select Case cmd
-            Case commandTypeEnum.ACK
+            Case eCommandType.ACK
 
-            Case commandTypeEnum.NAK
+            Case eCommandType.NAK
 
-            Case commandTypeEnum.SetParamArray        '//Followed by an index num
+            Case eCommandType.SetParamArray        '//Followed by an index num
                 setParamArray(param, val, paramIndex)
-            Case commandTypeEnum.SetSingleParam       '//Followed by a pStatEnum
+            Case eCommandType.SetSingleParam       '//Followed by a pStatEnum
                 setSingleParam(param, val, paramIndex)
-            Case commandTypeEnum.GetParamArray        '//Followed by an index num
+            Case eCommandType.GetParamArray        '//Followed by an index num
 
-            Case commandTypeEnum.GetSingleParam       '//Followed by a pStatEnum
+            Case eCommandType.GetSingleParam       '//Followed by a pStatEnum
 
-            Case commandTypeEnum.SetFileData
+            Case eCommandType.SetFileData
 
-            Case commandTypeEnum.GetFileData
+            Case eCommandType.GetFileData
 
-            Case commandTypeEnum.ResetDevice
+            Case eCommandType.ResetDevice
 
-            Case commandTypeEnum.EraseDevice
+            Case eCommandType.EraseDevice
 
         End Select
     End Sub
@@ -534,7 +577,7 @@ Public Class Form1
                 '    chanControls(paramIndex(0)).ProgRef = monitorDev.Prog
                 'End If
                 If IsNothing(chanControls(paramIndex(0)).GetProgRef()) Then
-                    chanControls(paramIndex(0)).SetprogRef(monitorDev.Prog)
+                    chanControls(paramIndex(0)).SetProgRef(monitorDev.Prog)
                 End If
 
                 If Not IsNothing(chanControls(paramIndex(0))) Then
@@ -569,7 +612,7 @@ Public Class Form1
                 chanControls(paramIndex(0)).MaxOutputPulsewidthPct = CInt(valArray(16))
 
                 lastChanStatsReceivedTime = Now
-                If autoStatus = AutoStatusenum.asOn Then
+                If autoStatus = eAutoStatus.asOn Then
                     nextParamArrayAutoStatus = paramIndex(0) + 1
                     If nextParamArrayAutoStatus >= monitorDev.Channel.Count Then
                         nextParamArrayAutoStatus = 0
@@ -605,7 +648,7 @@ Public Class Form1
     End Sub
     Private Sub sendParameter(ByVal param As pStatEnum, ByVal newVal As String, Optional ByVal index As Integer = -1)
         Dim dataBuff As String
-        dataBuff = Chr(commandTypeEnum.SetSingleParam) & Chr(param)
+        dataBuff = Chr(eCommandType.SetSingleParam) & Chr(param)
 
         If index >= 0 Then
             dataBuff &= index
@@ -615,7 +658,7 @@ Public Class Form1
     End Sub
     Private Sub requestParameter(ByVal param As pStatEnum, Optional ByVal index As Integer = -1)
         Dim dataBuff As String
-        dataBuff = Chr(commandTypeEnum.GetSingleParam) & Chr(param)
+        dataBuff = Chr(eCommandType.GetSingleParam) & Chr(param)
 
         If index >= 0 Then
             dataBuff &= index
@@ -626,7 +669,7 @@ Public Class Form1
     Private Sub sendParamArray(ByRef Dev As Device_t, ByVal paNum As paramArrayEnum, Optional ByVal paramIndex1 As Integer = -1,
                                Optional ByVal paramIndex2 As Integer = -1)
         Dim dataBuff As String
-        dataBuff = Chr(commandTypeEnum.SetParamArray) & Chr(paNum)
+        dataBuff = Chr(eCommandType.SetParamArray) & Chr(paNum)
 
         Select Case paNum
             Case paramArrayEnum.progLineData
@@ -651,7 +694,7 @@ Public Class Form1
     Private Sub requestParamArray(ByVal paNum As paramArrayEnum, Optional ByVal paramIndex As Integer = -1,
                                   Optional ByVal index2 As Integer = -1)
         Dim dataBuff As String
-        dataBuff = Chr(commandTypeEnum.GetParamArray) & Chr(paNum)
+        dataBuff = Chr(eCommandType.GetParamArray) & Chr(paNum)
         If paramIndex > -1 Then
             dataBuff &= paramIndex
             If index2 > -1 Then
@@ -735,6 +778,241 @@ Public Class Form1
     Private Sub UcChanControl1_SwapPolarity_Changed(index As Integer, PolarityIsSwapped As Integer)
         sendParameter(pStatEnum.SwapPolarity, PolarityIsSwapped, index)
     End Sub
+#End Region
+
+#Region "Debug & Simulator"
+    Private Sub InitializeSimulator()
+        If IsNothing(editorDev) Then Return
+
+        ReDim simChannelStates(editorDev.Channel.Count - 1)
+        For i As Integer = 0 To editorDev.Channel.Count - 1
+            simChannelStates(i) = New ChannelSimState
+            ReDim simChannelStates(i).Variables(editorDev.NumVarsPerProgram - 1)
+            ReDim simChannelStates(i).Timers(editorDev.NumTimersPerProgram - 1)
+            ReDim simChannelStates(i).TimerStartTicks(editorDev.NumTimersPerProgram - 1)
+            ReDim simChannelStates(i).TimerRunning(editorDev.NumTimersPerProgram - 1)
+            ' All values initialized to 0 by default
+        Next
+
+        AddHandler simTimer.Tick, AddressOf SimulatorTick
+        simTimer.Enabled = False
+    End Sub
+
+    Private Sub InitializeDebugTabs()
+        ' Called once or on project/device change
+        PopulateChannelCombo(cboVariablesChannel)
+        PopulateChannelCombo(cboTimersChannel)
+
+        ' Setup grid columns (only once)
+        SetupVariablesGrid()
+        SetupTimersGrid()
+
+        ' Default to Master channel
+        If cboVariablesChannel.Items.Count > 0 Then
+            cboVariablesChannel.SelectedIndex = 0
+            cboTimersChannel.SelectedIndex = 0
+        End If
+
+        InitializeSimulator()
+    End Sub
+
+    Private Sub PopulateChannelCombo(cbo As ComboBox)
+        cbo.Items.Clear()
+        If IsNothing(editorDev) Then Return
+
+        For i As Integer = 0 To editorDev.Channel.Count - 1
+            Dim chanName As String = editorDev.allChannelsString(i).TrimEnd(Chr(0))
+            If chanName = "" Then chanName = "Channel " & i
+            cbo.Items.Add(chanName)
+        Next
+    End Sub
+
+    Private Sub SetupVariablesGrid()
+        dgvVariables.Columns.Clear()
+        dgvVariables.Columns.Add("VarName", "Variable")
+        dgvVariables.Columns.Add("VarValue", "Value")
+        dgvVariables.Columns(0).Width = 220
+        dgvVariables.Columns(1).Width = 100
+        dgvVariables.Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+        dgvVariables.Columns(1).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+        dgvVariables.AllowUserToAddRows = False
+        dgvVariables.AllowUserToDeleteRows = False
+        dgvVariables.ReadOnly = True
+        dgvVariables.RowHeadersVisible = False
+    End Sub
+
+    Private Sub SetupTimersGrid()
+        dgvTimers.Columns.Clear()
+        dgvTimers.Columns.Add("TimerName", "Timer")
+        dgvTimers.Columns.Add("TimerValue", "Value (ms)")
+        dgvTimers.Columns(0).Width = 220
+        dgvTimers.Columns(1).Width = 100
+        dgvTimers.Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+        dgvTimers.Columns(1).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+        dgvTimers.AllowUserToAddRows = False
+        dgvTimers.AllowUserToDeleteRows = False
+        dgvTimers.ReadOnly = True
+        dgvTimers.RowHeadersVisible = False
+    End Sub
+
+    Private Sub cboVariablesChannel_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboVariablesChannel.SelectedIndexChanged
+        UpdateVariablesGrid()
+    End Sub
+
+    Private Sub cboTimersChannel_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboTimersChannel.SelectedIndexChanged
+        UpdateTimersGrid()
+    End Sub
+
+    Private Sub UpdateVariablesGrid()
+        dgvVariables.Rows.Clear()
+        If IsNothing(editorDev) OrElse cboVariablesChannel.SelectedIndex < 0 Then Return
+
+        Dim progNum As Integer = editorDev.CurProgNum
+        If progNum < 0 OrElse progNum >= editorDev.Prog.Count Then Return
+
+        Dim prog As Program = editorDev.Prog(progNum)
+
+        For i As Integer = 0 To Math.Min(prog.varName.Count - 1, editorDev.NumVarsPerProgram - 1)
+            Dim varName As String = prog.varName(i).TrimEnd(Chr(0))
+            If varName = "" Then varName = "Var " & i
+            dgvVariables.Rows.Add(varName, 0)  ' Initial value = 0 (will be updated by simulator later)
+        Next
+    End Sub
+
+    Private Sub UpdateTimersGrid()
+        dgvTimers.Rows.Clear()
+        If IsNothing(editorDev) OrElse cboTimersChannel.SelectedIndex < 0 Then Return
+
+        Dim progNum As Integer = editorDev.CurProgNum
+        If progNum < 0 OrElse progNum >= editorDev.Prog.Count Then Return
+
+        Dim prog As Program = editorDev.Prog(progNum)
+
+        For i As Integer = 0 To Math.Min(prog.timerName.Count - 1, editorDev.NumTimersPerProgram - 1)
+            Dim timerName As String = prog.timerName(i).TrimEnd(Chr(0))
+            If timerName = "" Then timerName = "Tim " & i
+            dgvTimers.Rows.Add(timerName, 0)  ' Initial value = 0 ms
+        Next
+    End Sub
+
+
+    Private Sub SimulatorTick(sender As Object, e As EventArgs)
+        If simState = eSimState.Running OrElse simState = eSimState.Stepping Then
+            ExecuteOneSimulationCycle()
+            UpdateAllDebugGridsAndHighlight()
+
+            If simState = eSimState.Stepping Then
+                simState = eSimState.Paused
+                simTimer.Enabled = False
+                tsbtnDebugStep.Enabled = True
+            End If
+        End If
+    End Sub
+
+    Private Sub ExecuteOneSimulationCycle()
+        For chanIdx As Integer = 0 To editorDev.Channel.Count - 1
+            Dim state As ChannelSimState = simChannelStates(chanIdx)
+            Dim prog As Program = editorDev.Prog(state.CurProgNum)
+
+            If state.CurLineNum >= prog.progLine.Count Then
+                state.CurLineNum = 0  ' Loop or stop? For now loop
+            End If
+
+            Dim line() As Integer = prog.progLine(state.CurLineNum)
+            Dim cmd As Integer = line(eDataField.dfCommand)
+
+            ' Check breakpoint
+            If simBreakpoints.Contains(state.CurLineNum) Then
+                simState = eSimState.Paused
+                simTimer.Enabled = False
+                tsbtnDebugRun.Enabled = True
+                tsbtnDebugPause.Enabled = False
+                tsbtnDebugStep.Enabled = True
+                Continue For
+            End If
+
+            Select Case cmd
+                Case eCommand.cmdNoop
+                    ' Do nothing
+
+                Case eCommand.cmdSet
+                    Dim targetVar As Integer = line(eDataField.dfParam1)
+                    Dim value As Integer = line(eDataField.dfParam2)
+                    If targetVar >= 0 AndAlso targetVar < state.Variables.Length Then
+                        state.Variables(targetVar) = value
+                    End If
+
+                Case eCommand.cmdGoTo
+                    state.CurLineNum = line(eDataField.dfGotoTrue) - 1
+                    Continue For  ' Skip increment
+
+                Case eCommand.cmdTest
+                    Dim testResult As Boolean = EvaluateTest(line, state)
+                    If testResult Then
+                        state.CurLineNum = line(eDataField.dfGotoTrue) - 1
+                    Else
+                        state.CurLineNum = line(eDataField.dfGotoFalse) - 1
+                    End If
+                    Continue For
+
+                Case eCommand.cmdTenMotOutput
+                    ' Simulate output activation
+                    state.OutputActive = True
+                    state.OutputStartTime = Environment.TickCount
+                    state.OutputDuration = line(eDataField.dfDuration)
+                    state.OutputStartVal = line(eDataField.dfStartVal)
+                    state.OutputEndVal = line(eDataField.dfEndVal)
+                    state.RepeatsRemaining = line(eDataField.dfRepeats)
+
+                    ' Add more commands as needed...
+            End Select
+
+            ' Increment line
+            state.CurLineNum += 1
+            If state.CurLineNum >= prog.progLine.Count Then
+                state.CurLineNum = 0
+            End If
+        Next
+    End Sub
+
+    Private Function EvaluateTest(line() As Integer, state As ChannelSimState) As Boolean
+        ' Simplified — expand as needed
+        Dim varNum As Integer = line(eDataField.dfParam1)
+        Dim compareVal As Integer = line(eDataField.dfParam2)
+        Dim operator As Integer = line(eDataField.dfOperator)  ' Assume you have enum
+
+        If varNum < 0 OrElse varNum >= state.Variables.Length Then Return False
+        Dim varVal As Integer = state.Variables(varNum)
+
+        Select Case operator
+            Case 0 : Return varVal = compareVal   ' ==
+            Case 1 : Return varVal <> compareVal  ' !=
+            Case 2 : Return varVal > compareVal
+            Case 3 : Return varVal >= compareVal
+            Case 4 : Return varVal < compareVal
+            Case 5 : Return varVal <= compareVal
+            Case Else : Return False
+        End Select
+    End Function
+
+    Private Sub UpdateAllDebugGridsAndHighlight()
+        ' Highlight current line for selected program
+        If editorDev.CurProgNum >= 0 AndAlso editorDev.CurProgNum < editorDev.Prog.Count Then
+            Dim chanIdx As Integer = cboVariablesChannel.SelectedIndex
+            If chanIdx >= 0 AndAlso chanIdx < simChannelStates.Length Then
+                Dim lineNum As Integer = simChannelStates(chanIdx).CurLineNum
+                If lineNum >= 0 AndAlso lineNum < lstProgDisplay.Items.Count Then
+                    lstProgDisplay.SelectedIndex = lineNum
+                    lstProgDisplay.TopIndex = Math.Max(0, lineNum - 5)
+                End If
+            End If
+        End If
+
+        ' Update grids
+        UpdateVariablesGrid()
+        UpdateTimersGrid()
+    End Sub
+
 #End Region
 
 #Region "Program Lines"
@@ -868,13 +1146,13 @@ Public Class Form1
         Dim tmpLine(DataFieldLen - 1) As Integer
         For n As Integer = 0 To editorDev.Prog(TargetProgNumber).progLine.Count - 1
             tmpLine = editorDev.Prog(TargetProgNumber).progLine(n)
-            If (tmpLine(DataFieldEnum.dfCommand) = CommandEnum.cmdGoTo) Or (tmpLine(DataFieldEnum.dfCommand) = CommandEnum.cmdTest) Then
-                If tmpLine(DataFieldEnum.dfGotoTrue) >= startIndex Then
-                    tmpLine(DataFieldEnum.dfGotoTrue) += offset
+            If (tmpLine(eDataField.dfCommand) = eCommand.cmdGoTo) Or (tmpLine(eDataField.dfCommand) = eCommand.cmdTest) Then
+                If tmpLine(eDataField.dfGotoTrue) >= startIndex Then
+                    tmpLine(eDataField.dfGotoTrue) += offset
                     RaiseEvent UnsavedProgramChanges(editorDev, True)
                 End If
-                If tmpLine(DataFieldEnum.dfGotoFalse) >= startIndex Then
-                    tmpLine(DataFieldEnum.dfGotoFalse) += offset
+                If tmpLine(eDataField.dfGotoFalse) >= startIndex Then
+                    tmpLine(eDataField.dfGotoFalse) += offset
                     RaiseEvent UnsavedProgramChanges(editorDev, True)
                 End If
             End If
@@ -941,7 +1219,7 @@ Public Class Form1
     Private Sub DeleteProgramLine(TargetProgNumber As Integer, LineIndex As Integer)
         Dim Prog As List(Of Program) = editorDev.Prog
         If (TargetProgNumber < 0) Or (TargetProgNumber >= Prog.Count) Then Exit Sub
-        If (LineIndex < 0) Or (LineIndex >= prog(TargetProgNumber).progLine.Count) Then Exit Sub
+        If (LineIndex < 0) Or (LineIndex >= Prog(TargetProgNumber).progLine.Count) Then Exit Sub
 
         Prog(TargetProgNumber).progLine.RemoveAt(LineIndex)
         RaiseEvent UnsavedProgramChanges(editorDev, True)
@@ -953,7 +1231,7 @@ Public Class Form1
             LoadProgramSentenceDisplay()
             If LineIndex < Prog(editorDev.CurProgNum).progLine.Count Then
                 lstProgDisplay.SelectedIndex = LineIndex
-            ElseIf Prog(editordev.CurProgNum).progLine.Count > 0 Then
+            ElseIf Prog(editorDev.CurProgNum).progLine.Count > 0 Then
                 lstProgDisplay.SelectedIndex = Prog(editorDev.CurProgNum).progLine.Count - 1
             Else
                 lstProgDisplay.SelectedIndex = -1
@@ -985,6 +1263,8 @@ Public Class Form1
             txtProgName.Text = ""
             txtProgName.Enabled = False
         End If
+
+        UpdateVariablesGrid()
     End Sub
 
     Private Sub MoveProgramLineUp(TargetProgNumber As Integer, ByVal OrigIndex As Integer)
@@ -1306,6 +1586,7 @@ Public Class Form1
         If DialogVarNamesAll.ShowEditDialog(tmpProg, lstPrograms.SelectedIndex, DialogVarNamesAll.NameList_t.VarNames) = MsgBoxResult.Ok Then
             editorDev.Prog = tmpProg
             RaiseEvent UnsavedProgramChanges(editorDev, True)
+            UpdateVariablesGrid()
         End If
     End Sub
     Private Sub cmdEditVarNames_Click(sender As Object, e As EventArgs) Handles cmdEditVarNames.Click
@@ -1469,6 +1750,7 @@ Public Class Form1
     Private Sub RefreshProgramDisplays()
         InitProgLineEditControl()
         PopulateProgramListDisplay()
+        InitializeDebugTabs()
     End Sub
 
     Private Sub OpenProjectFromFile()
@@ -1751,7 +2033,7 @@ Public Class Form1
 
         'Make sure autostatus is off
         autoStatusLast = autoStatus
-        autoStatus = AutoStatusenum.asOff
+        autoStatus = eAutoStatus.asOff
 
         currentDownloadingDevice = Dev
 
@@ -1775,7 +2057,7 @@ Public Class Form1
 
         'Restore autostatus mode:
         Select Case My.Settings.lastAutoStatus
-            Case AutoStatusenum.asOn
+            Case eAutoStatus.asOn
                 cmdtsChanMonAutoStatusOn.PerformClick()
             Case Else
                 'leave autostatus off
@@ -1935,8 +2217,8 @@ Public Class Form1
         sendParameter(pStatEnum.NumberOfPrograms, editorDev.Prog.Count)
 
         'wait for the data to be returned.
-        While lastCommandTypeReceived <> commandTypeEnum.ACK
-            If (lastCommandTypeReceived = commandTypeEnum.NAK) Or (Now() > progComTimeoutTime) Then
+        While lastCommandTypeReceived <> eCommandType.ACK
+            If (lastCommandTypeReceived = eCommandType.NAK) Or (Now() > progComTimeoutTime) Then
                 retryCounter += 1
                 If retryCounter <= maxRetries Then
                     'retry
@@ -1966,8 +2248,8 @@ Public Class Form1
             sendParameter(pStatEnum.ProgramLength, editorDev.Prog(n).progLine.Count, n)
 
             'wait for the data to be returned.
-            While lastCommandTypeReceived <> commandTypeEnum.ACK
-                If (lastCommandTypeReceived = commandTypeEnum.NAK) Or (Now() > progComTimeoutTime) Then
+            While lastCommandTypeReceived <> eCommandType.ACK
+                If (lastCommandTypeReceived = eCommandType.NAK) Or (Now() > progComTimeoutTime) Then
                     retryCounter += 1
                     If retryCounter <= maxRetries Then
                         'retry
@@ -2005,8 +2287,8 @@ Public Class Form1
             sendParameter(pStatEnum.ProgramName, fullName, p)
 
             'wait for the data to be returned.
-            While lastCommandTypeReceived <> commandTypeEnum.ACK
-                If (lastCommandTypeReceived = commandTypeEnum.NAK) Or (Now() > progComTimeoutTime) Then
+            While lastCommandTypeReceived <> eCommandType.ACK
+                If (lastCommandTypeReceived = eCommandType.NAK) Or (Now() > progComTimeoutTime) Then
                     retryCounter += 1
                     If retryCounter <= maxRetries Then
                         'retry
@@ -2034,8 +2316,8 @@ Public Class Form1
                 bwULProgToDevice.ReportProgress(CInt(tmpProgress), "Sending program line data of prog " & p & ": " & l & "/" & (editorDev.Prog(p).progLine.Count - 1))
                 sendParamArray(editorDev, paramArrayEnum.progLineData, p, l)
 
-                While lastCommandTypeReceived <> commandTypeEnum.ACK
-                    If (lastCommandTypeReceived = commandTypeEnum.NAK) Or (Now() > progComTimeoutTime) Then
+                While lastCommandTypeReceived <> eCommandType.ACK
+                    If (lastCommandTypeReceived = eCommandType.NAK) Or (Now() > progComTimeoutTime) Then
                         retryCounter += 1
                         If retryCounter <= maxRetries Then
                             'retry
@@ -2086,7 +2368,7 @@ Public Class Form1
 
             uploadInProgress = False
             'Restore autostatus
-            If autoStatusLast = AutoStatusenum.asOn Then
+            If autoStatusLast = eAutoStatus.asOn Then
                 cmdtsChanMonAutoStatusOn.PerformClick()
             End If
 
@@ -2279,7 +2561,40 @@ Public Class Form1
     End Sub
 
 
+    Private Sub tsbtnDebugRun_Click(sender As Object, e As EventArgs) Handles tsbtnDebugRun.Click
+        If simState = eSimState.Stopped Then
+            InitializeSimulator()
+        End If
 
+        simState = eSimState.Running
+        simTimer.Enabled = True
+
+        tsbtnDebugRun.Enabled = False
+        tsbtnDebugPause.Enabled = True
+        tsbtnDebugStep.Enabled = False
+    End Sub
+
+    Private Sub tsbtnDebugPause_Click(sender As Object, e As EventArgs) Handles tsbtnDebugPause.Click
+        simState = eSimState.Paused
+        simTimer.Enabled = False
+
+        tsbtnDebugRun.Enabled = True
+        tsbtnDebugPause.Enabled = False
+        tsbtnDebugStep.Enabled = True
+    End Sub
+
+    Private Sub tsbtnDebugStep_Click(sender As Object, e As EventArgs) Handles tsbtnDebugStep.Click
+        If simState = eSimState.Stopped Then
+            InitializeSimulator()
+            simState = eSimState.Paused
+        End If
+
+        simState = eSimState.Stepping
+        ExecuteOneSimulationCycle()
+        UpdateAllDebugGridsAndHighlight()
+
+        tsbtnDebugStep.Enabled = False  ' Re-enable on next pause
+    End Sub
 
 #End Region
 
