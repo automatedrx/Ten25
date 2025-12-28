@@ -141,7 +141,7 @@ typedef enum {
 
 	pStat_NumPrograms			= 'A',	//'Includes chanProgs and sysProgs.
 	pStat_ProgramLength			= 'B',	//'Index Required for program number. Indicates the number of lines in a program
-	pStat_ProgramName			= 'C'	// Index required for program name.
+	pStat_ProgramName			= 'C',	// Index required for program name.
 } pStatEnum;
 
 typedef enum {

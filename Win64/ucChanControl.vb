@@ -1,9 +1,11 @@
 ﻿Imports System.ComponentModel
+Imports System.Diagnostics.Eventing.Reader
 Imports Accessibility
 Imports Tens2502.comDef
 Public Class ucChanControl
 
     Public Event Enabled_Click(ByVal index As Integer, ByVal NewState As Boolean)
+    Public Event LiveTrack_Click(ByVal index As Integer, ByVal NewState As Boolean)
     Public Event Speed_Changed(ByVal index As Integer, ByVal NewSpeed As Integer)
     Public Event OutputIntensity_Changed(ByVal index As Integer, ByVal NewOutput As Integer)
     Public Event MaxPulseWidthOutputPct_Changed(ByVal index As Integer, ByVal NewMax As Integer)
@@ -14,6 +16,7 @@ Public Class ucChanControl
 
     Dim _chanIndex As Integer = -1
     Dim _chanEnabled As Boolean = False
+    Dim _liveTrack As Boolean = False
 
     Dim _progRef As List(Of Program)
 
@@ -61,6 +64,7 @@ Public Class ucChanControl
     Dim ControlColorGreen As Color = Color.Lime
     Dim ControlColorNone As Color = Me.BackColor
     Dim ControlColorRed As Color = Color.HotPink
+    Dim ControlColorLiveTrack As Color = Color.DeepSkyBlue
 
     'Dim ignoreSpeedSlider As Boolean = False
     'Dim ignoreOutputSlider As Boolean = False
@@ -152,6 +156,20 @@ Public Class ucChanControl
                 cmdEnable.BackColor = ControlColorGreen
             Else
                 cmdEnable.BackColor = ControlColorNone
+            End If
+        End Set
+    End Property
+
+    Public Property LiveTrackTarget() As Boolean
+        Get
+            Return _liveTrack
+        End Get
+        Set(value As Boolean)
+            _liveTrack = value
+            If value = True Then
+                cmdLiveTrack.BackColor = ControlColorLiveTrack
+            Else 
+                cmdLiveTrack.BackColor = ControlColorNone
             End If
         End Set
     End Property
@@ -561,8 +579,18 @@ Public Class ucChanControl
         RaiseEvent Enabled_Click(ChanIndex, _chanEnabled)
     End Sub
 
+    Private Sub cmdLiveTrack_Click(sender As Object, e As EventArgs) Handles cmdLiveTrack.Click
+        If _liveTrack = True Then
+            _liveTrack = False
+        Else
+            _liveTrack = True
+        End If
+        RaiseEvent LiveTrack_Click(ChanIndex, _liveTrack)
+    End Sub
+
     Private Sub ChannelUserControl_Load(sender As Object, e As EventArgs) Handles Me.Load
         _chanEnabled = False
+        _liveTrack = False
         lblSpeed.Text = _speedVal & "%"
         lblRepeatsRemaining.Text = "--"
         lblProgName.Text = ""

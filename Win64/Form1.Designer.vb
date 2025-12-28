@@ -76,6 +76,7 @@ Partial Class Form1
         tsbtnDebugRun = New ToolStripButton()
         tsbtnDebugPause = New ToolStripButton()
         tsbtnDebugStep = New ToolStripButton()
+        tsbtnLiveTracking = New ToolStripButton()
         Panel1 = New Panel()
         SplitContainer1 = New SplitContainer()
         SplitContainer5 = New SplitContainer()
@@ -548,11 +549,11 @@ Partial Class Form1
         ' 
         ToolStrip2.Dock = DockStyle.None
         ToolStrip2.ImageScalingSize = New Size(25, 25)
-        ToolStrip2.Items.AddRange(New ToolStripItem() {tscmdNewProject, ToolStripSeparator14, tscmdOpenProjectFromFile, tscmdSaveProjectToFile, ToolStripSeparator15, tscmdOpenProgramFromDevice, tscmdSaveProgramToDevice, ToolStripSeparator16, ToolStripSeparator17, tsbtnRealOrSimulated, tsbtnDebugRun, tsbtnDebugPause, tsbtnDebugStep})
+        ToolStrip2.Items.AddRange(New ToolStripItem() {tscmdNewProject, ToolStripSeparator14, tscmdOpenProjectFromFile, tscmdSaveProjectToFile, ToolStripSeparator15, tscmdOpenProgramFromDevice, tscmdSaveProgramToDevice, ToolStripSeparator16, ToolStripSeparator17, tsbtnRealOrSimulated, tsbtnDebugRun, tsbtnDebugPause, tsbtnDebugStep, tsbtnLiveTracking})
         ToolStrip2.LayoutStyle = ToolStripLayoutStyle.Flow
         ToolStrip2.Location = New Point(3, 0)
         ToolStrip2.Name = "ToolStrip2"
-        ToolStrip2.Size = New Size(388, 32)
+        ToolStrip2.Size = New Size(437, 32)
         ToolStrip2.TabIndex = 0
         ToolStrip2.Text = "Project"
         ' 
@@ -669,6 +670,17 @@ Partial Class Form1
         tsbtnDebugStep.Size = New Size(29, 29)
         tsbtnDebugStep.Text = "Step"
         tsbtnDebugStep.ToolTipText = "Single Step"
+        ' 
+        ' tsbtnLiveTracking
+        ' 
+        tsbtnLiveTracking.AutoSize = False
+        tsbtnLiveTracking.CheckOnClick = True
+        tsbtnLiveTracking.DisplayStyle = ToolStripItemDisplayStyle.Text
+        tsbtnLiveTracking.Image = CType(resources.GetObject("tsbtnLiveTracking.Image"), Image)
+        tsbtnLiveTracking.ImageTransparentColor = Color.Magenta
+        tsbtnLiveTracking.Name = "tsbtnLiveTracking"
+        tsbtnLiveTracking.Size = New Size(80, 29)
+        tsbtnLiveTracking.Text = "Live Tracking"
         ' 
         ' Panel1
         ' 
@@ -795,7 +807,7 @@ Partial Class Form1
         tabpageVariables.Location = New Point(4, 24)
         tabpageVariables.Name = "tabpageVariables"
         tabpageVariables.Padding = New Padding(3)
-        tabpageVariables.Size = New Size(192, 72)
+        tabpageVariables.Size = New Size(418, 414)
         tabpageVariables.TabIndex = 1
         tabpageVariables.Text = "Variables"
         tabpageVariables.UseVisualStyleBackColor = True
@@ -815,7 +827,7 @@ Partial Class Form1
         ' SplitContainerVariables.Panel2
         ' 
         SplitContainerVariables.Panel2.Controls.Add(dgvVariables)
-        SplitContainerVariables.Size = New Size(186, 66)
+        SplitContainerVariables.Size = New Size(412, 408)
         SplitContainerVariables.SplitterDistance = 36
         SplitContainerVariables.TabIndex = 0
         ' 
@@ -837,7 +849,7 @@ Partial Class Form1
         dgvVariables.Name = "dgvVariables"
         dgvVariables.ReadOnly = True
         dgvVariables.RowHeadersVisible = False
-        dgvVariables.Size = New Size(186, 26)
+        dgvVariables.Size = New Size(412, 368)
         dgvVariables.TabIndex = 0
         ' 
         ' tabpageTimers
@@ -1360,6 +1372,7 @@ Partial Class Form1
         UcChanControl1.ChanType = 0
         UcChanControl1.Duration = -1
         UcChanControl1.LineNum = -1
+        UcChanControl1.LiveTrackTarget = False
         UcChanControl1.Location = New Point(5, 5)
         UcChanControl1.MaxOutputPulsewidthPct = 10
         UcChanControl1.MaxSpeed = 0
@@ -1699,5 +1712,6 @@ Partial Class Form1
     Friend WithEvents cboTimersChannel As ComboBox
     Friend WithEvents dgvTimers As DataGridView
     Friend WithEvents tsbtnRealOrSimulated As ToolStripButton
+    Friend WithEvents tsbtnLiveTracking As ToolStripButton
 
 End Class

@@ -3025,7 +3025,8 @@ bool sendParameterArray(char* buff, uint8_t indx, comChanEnum comChannel, uint16
 		for (int t = 0; t < NUM_TIMERS; t++) {
 			len += snprintf(&dataBuff[len], sizeof(dataBuff)-(len+1), ",%ld", pCurStatusDebug->timer[t]);
 		}
-
+		retVal = true;
+		break;
 	default:
 		retVal = false;
 		break;

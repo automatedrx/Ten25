@@ -52,6 +52,7 @@ Partial Class ucChanControl
         sldMaxOutputPulseWidthPct = New TrackBar()
         sldPulseWidth = New TrackBar()
         lblPulseWidth = New Label()
+        cmdLiveTrack = New Button()
         grpIntensity.SuspendLayout()
         grpOutputIntensity.SuspendLayout()
         CType(sldOutputIntensityPct, ComponentModel.ISupportInitialize).BeginInit()
@@ -68,10 +69,9 @@ Partial Class ucChanControl
         ' 
         cmdEnable.BackColor = Color.HotPink
         cmdEnable.BackgroundImageLayout = ImageLayout.None
-        cmdEnable.Dock = DockStyle.Top
         cmdEnable.Location = New Point(0, 0)
         cmdEnable.Name = "cmdEnable"
-        cmdEnable.Size = New Size(177, 23)
+        cmdEnable.Size = New Size(119, 23)
         cmdEnable.TabIndex = 0
         cmdEnable.Text = "cmdEnable"
         cmdEnable.UseVisualStyleBackColor = False
@@ -384,11 +384,23 @@ Partial Class ucChanControl
         lblPulseWidth.TabIndex = 7
         lblPulseWidth.Text = "2000%"
         ' 
+        ' cmdLiveTrack
+        ' 
+        cmdLiveTrack.BackColor = Color.Transparent
+        cmdLiveTrack.BackgroundImageLayout = ImageLayout.None
+        cmdLiveTrack.Location = New Point(124, 0)
+        cmdLiveTrack.Name = "cmdLiveTrack"
+        cmdLiveTrack.Size = New Size(50, 23)
+        cmdLiveTrack.TabIndex = 9
+        cmdLiveTrack.Text = "Track"
+        cmdLiveTrack.UseVisualStyleBackColor = False
+        ' 
         ' ucChanControl
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         BorderStyle = BorderStyle.FixedSingle
+        Controls.Add(cmdLiveTrack)
         Controls.Add(grpPulseWidth)
         Controls.Add(grpSpeed)
         Controls.Add(grpProgInfo)
@@ -447,5 +459,6 @@ Partial Class ucChanControl
     Friend WithEvents sbarComplete As ucSBar
     Friend WithEvents pnlPolarity As Panel
     Friend WithEvents sldMaxOutputPulseWidthPct As TrackBar
+    Friend WithEvents cmdLiveTrack As Button
 
 End Class

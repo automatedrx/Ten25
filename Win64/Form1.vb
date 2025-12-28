@@ -119,8 +119,8 @@ Public Class Form1
     End Class
 
 
-
-
+    '=== User Prog Debugging ===
+    Public LiveTrackingTargetChan As Integer = 0    'This is the target chan number for live tracking.
 
 
 
@@ -279,6 +279,7 @@ Public Class Form1
             cmdRefreshComportList.Enabled = False
             tmrCheckComportStatus.Enabled = True
             UpdateDebugButtonStates()
+            tsbtnLiveTracking.Enabled = True
         Else
             'cmdConnect.BackColor = ControlColorNone
             tmrCheckComportStatus.Enabled = False
@@ -287,6 +288,8 @@ Public Class Form1
             cboComPorts.Enabled = True
             cmdRefreshComportList.Enabled = True
             validDevice = False 'reset the flag so that when a comport is opened again, the program will initiate communications.
+            tsbtnLiveTracking.Enabled = False
+            tsbtnLiveTracking.Checked = False
         End If
     End Sub
 
@@ -641,6 +644,11 @@ Public Class Form1
                     If nextParamArrayAutoStatus >= monitorDev.Channel.Count Then
                         nextParamArrayAutoStatus = 0
                     End If
+                    'See if we need to request debug data: (only for one channel at a time)
+                    If tsbtnLiveTracking.Checked = True AndAlso (paramIndex(0) = LiveTrackingTargetChan Or paramIndex(0) = 0) Then
+                        'requestParamArray(eParamArray.chanDebugData, LiveTrackingTargetChan)
+                        RequestLiveDebugData(paramIndex(0))
+                    End If
                     requestParamArray(eParamArray.chanStats, nextParamArrayAutoStatus)
                 End If
 
@@ -668,9 +676,59 @@ Public Class Form1
             Case eParamArray.chanDebugData
                 '// 0 curProgNum, 1 curLineNum, 2 progState, 3 number of program variables, 4 number of program timers,
                 '// 5 variable values,  5 + (number of program variables * 4) start of timer values
+                Dim chanIdx As Integer = paramIndex(0)
+                If valArray.Length < 3 Then Exit Sub ' progNum, lineNum, progState minimum
 
+                Dim progNum As Integer = CInt(valArray(0))
+                Dim lineNum As Integer = CInt(valArray(1))
+                Dim progState As Integer = CInt(valArray(2))
 
+                ' Switch to running program if different
+                If editorDev.CurProgNum <> progNum Then
+                    lstPrograms.SelectedIndex = progNum
+                End If
+
+                ' Highlight current line
+                If lineNum >= 0 AndAlso lineNum < lstProgDisplay.Items.Count Then
+                    lstProgDisplay.SelectedIndex = lineNum
+                    lstProgDisplay.TopIndex = Math.Max(0, lineNum - 5)
+                End If
+
+                ' Update variables (assuming next N values are vars)
+                Dim varStart As Integer = 3
+                For i As Integer = 0 To Math.Min(editorDev.NumVarsPerProgram - 1, valArray.Length - varStart - 1)
+                    simChannelStates(chanIdx).Variables(i) = CInt(valArray(varStart + i))
+                Next
+
+                ' Update timers (after variables)
+                Dim timerStart As Integer = varStart + editorDev.NumVarsPerProgram
+                For i As Integer = 0 To Math.Min(editorDev.NumTimersPerProgram - 1, valArray.Length - timerStart - 1)
+                    simChannelStates(chanIdx).Timers(i) = CLng(valArray(timerStart + i))
+                Next
+
+                ' Refresh grids if this is our viewed channel
+                If chanIdx = cboVariablesChannel.SelectedIndex Then
+                    UpdateAllDebugGridsAndHighlight()
+                End If
         End Select
+
+        'If pArrayNum = eParamArray.chanStats Then
+        '    lastChanStatsReceivedTime = Now
+        '    If autoStatus = eAutoStatus.asOn Then
+        '        nextParamArrayAutoStatus = paramIndex(0) + 1
+        '        If nextParamArrayAutoStatus >= monitorDev.Channel.Count Then
+        '            nextParamArrayAutoStatus = 0
+        '        End If
+        '        requestParamArray(eParamArray.chanStats, nextParamArrayAutoStatus)
+        '    End If
+        '    'Grok- here's where we could request the debug info from the device if dgvVariables or dgvTimers is visible
+        '    'if dgv's visible = true then
+        '    '   requestParamArray(eParamArray.chanDebugData, [channel number selected in cbo box]
+        '    'end if
+        'End If
+
+
+
     End Sub
     Private Sub sendParameter(ByVal param As pStatEnum, ByVal newVal As Integer, Optional ByVal index As Integer = -1)
         sendParameter(param, newVal.ToString, index)
@@ -692,6 +750,12 @@ Public Class Form1
         If index >= 0 Then
             dataBuff &= index
         End If
+        dataBuff &= Chr(10)
+        dataSend(dataBuff, dataBuff.Length)
+    End Sub
+    Private Sub sendDebugCommand(debugCmd As eCommandType)
+        Dim dataBuff As String
+        dataBuff = Chr(debugCmd)
         dataBuff &= Chr(10)
         dataSend(dataBuff, dataBuff.Length)
     End Sub
@@ -774,6 +838,7 @@ Public Class Form1
                         .Polarity = -1}
 
             AddHandler chanControls(n).Enabled_Click, AddressOf Chan_Enabled_Click
+            AddHandler chanControls(n).LiveTrack_Click, AddressOf Chan_LiveTrack_Click
             AddHandler chanControls(n).Speed_Changed, AddressOf Chan_Speed_Changed
             AddHandler chanControls(n).OutputIntensity_Changed, AddressOf Chan_OutputIntensity_Changed
             AddHandler chanControls(n).IntensityMin_Changed, AddressOf Chan_IntensityMin_Changed
@@ -787,6 +852,32 @@ Public Class Form1
     Private Sub Chan_Enabled_Click(index As Integer, NewState As Boolean)
         Dim tmpVal As Integer = If((NewState = True), 1, 0)
         sendParameter(pStatEnum.ChanEnabled, tmpVal, index)
+    End Sub
+
+    Private Sub Chan_LiveTrack_Click(index As Integer, NewState As Boolean)
+        'Whether the newstate is true or false, all other channels need to be set to false.
+        'If the newstate is true then this channel will have it's tracking state set to true.
+        For n As Integer = 0 To chanControls.Length - 1
+            If n = index Then
+                chanControls(n).LiveTrackTarget = NewState
+            Else
+                chanControls(n).LiveTrackTarget = False
+            End If
+        Next
+        If NewState = True Then
+            'This is the new livetrack channel.  Turn off livetrack on all other channels, and turn
+            LiveTrackingTargetChan = index
+            If tsbtnLiveTracking.Checked = False Then
+                tsbtnLiveTracking.PerformClick()
+            End If
+            'RequestLiveDebugData()  --This is called in the livetracking button click.
+        Else
+            If LiveTrackingTargetChan = index Then
+                'This was the active livetrack channel but the user just turned it off.
+                LiveTrackingTargetChan = 0
+                tsbtnLiveTracking.Checked = False
+            End If
+        End If
     End Sub
 
     Private Sub Chan_Speed_Changed(ByVal index As Integer, ByVal NewSpeed As Integer)
@@ -858,30 +949,44 @@ Public Class Form1
 
     Private Sub SetupVariablesGrid()
         dgvVariables.Columns.Clear()
-        dgvVariables.Columns.Add("VarName", "Variable")
-        dgvVariables.Columns.Add("VarValue", "Value")
-        dgvVariables.Columns(0).Width = 220
-        dgvVariables.Columns(1).Width = 100
-        dgvVariables.Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+        dgvVariables.Columns.Add("SysVarName", "Sys Var")
+        dgvVariables.Columns.Add("SysVarValue", "Sys Value")
+        dgvVariables.Columns.Add("ChanVarName", "Channel Var")
+        dgvVariables.Columns.Add("ChanVarValue", "Chan Value")
+
+        dgvVariables.Columns(0).Width = 120
+        dgvVariables.Columns(1).Width = 80
+        dgvVariables.Columns(2).Width = 120
+        dgvVariables.Columns(3).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+
         dgvVariables.Columns(1).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
-        dgvVariables.AllowUserToAddRows = False
-        dgvVariables.AllowUserToDeleteRows = False
+        dgvVariables.Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+
         dgvVariables.ReadOnly = True
         dgvVariables.RowHeadersVisible = False
+        dgvVariables.AllowUserToAddRows = False
+        dgvVariables.AllowUserToDeleteRows = False
     End Sub
 
     Private Sub SetupTimersGrid()
         dgvTimers.Columns.Clear()
-        dgvTimers.Columns.Add("TimerName", "Timer")
-        dgvTimers.Columns.Add("TimerValue", "Value (ms)")
-        dgvTimers.Columns(0).Width = 220
-        dgvTimers.Columns(1).Width = 100
-        dgvTimers.Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+        dgvTimers.Columns.Add("SysTimerName", "Sys Timer")
+        dgvTimers.Columns.Add("SysTimerValue", "Sys Value (ms)")
+        dgvTimers.Columns.Add("ChanTimerName", "Channel Timer")
+        dgvTimers.Columns.Add("ChanTimerValue", "Chan Value (ms)")
+
+        dgvTimers.Columns(0).Width = 120
+        dgvTimers.Columns(1).Width = 80
+        dgvTimers.Columns(2).Width = 120
+        dgvTimers.Columns(3).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+
         dgvTimers.Columns(1).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
-        dgvTimers.AllowUserToAddRows = False
-        dgvTimers.AllowUserToDeleteRows = False
+        dgvTimers.Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+
         dgvTimers.ReadOnly = True
         dgvTimers.RowHeadersVisible = False
+        dgvTimers.AllowUserToAddRows = False
+        dgvTimers.AllowUserToDeleteRows = False
     End Sub
 
     Private Sub cboVariablesChannel_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboVariablesChannel.SelectedIndexChanged
@@ -893,34 +998,103 @@ Public Class Form1
     End Sub
 
     Private Sub UpdateVariablesGrid()
+        'dgvVariables.Rows.Clear()
+        'If IsNothing(editorDev) OrElse cboVariablesChannel.SelectedIndex < 0 Then Return
+
+        'Dim progNum As Integer = editorDev.CurProgNum
+        'If progNum < 0 OrElse progNum >= editorDev.Prog.Count Then Return
+
+        'Dim prog As Program = editorDev.Prog(progNum)
+
+        'For i As Integer = 0 To Math.Min(prog.varName.Count - 1, editorDev.NumVarsPerProgram - 1)
+        '    Dim varName As String = prog.varName(i).TrimEnd(Chr(0))
+        '    If varName = "" Then varName = "Var " & i
+        '    dgvVariables.Rows.Add(varName, 0)  ' Initial value = 0 (will be updated by simulator later)
+        'Next
         dgvVariables.Rows.Clear()
-        If IsNothing(editorDev) OrElse cboVariablesChannel.SelectedIndex < 0 Then Return
+        If IsNothing(editorDev) Then Return
+        If IsNothing(simChannelStates) Then Return
 
-        Dim progNum As Integer = editorDev.CurProgNum
-        If progNum < 0 OrElse progNum >= editorDev.Prog.Count Then Return
+        Dim sysProg As Program = editorDev.Prog(0) ' System program
+        Dim chanProg As Program
+        Dim chanState As ChannelSimState
 
-        Dim prog As Program = editorDev.Prog(progNum)
+        Dim targetChan As Integer = cboVariablesChannel.SelectedIndex
+        If tsbtnLiveTracking.Checked = True Then
+            'Show the variables of the current channel
+            targetChan = LiveTrackingTargetChan
+        End If
 
-        For i As Integer = 0 To Math.Min(prog.varName.Count - 1, editorDev.NumVarsPerProgram - 1)
-            Dim varName As String = prog.varName(i).TrimEnd(Chr(0))
-            If varName = "" Then varName = "Var " & i
-            dgvVariables.Rows.Add(varName, 0)  ' Initial value = 0 (will be updated by simulator later)
+        If targetChan < 0 OrElse targetChan >= simChannelStates.Length Then
+            chanProg = sysProg
+            chanState = simChannelStates(0)
+        Else
+            chanProg = editorDev.Prog(editorDev.CurProgNum)
+            chanState = simChannelStates(targetChan)
+        End If
+
+        Dim maxRows As Integer = Math.Max(editorDev.NumVarsPerProgram, Math.Max(sysProg.varName.Count, chanProg.varName.Count))
+
+        For i As Integer = 0 To maxRows - 1
+            Dim sysName As String = If(i < sysProg.varName.Count, sysProg.varName(i).TrimEnd(Chr(0)), "")
+            If sysName = "" Then sysName = "Var " & i
+            Dim sysVal As Integer = If(i < simChannelStates(0).Variables.Length, simChannelStates(0).Variables(i), 0)
+
+            Dim chanName As String = If(i < chanProg.varName.Count, chanProg.varName(i).TrimEnd(Chr(0)), "")
+            If chanName = "" Then chanName = "Var " & i
+            Dim chanVal As Integer = If(i < chanState.Variables.Length, chanState.Variables(i), 0)
+
+            dgvVariables.Rows.Add(sysName, sysVal, chanName, chanVal)
         Next
     End Sub
 
     Private Sub UpdateTimersGrid()
+        'dgvTimers.Rows.Clear()
+        'If IsNothing(editorDev) OrElse cboTimersChannel.SelectedIndex < 0 Then Return
+
+        'Dim progNum As Integer = editorDev.CurProgNum
+        'If progNum < 0 OrElse progNum >= editorDev.Prog.Count Then Return
+
+        'Dim prog As Program = editorDev.Prog(progNum)
+
+        'For i As Integer = 0 To Math.Min(prog.timerName.Count - 1, editorDev.NumTimersPerProgram - 1)
+        '    Dim timerName As String = prog.timerName(i).TrimEnd(Chr(0))
+        '    If timerName = "" Then timerName = "Tim " & i
+        '    dgvTimers.Rows.Add(timerName, 0)  ' Initial value = 0 ms
+        'Next
         dgvTimers.Rows.Clear()
-        If IsNothing(editorDev) OrElse cboTimersChannel.SelectedIndex < 0 Then Return
+        If IsNothing(editorDev) Then Return
+        If IsNothing(simChannelStates) Then Return
 
-        Dim progNum As Integer = editorDev.CurProgNum
-        If progNum < 0 OrElse progNum >= editorDev.Prog.Count Then Return
+        Dim sysProg As Program = editorDev.Prog(0)
+        Dim chanProg As Program
+        Dim chanState As ChannelSimState
 
-        Dim prog As Program = editorDev.Prog(progNum)
+        Dim targetChan As Integer = cboTimersChannel.SelectedIndex
+        If tsbtnLiveTracking.Checked = True Then
+            'Show the timers of the current channel
+            targetChan = LiveTrackingTargetChan
+        End If
+        If targetChan < 0 OrElse targetChan >= simChannelStates.Length Then
+            chanProg = sysProg
+            chanState = simChannelStates(0)
+        Else
+            chanProg = editorDev.Prog(editorDev.CurProgNum)
+            chanState = simChannelStates(targetChan)
+        End If
 
-        For i As Integer = 0 To Math.Min(prog.timerName.Count - 1, editorDev.NumTimersPerProgram - 1)
-            Dim timerName As String = prog.timerName(i).TrimEnd(Chr(0))
-            If timerName = "" Then timerName = "Tim " & i
-            dgvTimers.Rows.Add(timerName, 0)  ' Initial value = 0 ms
+        Dim maxRows As Integer = Math.Max(editorDev.NumTimersPerProgram, Math.Max(sysProg.timerName.Count, chanProg.timerName.Count))
+
+        For i As Integer = 0 To maxRows - 1
+            Dim sysName As String = If(i < sysProg.timerName.Count, sysProg.timerName(i).TrimEnd(Chr(0)), "")
+            If sysName = "" Then sysName = "Tim " & i
+            Dim sysVal As Integer = If(i < simChannelStates(0).Timers.Length, simChannelStates(0).Timers(i), 0)
+
+            Dim chanName As String = If(i < chanProg.timerName.Count, chanProg.timerName(i).TrimEnd(Chr(0)), "")
+            If chanName = "" Then chanName = "Tim " & i
+            Dim chanVal As Integer = If(i < chanState.Timers.Length, chanState.Timers(i), 0)
+
+            dgvTimers.Rows.Add(sysName, sysVal, chanName, chanVal)
         Next
     End Sub
 
@@ -1356,6 +1530,13 @@ Public Class Form1
 
     End Sub
 
+    Private Sub RequestLiveDebugData(chanNum As Integer)
+        'Dim targetChan As Integer = cboVariablesChannel.SelectedIndex
+        If LiveTrackingTargetChan < 0 OrElse Not tsbtnLiveTracking.Checked Then Return
+        'requestParamArray(eParamArray.chanDebugData, LiveTrackingTargetChan)
+        requestParamArray(eParamArray.chanDebugData, chanNum)
+    End Sub
+
     Private Sub UpdateAllDebugGridsAndHighlight()
         If IsNothing(editorDev) Then Exit Sub
 
@@ -1636,6 +1817,7 @@ Public Class Form1
         End If
 
         UpdateVariablesGrid()
+        UpdateTimersGrid()
     End Sub
 
     Private Sub MoveProgramLineUp(TargetProgNumber As Integer, ByVal OrigIndex As Integer)
@@ -2933,33 +3115,50 @@ Public Class Form1
 
 
     Private Sub tsbtnDebugRun_Click(sender As Object, e As EventArgs) Handles tsbtnDebugRun.Click
-        If simState = eSimState.Stopped Then
-            InitializeSimulator()
+        If tsbtnRealOrSimulated.Checked Then
+            If simState = eSimState.Stopped Then
+                InitializeSimulator()
+            End If
+
+            simState = eSimState.Running
+            tmrSim.Enabled = True
+
+            tsbtnDebugRun.Enabled = False
+            tsbtnDebugPause.Enabled = True
+            tsbtnDebugStep.Enabled = False
+        Else
+            sendDebugCommand(eCommandType.DebugResume)  ' or just send command
+            tsbtnDebugRun.Enabled = False
+            tsbtnDebugPause.Enabled = True
         End If
-
-        simState = eSimState.Running
-        tmrSim.Enabled = True
-
-        tsbtnDebugRun.Enabled = False
-        tsbtnDebugPause.Enabled = True
-        tsbtnDebugStep.Enabled = False
     End Sub
 
     Private Sub tsbtnDebugPause_Click(sender As Object, e As EventArgs) Handles tsbtnDebugPause.Click
-        simState = eSimState.Paused
-        tmrSim.Enabled = False
+        If tsbtnRealOrSimulated.Checked Then
+            simState = eSimState.Paused
+            tmrSim.Enabled = False
 
-        tsbtnDebugRun.Enabled = True
-        tsbtnDebugPause.Enabled = False
-        tsbtnDebugStep.Enabled = True
+            tsbtnDebugRun.Enabled = True
+            tsbtnDebugPause.Enabled = False
+            tsbtnDebugStep.Enabled = True
+        Else
+            sendDebugCommand(eCommandType.DebugResume)
+            tsbtnDebugRun.Enabled = True
+            tsbtnDebugPause.Enabled = False
+            tsbtnDebugStep.Enabled = True
+        End If
     End Sub
 
     Private Sub tsbtnDebugStep_Click(sender As Object, e As EventArgs) Handles tsbtnDebugStep.Click
-        If simState = eSimState.Stopped Then
-            InitializeSimulator()
+        If tsbtnRealOrSimulated.Checked Then
+            If simState = eSimState.Stopped Then
+                InitializeSimulator()
+            End If
+            simState = eSimState.Stepping
+            tmrSim.Enabled = True  ' One tick will run and then pause
+        Else
+            sendDebugCommand(eCommandType.DebugStep)
         End If
-        simState = eSimState.Stepping
-        tmrSim.Enabled = True  ' One tick will run and then pause
     End Sub
 
 
@@ -2980,6 +3179,20 @@ Public Class Form1
         End If
 
         UpdateDebugButtonStates()
+    End Sub
+
+    Private Sub tsbtnLiveTracking_Click(sender As Object, e As EventArgs) Handles tsbtnLiveTracking.Click
+        If tsbtnLiveTracking.Checked Then
+            UpdateDebugButtonStates()
+            'If autostatus is not currently on, try to turn it on:
+            If uploadInProgress Or downloadInProgress Then
+                Exit Sub
+            Else
+                ' Start requesting debug data for current target channel
+                RequestLiveDebugData(0)
+                SetAutoStatusMode(eAutoStatus.asOn)
+            End If
+        End If
     End Sub
 
 #End Region
