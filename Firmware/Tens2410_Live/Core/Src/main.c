@@ -1867,6 +1867,10 @@ void newMessageReceived(char* buff, uint8_t indx, comChanEnum comChannel, uint16
 		msgValid = true; //SendACK();
 		break;
 
+	case commandType_DebugSetBreakpoint:
+		break;
+	case commandType_DebugClearBreakpoint:
+		break;
 	default:
 		msgValid = false;
 	}

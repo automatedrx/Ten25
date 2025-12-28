@@ -263,13 +263,13 @@ Module comDef
         tensCompare_IsNotBetween = 8
     End Enum
 
-    Public Enum fileDataEnum As Byte
+    Public Enum efileData As Byte
         numChannelProgs = AscW("a")
         numSysProgs = AscW("b")
 
     End Enum
 
-    Public Enum paramArrayEnum As Byte
+    Public Enum eParamArray As Byte
         None = 0
         DeviceInfo = AscW("1")                '[RadioId, NumChannels, NumMotorChannels, NumTensChannels, NumSysChannels]
         chanMinMaxInfo = AscW("2") 'Index req'd

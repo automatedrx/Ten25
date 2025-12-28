@@ -380,7 +380,7 @@ Public Class Form1
                     cmdtsChanMonAutoStatusOff.Checked = False
                     cmdtsChanMonAutoStatusOn.Checked = True
                     nextParamArrayAutoStatus = 0
-                    requestParamArray(paramArrayEnum.chanStats, nextParamArrayAutoStatus)
+                    requestParamArray(eParamArray.chanStats, nextParamArrayAutoStatus)
             End Select
 
             UpdateDebugButtonStates()
@@ -413,7 +413,7 @@ Public Class Form1
         If autoStatus = eAutoStatus.asOn Then
             If Now > lastChanStatsReceivedTime.AddSeconds(2) Then
                 nextParamArrayAutoStatus = 0
-                requestParamArray(paramArrayEnum.chanStats, nextParamArrayAutoStatus)
+                requestParamArray(eParamArray.chanStats, nextParamArrayAutoStatus)
             End If
         Else
             tmrCheckAutostatus.Enabled = False
@@ -556,14 +556,14 @@ Public Class Form1
 
         End Select
     End Sub
-    Private Sub setParamArray(ByVal pArrayNum As paramArrayEnum, ByVal val As String, ByVal paramIndex() As Integer)
+    Private Sub setParamArray(ByVal pArrayNum As eParamArray, ByVal val As String, ByVal paramIndex() As Integer)
         lastProgParamArrayReceived = pArrayNum
 
         'Split the val into an array of values
         Dim valArray As String() = val.Split(",")
 
         Select Case pArrayNum
-            Case paramArrayEnum.DeviceInfo
+            Case eParamArray.DeviceInfo
                 '// DeviceType, RadioId, NumberOfPrograms, DeviceName, SerialNumber
                 If valArray.Length = 5 Then
                     monitorDev = GetDeviceTemplate(CInt(valArray(0)))
@@ -576,7 +576,7 @@ Public Class Form1
                     AddBlankProgram(monitorDev, devNumProgramsLastReported)
                     initChannels()
                 End If
-            Case paramArrayEnum.chanMinMaxInfo
+            Case eParamArray.chanMinMaxInfo
                 '// minSpeed, maxSpeed, minIntensity, maxIntensity
                 Dim tmpChan As Channel_t = monitorDev.Channel(paramIndex(0))
                 tmpChan.SpeedMin = CInt(valArray(0))
@@ -588,7 +588,7 @@ Public Class Form1
                 chanControls(paramIndex(0)).OutputIntensityMin = CInt(valArray(2))
                 chanControls(paramIndex(0)).OutputIntensityMax = CInt(valArray(3))
 
-            Case paramArrayEnum.chanStats
+            Case eParamArray.chanStats
                 '// chan0-3
                 '// 0 chanEnabled, 1 chanSpeed, 2 curLineNum, 3 startVal, 4 endVal, 5 modDuration,
                 '// 6 percentComplete, 7 RepeatsRemaining, 8 chanCurVal, 9 chanCurIntensity,
@@ -641,10 +641,10 @@ Public Class Form1
                     If nextParamArrayAutoStatus >= monitorDev.Channel.Count Then
                         nextParamArrayAutoStatus = 0
                     End If
-                    requestParamArray(paramArrayEnum.chanStats, nextParamArrayAutoStatus)
+                    requestParamArray(eParamArray.chanStats, nextParamArrayAutoStatus)
                 End If
 
-            Case paramArrayEnum.progLineData
+            Case eParamArray.progLineData
                 Dim tmpProg = paramIndex(0)
                 Dim tmpLine = paramIndex(1)
                 If (tmpProg >= 0) And (tmpProg < monitorDev.Prog.Count) Then
@@ -664,6 +664,11 @@ Public Class Form1
                         lstPrograms.SelectedIndex = 0
                     End If
                 End If
+
+            Case eParamArray.chanDebugData
+                '// 0 curProgNum, 1 curLineNum, 2 progState, 3 number of program variables, 4 number of program timers,
+                '// 5 variable values,  5 + (number of program variables * 4) start of timer values
+
 
         End Select
     End Sub
@@ -690,13 +695,13 @@ Public Class Form1
         dataBuff &= Chr(10)
         dataSend(dataBuff, dataBuff.Length)
     End Sub
-    Private Sub sendParamArray(ByRef Dev As Device_t, ByVal paNum As paramArrayEnum, Optional ByVal paramIndex1 As Integer = -1,
+    Private Sub sendParamArray(ByRef Dev As Device_t, ByVal paNum As eParamArray, Optional ByVal paramIndex1 As Integer = -1,
                                Optional ByVal paramIndex2 As Integer = -1)
         Dim dataBuff As String
         dataBuff = Chr(eCommandType.SetParamArray) & Chr(paNum)
 
         Select Case paNum
-            Case paramArrayEnum.progLineData
+            Case eParamArray.progLineData
                 'paramIndex1 = prog number, paramIndex2 = line number
                 If (paramIndex1 < 0) Or (paramIndex1 >= Dev.Prog.Count) Then Return
                 If (paramIndex2 < 0) Or (paramIndex2 >= Dev.Prog(paramIndex1).progLine.Count) Then Return
@@ -715,7 +720,7 @@ Public Class Form1
         dataBuff &= Chr(10)
         dataSend(dataBuff, dataBuff.Length)
     End Sub
-    Private Sub requestParamArray(ByVal paNum As paramArrayEnum, Optional ByVal paramIndex As Integer = -1,
+    Private Sub requestParamArray(ByVal paNum As eParamArray, Optional ByVal paramIndex As Integer = -1,
                                   Optional ByVal index2 As Integer = -1)
         Dim dataBuff As String
         dataBuff = Chr(eCommandType.GetParamArray) & Chr(paNum)
@@ -1190,9 +1195,9 @@ Public Class Form1
                     Case eDataSourceChanSetting.dscsEndVal
                         retVal = simChannelStates(targetChan).OutputEndVal
                     Case eDataSourceChanSetting.dscsCurVal
-                        retVal = simChannelStates(targetChan).Outputcurval
+                        retVal = simChannelStates(targetChan).OutputCurVal
                     Case eDataSourceChanSetting.dscsPolarity
-                        retVal = simChannelStates(targetChan).polarity
+                        retVal = simChannelStates(targetChan).Polarity
                     Case eDataSourceChanSetting.dscsIntensity
                         retVal = simChannelStates(targetChan).TensIntensityCurLevel
                     Case eDataSourceChanSetting.dscsIntensityMin
@@ -2216,10 +2221,10 @@ Public Class Form1
 
 
         'Get the number of programs on device.  
-        lastProgParamArrayReceived = paramArrayEnum.None
+        lastProgParamArrayReceived = eParamArray.None
         devNumProgramsLastReported = -1
-        requestParamArray(paramArrayEnum.DeviceInfo)
-        While lastProgParamArrayReceived <> paramArrayEnum.DeviceInfo
+        requestParamArray(eParamArray.DeviceInfo)
+        While lastProgParamArrayReceived <> eParamArray.DeviceInfo
             If Now() > tmpStartTime.AddMilliseconds(tmpTimeoutinMs) Then
                 bwDLProgFromDevice.ReportProgress(CInt(tmpProgress), "Timed out retrieving device info.")
                 e.Cancel = True
@@ -2281,10 +2286,10 @@ Public Class Form1
         For p As Integer = 1 To monitorDev.Prog.Count
             For l As Integer = 0 To monitorDev.Prog(p - 1).progLine.Count - 1
                 tmpStartTime = Now()
-                lastProgParamArrayReceived = paramArrayEnum.None
-                requestParamArray(paramArrayEnum.progLineData, p - 1, l)
+                lastProgParamArrayReceived = eParamArray.None
+                requestParamArray(eParamArray.progLineData, p - 1, l)
 
-                While lastProgParamArrayReceived <> paramArrayEnum.progLineData
+                While lastProgParamArrayReceived <> eParamArray.progLineData
                     If Now() > tmpStartTime.AddMilliseconds(tmpTimeoutinMs) Then
                         bwDLProgFromDevice.ReportProgress(CInt(tmpProgress), "Timed out retrieving Prog " & p - 1 & " Line " & l & ".")
                         e.Cancel = True
@@ -2325,9 +2330,9 @@ Public Class Form1
         'Get the min/max settings of each channel.
         For n As Integer = 1 To monitorDev.Channel.Count
             tmpStartTime = Now()
-            lastProgParamArrayReceived = paramArrayEnum.None
-            requestParamArray(paramArrayEnum.chanMinMaxInfo, n - 1)
-            While lastProgParamArrayReceived <> paramArrayEnum.chanMinMaxInfo
+            lastProgParamArrayReceived = eParamArray.None
+            requestParamArray(eParamArray.chanMinMaxInfo, n - 1)
+            While lastProgParamArrayReceived <> eParamArray.chanMinMaxInfo
                 If Now() > tmpStartTime.AddMilliseconds(tmpTimeoutinMs) Then
                     bwDLProgFromDevice.ReportProgress(CInt(tmpProgress), "Timed out retrieving Min/Max Data for channel " & n - 1 & ".")
                     e.Cancel = True
@@ -2680,7 +2685,7 @@ Public Class Form1
                 'capture the timeout time for our timeout timer
                 progComTimeoutTime = Now.AddSeconds(timoutLenInSeconds)
                 bwULProgToDevice.ReportProgress(CInt(tmpProgress), "Sending program line data of prog " & p & ": " & l & "/" & (editorDev.Prog(p).progLine.Count - 1))
-                sendParamArray(editorDev, paramArrayEnum.progLineData, p, l)
+                sendParamArray(editorDev, eParamArray.progLineData, p, l)
 
                 While lastCommandTypeReceived <> eCommandType.ACK
                     If (lastCommandTypeReceived = eCommandType.NAK) Or (Now() > progComTimeoutTime) Then
@@ -2690,7 +2695,7 @@ Public Class Form1
                             progComTimeoutTime = Now.AddSeconds(timoutLenInSeconds)
                             lastCommandTypeReceived = 0
                             bwULProgToDevice.ReportProgress(CInt(tmpProgress), "Sending program line data of prog " & p & ": " & l & "/" & (editorDev.Prog(p).progLine.Count - 1) & "  Retry " & retryCounter)
-                            sendParamArray(editorDev, paramArrayEnum.progLineData, p, l)
+                            sendParamArray(editorDev, eParamArray.progLineData, p, l)
                         Else
                             bwULProgToDevice.ReportProgress(CInt(tmpProgress), "Sending program line data of prog " & p & ": " & l & "/" & (editorDev.Prog(p).progLine.Count - 1) & "  TimedOut!")
                             e.Cancel = True

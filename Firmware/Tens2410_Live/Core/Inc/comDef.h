@@ -101,7 +101,8 @@ typedef enum {
 	commandType_DebugPause		= 's',
 	commandType_DebugResume		= 't',
 	commandType_DebugStep		= 'u',
-	commandType_DebugSetBreakpoint	= 'v'
+	commandType_DebugSetBreakpoint		= 'v',
+	commandType_DebugClearBreakpoint 	= 'w'
 } commandTypeEnum;
 
 typedef enum {
