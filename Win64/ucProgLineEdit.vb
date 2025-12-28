@@ -43,7 +43,7 @@ Public Class ucProgLineEdit
                 pnlCommand.Visible = False
             Else
                 pnlCommand.Visible = True
-                cboCommand.SelectedIndex = _ProgLine(DataFieldEnum.dfCommand)
+                cboCommand.SelectedIndex = _ProgLine(eDataField.dfCommand)
             End If
         End Set
     End Property
@@ -164,28 +164,28 @@ Public Class ucProgLineEdit
             Return retVal
         End If
 
-        Select Case pLine(DataFieldEnum.dfCommand)
-            Case CommandEnum.cmdNoop
+        Select Case pLine(eDataField.dfCommand)
+            Case eCommand.cmdNoop
                 retVal = "No Op."
-            Case CommandEnum.cmdTenMotOutput
+            Case eCommand.cmdTenMotOutput
                 retVal = ProgLineSentenceTenMot(pLine)
-            Case CommandEnum.cmdGoTo
+            Case eCommand.cmdGoTo
                 retVal = ProgLineSentenceGoto(pLine)
-            Case CommandEnum.cmdEnd
+            Case eCommand.cmdEnd
                 retVal = "End Program"
-            Case CommandEnum.cmdTest
+            Case eCommand.cmdTest
                 retVal = ProgLineSentenceTest(pLine)
-            Case CommandEnum.cmdSet
+            Case eCommand.cmdSet
                 retVal = ProgLineSentenceSet(pLine)
-            Case CommandEnum.cmdDelay
+            Case eCommand.cmdDelay
                 retVal = ProgLineSentenceDelay(pLine)
-            Case CommandEnum.cmdProgControl
+            Case eCommand.cmdProgControl
                 retVal = ProgLineSentenceProgControl(pLine)
-                'Case CommandEnum.cmdSetModifier
+                'Case eCommand.cmdSetModifier
             '    retVal = ProgLineSentenceSetModifier(pLine)
-            Case CommandEnum.cmdDisplay
+            Case eCommand.cmdDisplay
                 retVal = ProgLineSentenceDisplay(pLine)
-            Case CommandEnum.cmdSendMsg
+            Case eCommand.cmdSendMsg
                 retVal = ProgLineSentenceSendMsg(pLine)
             Case Else
                 retVal = "Error 2: Invalid command."
@@ -194,20 +194,20 @@ Public Class ucProgLineEdit
         Return retVal
     End Function
 
-    Private Function GetValueSentence(ByVal source As DataSourceEnum, ByVal val1 As Integer, Optional ByVal val2 As Integer = 0) As String
+    Private Function GetValueSentence(ByVal source As eDataSource, ByVal val1 As Integer, Optional ByVal val2 As Integer = 0) As String
         Dim retVal As String
         If (source < 0) Or (val1 < 0) Then
             retVal = "ERROR"
             Return retVal
         End If
         Select Case source
-            Case DataSourceEnum.dsDirect
+            Case eDataSource.dsDirect
                 retVal = val1.ToString
-            Case DataSourceEnum.dsProgramVar
+            Case eDataSource.dsProgramVar
                 retVal = "[ProgVar " & val1 & ": " & devRef.Prog(_curProgNum).varName(val1) & "]"
-            Case DataSourceEnum.dsSysVar
+            Case eDataSource.dsSysVar
                 retVal = "[SysVar " & val1 & ": " & devRef.Prog(0).varName(val1) & "]"
-            Case DataSourceEnum.dsChanSetting
+            Case eDataSource.dsChanSetting
                 retVal = "[Chan Setting: "
                 'Channel will be in val2, setting will be in val1.
                 If val2 < devRef.allChannelsStringPlusThisChan.Length Then
@@ -222,7 +222,7 @@ Public Class ucProgLineEdit
                     retVal &= "<ERROR! Invalid Setting> "
                 End If
                 retVal &= "]"
-            Case DataSourceEnum.dsSysSetting
+            Case eDataSource.dsSysSetting
                 retVal = "[Sys Setting: "
                 If val1 < dataSourceSysSettingString.Length Then
                     retVal &= dataSourceSysSettingString(val1)
@@ -230,13 +230,13 @@ Public Class ucProgLineEdit
                     retVal &= "<ERROR! Invalid Setting> "
                 End If
                 retVal &= "]"
-            Case DataSourceEnum.dsDigIn
+            Case eDataSource.dsDigIn
                 retVal = "[Dig Input " & val1 & "]"
-            Case DataSourceEnum.dsDigOut
+            Case eDataSource.dsDigOut
                 retVal = "[Dig Output " & val1 & "]"
-            Case DataSourceEnum.dsRandom
+            Case eDataSource.dsRandom
                 retVal = "[Rand # from " & val1 & " to " & val2 & "]"
-            Case DataSourceEnum.dsTimer
+            Case eDataSource.dsTimer
                 retVal = "[Timer " & val1 & ": " & devRef.Prog(_curProgNum).timerName(val1) & "]"
             Case Else
                 retVal = "[ERROR! Invalid Source]"
@@ -245,29 +245,29 @@ Public Class ucProgLineEdit
     End Function
     Private Function ProgLineSentenceTenMot(ByRef pLine() As Integer) As String
         Dim retVal As String = "PWM Output.  "
-        Select Case pLine(DataFieldEnum.dfGotoTrue)
-            Case WaveformEnum.wfRamp
-                If (pLine(DataFieldEnum.df81S) = pLine(DataFieldEnum.df82S)) And (pLine(DataFieldEnum.df81V1) = pLine(DataFieldEnum.df82V1)) And (pLine(DataFieldEnum.df81V2) = pLine(DataFieldEnum.df82V2)) Then
+        Select Case pLine(eDataField.dfGotoTrue)
+            Case eWaveform.wfRamp
+                If (pLine(eDataField.df81S) = pLine(eDataField.df82S)) And (pLine(eDataField.df81V1) = pLine(eDataField.df82V1)) And (pLine(eDataField.df81V2) = pLine(eDataField.df82V2)) Then
                     'Constant output
-                    retVal &= "Constant output at " & GetValueSentence(pLine(DataFieldEnum.df81S), pLine(DataFieldEnum.df81V1), pLine(DataFieldEnum.df81V2)) & "%"
+                    retVal &= "Constant output at " & GetValueSentence(pLine(eDataField.df81S), pLine(eDataField.df81V1), pLine(eDataField.df81V2)) & "%"
                 Else
                     'Ramp output
-                    retVal &= "Ramp from " & GetValueSentence(pLine(DataFieldEnum.df81S), pLine(DataFieldEnum.df81V1), pLine(DataFieldEnum.df81V2))
-                    retVal &= "% to " & GetValueSentence(pLine(DataFieldEnum.df82S), pLine(DataFieldEnum.df82V1), pLine(DataFieldEnum.df82V2))
+                    retVal &= "Ramp from " & GetValueSentence(pLine(eDataField.df81S), pLine(eDataField.df81V1), pLine(eDataField.df81V2))
+                    retVal &= "% to " & GetValueSentence(pLine(eDataField.df82S), pLine(eDataField.df82V1), pLine(eDataField.df82V2))
                     retVal &= "%"
                 End If
-            Case WaveformEnum.wfTriangle
-                retVal &= "Triangle from " & GetValueSentence(pLine(DataFieldEnum.df81S), pLine(DataFieldEnum.df81V1), pLine(DataFieldEnum.df81V2))
-                retVal &= "% to " & GetValueSentence(pLine(DataFieldEnum.df82S), pLine(DataFieldEnum.df82V1), pLine(DataFieldEnum.df82V2))
-                retVal &= "% then back to " & GetValueSentence(pLine(DataFieldEnum.df81S), pLine(DataFieldEnum.df81V1), pLine(DataFieldEnum.df81V2))
-                retVal &= "%, DutyCycle: " & pLine(DataFieldEnum.dfGotoFalse) & "%" ' & GetValueSentence(pLine(DataFieldEnum.df323S), pLine(DataFieldEnum.df323V1), pLine(DataFieldEnum.df323V2))
-            Case WaveformEnum.wfSine
-                Dim quad As Integer = pLine(DataFieldEnum.dfGotoFalse)
+            Case eWaveform.wfTriangle
+                retVal &= "Triangle from " & GetValueSentence(pLine(eDataField.df81S), pLine(eDataField.df81V1), pLine(eDataField.df81V2))
+                retVal &= "% to " & GetValueSentence(pLine(eDataField.df82S), pLine(eDataField.df82V1), pLine(eDataField.df82V2))
+                retVal &= "% then back to " & GetValueSentence(pLine(eDataField.df81S), pLine(eDataField.df81V1), pLine(eDataField.df81V2))
+                retVal &= "%, DutyCycle: " & pLine(eDataField.dfGotoFalse) & "%" ' & GetValueSentence(pLine(eDataField.df323S), pLine(eDataField.df323V1), pLine(eDataField.df323V2))
+            Case eWaveform.wfSine
+                Dim quad As Integer = pLine(eDataField.dfGotoFalse)
                 retVal &= "Sine (" & quadrantString(quad)
-                retVal &= ") from " & GetValueSentence(pLine(DataFieldEnum.df81S), pLine(DataFieldEnum.df81V1), pLine(DataFieldEnum.df81V2))
-                retVal &= "% to " & GetValueSentence(pLine(DataFieldEnum.df82S), pLine(DataFieldEnum.df82V1), pLine(DataFieldEnum.df82V2))
-                If (quad = QuadrantEnum.quadMidHiMid) Or (quad = QuadrantEnum.quadMidLowMid) Or (quad = QuadrantEnum.quadLowHiLow) Or (quad = QuadrantEnum.quadHiLowHi) Then
-                    retVal &= "% to " & GetValueSentence(pLine(DataFieldEnum.df81S), pLine(DataFieldEnum.df81V1), pLine(DataFieldEnum.df81V2))
+                retVal &= ") from " & GetValueSentence(pLine(eDataField.df81S), pLine(eDataField.df81V1), pLine(eDataField.df81V2))
+                retVal &= "% to " & GetValueSentence(pLine(eDataField.df82S), pLine(eDataField.df82V1), pLine(eDataField.df82V2))
+                If (quad = eQuadrant.quadMidHiMid) Or (quad = eQuadrant.quadMidLowMid) Or (quad = eQuadrant.quadLowHiLow) Or (quad = eQuadrant.quadHiLowHi) Then
+                    retVal &= "% to " & GetValueSentence(pLine(eDataField.df81S), pLine(eDataField.df81V1), pLine(eDataField.df81V2))
                     'else quadMidHi, quadHiMid, quadMidLow, quadLowMid, quadLowHi
                 End If
                 retVal &= "%"
@@ -275,83 +275,83 @@ Public Class ucProgLineEdit
                 retVal = "<ERROR! UNKNOWN WAVEFORM>"
         End Select
 
-        retVal &= ", Polarity: " & polarityString(pLine(DataFieldEnum.dfPolarity))
-        retVal &= ", Duration: " & GetValueSentence(pLine(DataFieldEnum.df321S), pLine(DataFieldEnum.df321V1), pLine(DataFieldEnum.df321V2))
-        retVal &= ". Repeats: " & GetValueSentence(pLine(DataFieldEnum.df322S), pLine(DataFieldEnum.df322V1), pLine(DataFieldEnum.df322V2))
+        retVal &= ", Polarity: " & polarityString(pLine(eDataField.dfPolarity))
+        retVal &= ", Duration: " & GetValueSentence(pLine(eDataField.df321S), pLine(eDataField.df321V1), pLine(eDataField.df321V2))
+        retVal &= ". Repeats: " & GetValueSentence(pLine(eDataField.df322S), pLine(eDataField.df322V1), pLine(eDataField.df322V2))
 
-        If (pLine(DataFieldEnum.df323S) = 0) And (pLine(DataFieldEnum.df323V1) = 0) Then
+        If (pLine(eDataField.df323S) = 0) And (pLine(eDataField.df323V1) = 0) Then
             'No delay
             retVal &= ". No Delay."
         Else
             'with delay.
-            retVal &= ". Delay: " & GetValueSentence(pLine(DataFieldEnum.df323S), pLine(DataFieldEnum.df323V1), pLine(DataFieldEnum.df323V2))
+            retVal &= ". Delay: " & GetValueSentence(pLine(eDataField.df323S), pLine(eDataField.df323V1), pLine(eDataField.df323V2))
             retVal &= " mSec"
         End If
         Return retVal
     End Function
     Private Function ProgLineSentenceGoto(ByRef pLine() As Integer) As String
         Dim retVal As String = ""
-        retVal = "Goto Line " & pLine(DataFieldEnum.dfGotoTrue)
+        retVal = "Goto Line " & pLine(eDataField.dfGotoTrue)
         Return retVal
     End Function
     Private Function ProgLineSentenceTest(ByRef pLine() As Integer) As String
         Dim retVal As String = "Test: "
-        retVal &= "If " & GetValueSentence(pLine(DataFieldEnum.df81S), pLine(DataFieldEnum.df81V1), pLine(DataFieldEnum.df81V2))
-        retVal &= " " & testOperationString(pLine(DataFieldEnum.df82V1)) & " "
+        retVal &= "If " & GetValueSentence(pLine(eDataField.df81S), pLine(eDataField.df81V1), pLine(eDataField.df81V2))
+        retVal &= " " & testOperationString(pLine(eDataField.df82V1)) & " "
         'Any modifier?
-        If pLine(DataFieldEnum.df82V2) > MathOpEnum.mathOpNone Then
+        If pLine(eDataField.df82V2) > eMathOp.mathOpNone Then
             retVal &= "( "
         End If
-        retVal &= GetValueSentence(pLine(DataFieldEnum.df321S), pLine(DataFieldEnum.df321V1), pLine(DataFieldEnum.df321V2)) & " "
-        If pLine(DataFieldEnum.df82S) > MathOpEnum.mathOpNone Then
-            retVal &= " " & mathFunctionString(pLine(DataFieldEnum.df82V2)) & " "
-            retVal &= GetValueSentence(pLine(DataFieldEnum.df322S), pLine(DataFieldEnum.df322V1), pLine(DataFieldEnum.df322V2)) & " )"
+        retVal &= GetValueSentence(pLine(eDataField.df321S), pLine(eDataField.df321V1), pLine(eDataField.df321V2)) & " "
+        If pLine(eDataField.df82S) > eMathOp.mathOpNone Then
+            retVal &= " " & mathFunctionString(pLine(eDataField.df82V2)) & " "
+            retVal &= GetValueSentence(pLine(eDataField.df322S), pLine(eDataField.df322V1), pLine(eDataField.df322V2)) & " )"
         End If
 
-        retVal &= " Then Goto: " & pLine(DataFieldEnum.dfGotoTrue)
-        retVal &= ", Else Goto: " & pLine(DataFieldEnum.dfGotoFalse)
+        retVal &= " Then Goto: " & pLine(eDataField.dfGotoTrue)
+        retVal &= ", Else Goto: " & pLine(eDataField.dfGotoFalse)
         Return retVal
     End Function
     Private Function ProgLineSentenceSet(ByRef pLine() As Integer) As String
         Dim retVal As String = "Set "
-        Dim tmpModOp As MathOpEnum = pLine(DataFieldEnum.df82V2)
+        Dim tmpModOp As eMathOp = pLine(eDataField.df82V2)
 
-        retVal &= GetValueSentence(pLine(DataFieldEnum.df81S), pLine(DataFieldEnum.df81V1), pLine(DataFieldEnum.df81V2))
+        retVal &= GetValueSentence(pLine(eDataField.df81S), pLine(eDataField.df81V1), pLine(eDataField.df81V2))
         retVal &= " = "
-        If tmpModOp > MathOpEnum.mathOpNone Then
+        If tmpModOp > eMathOp.mathOpNone Then
             retVal &= "( "
         End If
-        retVal &= GetValueSentence(pLine(DataFieldEnum.df321S), pLine(DataFieldEnum.df321V1), pLine(DataFieldEnum.df321V2))
-        If tmpModOp > MathOpEnum.mathOpNone Then
+        retVal &= GetValueSentence(pLine(eDataField.df321S), pLine(eDataField.df321V1), pLine(eDataField.df321V2))
+        If tmpModOp > eMathOp.mathOpNone Then
             retVal &= " " & mathFunctionString(tmpModOp) & " "
-            retVal &= GetValueSentence(pLine(DataFieldEnum.df322S), pLine(DataFieldEnum.df322V1), pLine(DataFieldEnum.df322V2))
+            retVal &= GetValueSentence(pLine(eDataField.df322S), pLine(eDataField.df322V1), pLine(eDataField.df322V2))
             retVal &= " )"
         End If
         Return retVal
     End Function
     Private Function ProgLineSentenceDelay(ByRef pLine() As Integer) As String
         Dim retVal As String = ""
-        retVal &= "Delay: " & GetValueSentence(pLine(DataFieldEnum.df323S), pLine(DataFieldEnum.df323V1), pLine(DataFieldEnum.df323V2))
+        retVal &= "Delay: " & GetValueSentence(pLine(eDataField.df323S), pLine(eDataField.df323V1), pLine(eDataField.df323V2))
         retVal &= " mSec"
         Return retVal
     End Function
     Private Function ProgLineSentenceProgControl(ByRef pLine() As Integer) As String
         Dim retVal As String = "Program Control: "
-        Dim tmpOp = pLine(DataFieldEnum.df81V1)
+        Dim tmpOp = pLine(eDataField.df81V1)
 
-        If (tmpOp = OpTypeEnum.opLoadProgramAndPause) Or (tmpOp = OpTypeEnum.opLoadProgramAndRun) Then
+        If (tmpOp = eOpType.opLoadProgramAndPause) Or (tmpOp = eOpType.opLoadProgramAndRun) Then
             'load prog
-            retVal &= "Load Program # " & GetValueSentence(pLine(DataFieldEnum.df321S), pLine(DataFieldEnum.df321V1), pLine(DataFieldEnum.df321V2))
-            If pLine(DataFieldEnum.dfChannel) < devRef.allChannelsStringPlusThisChan.Length Then
-                retVal &= " on " & devRef.allChannelsStringPlusThisChan(pLine(DataFieldEnum.dfChannel)) & " Channel and "
+            retVal &= "Load Program # " & GetValueSentence(pLine(eDataField.df321S), pLine(eDataField.df321V1), pLine(eDataField.df321V2))
+            If pLine(eDataField.dfChannel) < devRef.allChannelsStringPlusThisChan.Length Then
+                retVal &= " on " & devRef.allChannelsStringPlusThisChan(pLine(eDataField.dfChannel)) & " Channel and "
             Else
-                retVal &= " on --OUT OF RANGE: Channel " & pLine(DataFieldEnum.dfChannel) & "-- and "
+                retVal &= " on --OUT OF RANGE: Channel " & pLine(eDataField.dfChannel) & "-- and "
             End If
-            retVal &= If(tmpOp = OpTypeEnum.opLoadProgramAndRun, "run.", "wait.")
-        ElseIf pLine(DataFieldEnum.df81V1) >= OpTypeEnum.opStart Then
+            retVal &= If(tmpOp = eOpType.opLoadProgramAndRun, "run.", "wait.")
+        ElseIf pLine(eDataField.df81V1) >= eOpType.opStart Then
             'start / stop / pause
-            retVal &= programOpTypeString(pLine(DataFieldEnum.df81V1))
-            retVal &= " Program on " & devRef.allChannelsStringPlusThisChan(pLine(DataFieldEnum.dfChannel)) & " Channel."
+            retVal &= programOpTypeString(pLine(eDataField.df81V1))
+            retVal &= " Program on " & devRef.allChannelsStringPlusThisChan(pLine(eDataField.dfChannel)) & " Channel."
         Else
             'unknown
             retVal &= "ERROR: Unknown operation."
@@ -623,26 +623,26 @@ Public Class ucProgLineEdit
         End If
         'If newProgLineData.Length <> DataFieldLen Then Return -1    'Wrong length of data
 
-        'Dim cmd As Integer = newProgLineData(DataFieldEnum.dfCommand)
+        'Dim cmd As Integer = newProgLineData(eDataField.dfCommand)
 
         ''TODO: this would be a great place to verify the data.
-        'If CheckLimits(newProgLineData(DataFieldEnum.dfCommand), 0, commandVals.Length - 1) = False Then Return DataFieldEnum.dfCommand + 1
-        'If CheckLimits(newProgLineData(DataFieldEnum.dfChannel), 0, _channelCount - 1) = False Then Return DataFieldEnum.dfChannel + 1
-        'If (cmd = CommandEnum.cmdGoTo) Or (cmd = CommandEnum.cmdTest) Then
-        '    'If CheckLimits(newProgLineData(DataFieldEnum.dfGotoTrue), 0, _ProgLineCount - 1) = False Then Return DataFieldEnum.dfGotoTrue + 1
-        '    'If CheckLimits(newProgLineData(DataFieldEnum.dfGotoFalse), 0, _ProgLineCount - 1) = False Then Return DataFieldEnum.dfGotoFalse + 1
+        'If CheckLimits(newProgLineData(eDataField.dfCommand), 0, commandVals.Length - 1) = False Then Return eDataField.dfCommand + 1
+        'If CheckLimits(newProgLineData(eDataField.dfChannel), 0, _channelCount - 1) = False Then Return eDataField.dfChannel + 1
+        'If (cmd = eCommand.cmdGoTo) Or (cmd = eCommand.cmdTest) Then
+        '    'If CheckLimits(newProgLineData(eDataField.dfGotoTrue), 0, _ProgLineCount - 1) = False Then Return eDataField.dfGotoTrue + 1
+        '    'If CheckLimits(newProgLineData(eDataField.dfGotoFalse), 0, _ProgLineCount - 1) = False Then Return eDataField.dfGotoFalse + 1
         'End If
 
         ''Sources:
-        'If CheckLimits(newProgLineData(DataFieldEnum.df81S), 0, dataSourceString.Length - 1) = False Then Return DataFieldEnum.df81S + 1
-        'If CheckLimits(newProgLineData(DataFieldEnum.df82S), 0, dataSourceString.Length - 1) = False Then Return DataFieldEnum.df82S + 1
-        'If CheckLimits(newProgLineData(DataFieldEnum.df321S), 0, dataSourceString.Length - 1) = False Then Return DataFieldEnum.df321S + 1
-        'If CheckLimits(newProgLineData(DataFieldEnum.df322S), 0, dataSourceString.Length - 1) = False Then Return DataFieldEnum.df322S + 1
-        'If CheckLimits(newProgLineData(DataFieldEnum.df323S), 0, dataSourceString.Length - 1) = False Then Return DataFieldEnum.df323S + 1
+        'If CheckLimits(newProgLineData(eDataField.df81S), 0, dataSourceString.Length - 1) = False Then Return eDataField.df81S + 1
+        'If CheckLimits(newProgLineData(eDataField.df82S), 0, dataSourceString.Length - 1) = False Then Return eDataField.df82S + 1
+        'If CheckLimits(newProgLineData(eDataField.df321S), 0, dataSourceString.Length - 1) = False Then Return eDataField.df321S + 1
+        'If CheckLimits(newProgLineData(eDataField.df322S), 0, dataSourceString.Length - 1) = False Then Return eDataField.df322S + 1
+        'If CheckLimits(newProgLineData(eDataField.df323S), 0, dataSourceString.Length - 1) = False Then Return eDataField.df323S + 1
 
         ''Polarity
-        'If cmd = CommandEnum.cmdTenMotOutput Then
-        '    If CheckLimits(newProgLineData(DataFieldEnum.dfPolarity), 0, polarityString.Length - 1) = False Then Return DataFieldEnum.dfPolarity + 1
+        'If cmd = eCommand.cmdTenMotOutput Then
+        '    If CheckLimits(newProgLineData(eDataField.dfPolarity), 0, polarityString.Length - 1) = False Then Return eDataField.dfPolarity + 1
         'End If
 
         ''Incoming data validation complete.
@@ -658,7 +658,7 @@ Public Class ucProgLineEdit
         'End If
 
         'If _enabled = True Then
-        '    cboCommand.SelectedIndex = _ProgLine(DataFieldEnum.dfCommand)
+        '    cboCommand.SelectedIndex = _ProgLine(eDataField.dfCommand)
         '    Return 0
         'Else
         '    Return 1  'Progline edit control is not enabled.
@@ -667,27 +667,27 @@ Public Class ucProgLineEdit
         devRef.Prog(CurProgramNumber).progLine(CurLineNumber).CopyTo(_ProgLine, 0) ' newProgLineData.Length <> DataFieldLen Then Return -1    'Wrong length of data
         _ProgLine.CopyTo(_ProgLineOrig, 0)
 
-        Dim cmd As Integer = _ProgLine(DataFieldEnum.dfCommand)
+        Dim cmd As Integer = _ProgLine(eDataField.dfCommand)
 
         'TODO: this would be a great place to verify the data.
         Dim checkLimitsErrorNum = 0
-        If CheckLimits(_ProgLine(DataFieldEnum.dfCommand), 0, commandVals.Length - 1) = False Then checkLimitsErrorNum = DataFieldEnum.dfCommand + 1
-        If CheckLimits(_ProgLine(DataFieldEnum.dfChannel), 0, _channelCount) = False Then checkLimitsErrorNum = DataFieldEnum.dfChannel + 1
-        If (cmd = CommandEnum.cmdGoTo) Or (cmd = CommandEnum.cmdTest) Then
-            'If CheckLimits(newProgLineData(DataFieldEnum.dfGotoTrue), 0, _ProgLineCount - 1) = False Then checkLimitsErrorNum = DataFieldEnum.dfGotoTrue + 1
-            'If CheckLimits(newProgLineData(DataFieldEnum.dfGotoFalse), 0, _ProgLineCount - 1) = False Then checkLimitsErrorNum = DataFieldEnum.dfGotoFalse + 1
+        If CheckLimits(_ProgLine(eDataField.dfCommand), 0, commandVals.Length - 1) = False Then checkLimitsErrorNum = eDataField.dfCommand + 1
+        If CheckLimits(_ProgLine(eDataField.dfChannel), 0, _channelCount) = False Then checkLimitsErrorNum = eDataField.dfChannel + 1
+        If (cmd = eCommand.cmdGoTo) Or (cmd = eCommand.cmdTest) Then
+            'If CheckLimits(newProgLineData(eDataField.dfGotoTrue), 0, _ProgLineCount - 1) = False Then checkLimitsErrorNum = eDataField.dfGotoTrue + 1
+            'If CheckLimits(newProgLineData(eDataField.dfGotoFalse), 0, _ProgLineCount - 1) = False Then checkLimitsErrorNum = eDataField.dfGotoFalse + 1
         End If
 
         'Sources:
-        If CheckLimits(_ProgLine(DataFieldEnum.df81S), 0, dataSourceString.Length - 1) = False Then checkLimitsErrorNum = DataFieldEnum.df81S + 1
-        If CheckLimits(_ProgLine(DataFieldEnum.df82S), 0, dataSourceString.Length - 1) = False Then checkLimitsErrorNum = DataFieldEnum.df82S + 1
-        If CheckLimits(_ProgLine(DataFieldEnum.df321S), 0, dataSourceString.Length - 1) = False Then checkLimitsErrorNum = DataFieldEnum.df321S + 1
-        If CheckLimits(_ProgLine(DataFieldEnum.df322S), 0, dataSourceString.Length - 1) = False Then checkLimitsErrorNum = DataFieldEnum.df322S + 1
-        If CheckLimits(_ProgLine(DataFieldEnum.df323S), 0, dataSourceString.Length - 1) = False Then checkLimitsErrorNum = DataFieldEnum.df323S + 1
+        If CheckLimits(_ProgLine(eDataField.df81S), 0, dataSourceString.Length - 1) = False Then checkLimitsErrorNum = eDataField.df81S + 1
+        If CheckLimits(_ProgLine(eDataField.df82S), 0, dataSourceString.Length - 1) = False Then checkLimitsErrorNum = eDataField.df82S + 1
+        If CheckLimits(_ProgLine(eDataField.df321S), 0, dataSourceString.Length - 1) = False Then checkLimitsErrorNum = eDataField.df321S + 1
+        If CheckLimits(_ProgLine(eDataField.df322S), 0, dataSourceString.Length - 1) = False Then checkLimitsErrorNum = eDataField.df322S + 1
+        If CheckLimits(_ProgLine(eDataField.df323S), 0, dataSourceString.Length - 1) = False Then checkLimitsErrorNum = eDataField.df323S + 1
 
         'Polarity
-        If cmd = CommandEnum.cmdTenMotOutput Then
-            If CheckLimits(_ProgLine(DataFieldEnum.dfPolarity), 0, polarityString.Length - 1) = False Then checkLimitsErrorNum = DataFieldEnum.dfPolarity + 1
+        If cmd = eCommand.cmdTenMotOutput Then
+            If CheckLimits(_ProgLine(eDataField.dfPolarity), 0, polarityString.Length - 1) = False Then checkLimitsErrorNum = eDataField.dfPolarity + 1
         End If
 
         If checkLimitsErrorNum > 0 Then
@@ -707,7 +707,7 @@ Public Class ucProgLineEdit
         End If
 
         If _enabled = True Then
-            cboCommand.SelectedIndex = _ProgLine(DataFieldEnum.dfCommand)
+            cboCommand.SelectedIndex = _ProgLine(eDataField.dfCommand)
             Return 0
         Else
             Return 1  'Progline edit control is not enabled.
@@ -716,7 +716,7 @@ Public Class ucProgLineEdit
     End Function
 
     Private Sub WaveformShapeRadioCheckChanged(sender As Object, e As EventArgs)
-        Dim newWaveform As WaveformEnum = WaveformEnum.wfNone
+        Dim newWaveform As eWaveform = eWaveform.wfNone
 
         Dim quadrantVisible As Boolean = False
         'Dim V323Visible As Boolean = False
@@ -726,20 +726,20 @@ Public Class ucProgLineEdit
 
         If rdoWaveformRamp.Checked Then
             waveformString = "Ramp"
-            newWaveform = WaveformEnum.wfRamp
+            newWaveform = eWaveform.wfRamp
         ElseIf rdoWaveformTriangle.Checked Then
             waveformString = "Triangle"
-            newWaveform = WaveformEnum.wfTriangle
+            newWaveform = eWaveform.wfTriangle
         ElseIf rdoWaveformSine.Checked Then
             waveformString = "Sine"
-            newWaveform = WaveformEnum.wfSine
+            newWaveform = eWaveform.wfSine
             quadrantVisible = True
         Else
             waveformString = "Not Selected"
-            newWaveform = WaveformEnum.wfNone
+            newWaveform = eWaveform.wfNone
         End If
 
-        'If (newWaveform = WaveformEnum.wfTriangle) Then
+        'If (newWaveform = eWaveform.wfTriangle) Then
         '    ucvcTenMotStart.SourceLabel = "Start:"
         '    ucvcTenMotEnd.SourceLabel = "Peak:"
         'Else
@@ -749,7 +749,7 @@ Public Class ucProgLineEdit
         'ucvcTenMotStart.MaxVal = 100
         'ucvcTenMotEnd.MaxVal = 100
 
-        _ProgLine(DataFieldEnum.dfGotoTrue) = newWaveform
+        _ProgLine(eDataField.dfGotoTrue) = newWaveform
         grpWaveform.Text = "Waveform - " & waveformString
         ShowSineQuadrant(quadrantVisible)
         ShowTenMotGroup(True)
@@ -761,51 +761,51 @@ Public Class ucProgLineEdit
         Dim tmpEndLabel = "End:"
 
         If rdoSineQuadMidHi.Checked = True Then
-            tmpQuadrant = QuadrantEnum.quadMidHi
+            tmpQuadrant = eQuadrant.quadMidHi
             tmpStartLabel = "Low:"
             tmpEndLabel = "High:"
         ElseIf rdoSineQuadMidHiMid.Checked = True Then
-            tmpQuadrant = QuadrantEnum.quadMidHiMid
+            tmpQuadrant = eQuadrant.quadMidHiMid
             tmpStartLabel = "Low:"
             tmpEndLabel = "High:"
         ElseIf rdoSineQuadHiMid.Checked = True Then
-            tmpQuadrant = QuadrantEnum.quadHiMid
+            tmpQuadrant = eQuadrant.quadHiMid
             tmpStartLabel = "High:"
             tmpEndLabel = "Low:"
         ElseIf rdoSineQuadMidLow.Checked = True Then
-            tmpQuadrant = QuadrantEnum.quadMidLow
+            tmpQuadrant = eQuadrant.quadMidLow
         ElseIf rdoSineQuadMidLowMid.Checked = True Then
-            tmpQuadrant = QuadrantEnum.quadMidLowMid
+            tmpQuadrant = eQuadrant.quadMidLowMid
         ElseIf rdoSineQuadLowMid.Checked = True Then
-            tmpQuadrant = QuadrantEnum.quadLowMid
+            tmpQuadrant = eQuadrant.quadLowMid
         ElseIf rdoSineQuadLowHi.Checked = True Then
-            tmpQuadrant = QuadrantEnum.quadLowHi
+            tmpQuadrant = eQuadrant.quadLowHi
         ElseIf rdoSineQuadLowHiLow.Checked = True Then
-            tmpQuadrant = QuadrantEnum.quadLowHiLow
+            tmpQuadrant = eQuadrant.quadLowHiLow
             tmpStartLabel = "Low:"
             tmpEndLabel = "High:"
         ElseIf rdoSineQuadHiLowHi.Checked = True Then
-            tmpQuadrant = QuadrantEnum.quadHiLowHi
+            tmpQuadrant = eQuadrant.quadHiLowHi
             tmpStartLabel = "High:"
             tmpEndLabel = "Low:"
 
         ElseIf rdoSineQuadHiLow.Checked = True Then
-            tmpQuadrant = QuadrantEnum.quadHiLow
+            tmpQuadrant = eQuadrant.quadHiLow
             tmpStartLabel = "High:"
             tmpEndLabel = "Low:"
         ElseIf rdoSineQuadMidHiLowMid.Checked = True Then
-            tmpQuadrant = QuadrantEnum.quadMidHiLowMid
+            tmpQuadrant = eQuadrant.quadMidHiLowMid
             tmpStartLabel = "Start:"
             tmpEndLabel = "High:"
         ElseIf rdoSineQuadMidLowHiMid.Checked = True Then
-            tmpQuadrant = QuadrantEnum.quadMidLowHiMid
+            tmpQuadrant = eQuadrant.quadMidLowHiMid
             tmpStartLabel = "Start:"
             tmpEndLabel = "Low:"
         End If
         ucvcTenMotStart.SourceLabel = tmpStartLabel
         ucvcTenMotEnd.SourceLabel = tmpEndLabel
 
-        _ProgLine(DataFieldEnum.dfGotoFalse) = tmpQuadrant
+        _ProgLine(eDataField.dfGotoFalse) = tmpQuadrant
     End Sub
 
     Private Sub ShowSineQuadrant(ByVal newVal As Boolean)
@@ -817,51 +817,51 @@ Public Class ucProgLineEdit
             grpSineQuadrant.Width = pnlTenMot.Width
             grpSineQuadrant.Visible = True
 
-            If CheckLimits(_ProgLine(DataFieldEnum.dfGotoFalse), 0, quadrantString.Length - 1) = False Then
+            If CheckLimits(_ProgLine(eDataField.dfGotoFalse), 0, quadrantString.Length - 1) = False Then
                 'The current quadrant value of _progLine is not valid.  Check to see
                 'if any quadrant rdo's are currently checked. If so then go with that one.
                 Dim tmpVal As Integer = 0
-                If rdoSineQuadMidHi.Checked = True Then tmpVal = QuadrantEnum.quadMidHi
-                If rdoSineQuadMidHiMid.Checked = True Then tmpVal = QuadrantEnum.quadMidHiMid
-                If rdoSineQuadHiMid.Checked = True Then tmpVal = QuadrantEnum.quadHiMid
-                If rdoSineQuadMidLow.Checked = True Then tmpVal = QuadrantEnum.quadMidLow
-                If rdoSineQuadMidLowMid.Checked = True Then tmpVal = QuadrantEnum.quadMidLowMid
-                If rdoSineQuadLowMid.Checked = True Then tmpVal = QuadrantEnum.quadLowMid
-                If rdoSineQuadLowHi.Checked = True Then tmpVal = QuadrantEnum.quadLowHi
-                If rdoSineQuadLowHiLow.Checked = True Then tmpVal = QuadrantEnum.quadLowHiLow
-                If rdoSineQuadHiLowHi.Checked = True Then tmpVal = QuadrantEnum.quadHiLowHi
+                If rdoSineQuadMidHi.Checked = True Then tmpVal = eQuadrant.quadMidHi
+                If rdoSineQuadMidHiMid.Checked = True Then tmpVal = eQuadrant.quadMidHiMid
+                If rdoSineQuadHiMid.Checked = True Then tmpVal = eQuadrant.quadHiMid
+                If rdoSineQuadMidLow.Checked = True Then tmpVal = eQuadrant.quadMidLow
+                If rdoSineQuadMidLowMid.Checked = True Then tmpVal = eQuadrant.quadMidLowMid
+                If rdoSineQuadLowMid.Checked = True Then tmpVal = eQuadrant.quadLowMid
+                If rdoSineQuadLowHi.Checked = True Then tmpVal = eQuadrant.quadLowHi
+                If rdoSineQuadLowHiLow.Checked = True Then tmpVal = eQuadrant.quadLowHiLow
+                If rdoSineQuadHiLowHi.Checked = True Then tmpVal = eQuadrant.quadHiLowHi
 
-                If rdoSineQuadHiLow.Checked = True Then tmpVal = QuadrantEnum.quadHiLow
-                If rdoSineQuadMidHiLowMid.Checked = True Then tmpVal = QuadrantEnum.quadMidHiLowMid
-                If rdoSineQuadMidLowHiMid.Checked = True Then tmpVal = QuadrantEnum.quadMidLowHiMid
-                _ProgLine(DataFieldEnum.dfGotoFalse) = tmpVal
+                If rdoSineQuadHiLow.Checked = True Then tmpVal = eQuadrant.quadHiLow
+                If rdoSineQuadMidHiLowMid.Checked = True Then tmpVal = eQuadrant.quadMidHiLowMid
+                If rdoSineQuadMidLowHiMid.Checked = True Then tmpVal = eQuadrant.quadMidLowHiMid
+                _ProgLine(eDataField.dfGotoFalse) = tmpVal
             End If
 
             'check the appropriate quadrant rdo:
-            Select Case _ProgLine(DataFieldEnum.dfGotoFalse)
-                Case QuadrantEnum.quadMidHi
+            Select Case _ProgLine(eDataField.dfGotoFalse)
+                Case eQuadrant.quadMidHi
                     rdoSineQuadMidHi.Checked = True
-                Case QuadrantEnum.quadMidHiMid
+                Case eQuadrant.quadMidHiMid
                     rdoSineQuadMidHiMid.Checked = True
-                Case QuadrantEnum.quadHiMid
+                Case eQuadrant.quadHiMid
                     rdoSineQuadHiMid.Checked = True
-                Case QuadrantEnum.quadMidLow
+                Case eQuadrant.quadMidLow
                     rdoSineQuadMidLow.Checked = True
-                Case QuadrantEnum.quadMidLowMid
+                Case eQuadrant.quadMidLowMid
                     rdoSineQuadMidLowMid.Checked = True
-                Case QuadrantEnum.quadLowMid
+                Case eQuadrant.quadLowMid
                     rdoSineQuadLowMid.Checked = True
-                Case QuadrantEnum.quadLowHi
+                Case eQuadrant.quadLowHi
                     rdoSineQuadLowHi.Checked = True
-                Case QuadrantEnum.quadLowHiLow
+                Case eQuadrant.quadLowHiLow
                     rdoSineQuadLowHiLow.Checked = True
-                Case QuadrantEnum.quadHiLowHi
+                Case eQuadrant.quadHiLowHi
                     rdoSineQuadHiLowHi.Checked = True
-                Case QuadrantEnum.quadHiLow
+                Case eQuadrant.quadHiLow
                     rdoSineQuadHiLow.Checked = True
-                Case QuadrantEnum.quadMidHiLowMid
+                Case eQuadrant.quadMidHiLowMid
                     rdoSineQuadMidHiLowMid.Checked = True
-                Case QuadrantEnum.quadMidLowHiMid
+                Case eQuadrant.quadMidLowHiMid
                     rdoSineQuadMidLowHiMid.Checked = True
             End Select
 
@@ -901,16 +901,16 @@ Public Class ucProgLineEdit
 
 
             'Load data into the tenMot controls:
-            ucvcTenMotStart.SourceSelectedIndex = _ProgLine(DataFieldEnum.df81S)
-            ucvcTenMotStart.Val1 = _ProgLine(DataFieldEnum.df81V1)
-            ucvcTenMotStart.Val2 = _ProgLine(DataFieldEnum.df81V2)
+            ucvcTenMotStart.SourceSelectedIndex = _ProgLine(eDataField.df81S)
+            ucvcTenMotStart.Val1 = _ProgLine(eDataField.df81V1)
+            ucvcTenMotStart.Val2 = _ProgLine(eDataField.df81V2)
             AddHandler ucvcTenMotStart.Source_Changed, AddressOf ucvcTenMotStart_Source_Changed
             AddHandler ucvcTenMotStart.Val_Changed, AddressOf ucvcTenMotStart_Val_Changed
             AddHandler ucvcTenMotStart.Val2_Changed, AddressOf ucvcTenMotStart_Val2_Changed
 
-            ucvcTenMotEnd.SourceSelectedIndex = _ProgLine(DataFieldEnum.df82S)
-            ucvcTenMotEnd.Val1 = _ProgLine(DataFieldEnum.df82V1)
-            ucvcTenMotEnd.Val2 = _ProgLine(DataFieldEnum.df82V2)
+            ucvcTenMotEnd.SourceSelectedIndex = _ProgLine(eDataField.df82S)
+            ucvcTenMotEnd.Val1 = _ProgLine(eDataField.df82V1)
+            ucvcTenMotEnd.Val2 = _ProgLine(eDataField.df82V2)
             AddHandler ucvcTenMotEnd.Source_Changed, AddressOf ucvcTenMotEnd_Source_Changed
             AddHandler ucvcTenMotEnd.Val_Changed, AddressOf ucvcTenMotEnd_Val_Changed
             AddHandler ucvcTenMotEnd.Val2_Changed, AddressOf ucvcTenMotEnd_Val2_Changed
@@ -920,26 +920,26 @@ Public Class ucProgLineEdit
                 cboPolarity.Items.Clear()
                 cboPolarity.Items.AddRange(polarityString)
             End If
-            If _ProgLine(DataFieldEnum.dfPolarity) >= polarityString.Length Then
-                _ProgLine(DataFieldEnum.dfPolarity) = 0
+            If _ProgLine(eDataField.dfPolarity) >= polarityString.Length Then
+                _ProgLine(eDataField.dfPolarity) = 0
             End If
-            cboPolarity.SelectedIndex = _ProgLine(DataFieldEnum.dfPolarity)
+            cboPolarity.SelectedIndex = _ProgLine(eDataField.dfPolarity)
             AddHandler cboPolarity.SelectedIndexChanged, AddressOf CboPolarity_SelectedIndexChanged
 
             ucvcTenMotV321.SourceLabel = "Duration:"
             ucvcTenMotV321.UnitsLabel = "mSec"
-            ucvcTenMotV321.SourceSelectedIndex = _ProgLine(DataFieldEnum.df321S)
-            ucvcTenMotV321.Val1 = _ProgLine(DataFieldEnum.df321V1)
-            ucvcTenMotV321.Val2 = _ProgLine(DataFieldEnum.df321V2)
+            ucvcTenMotV321.SourceSelectedIndex = _ProgLine(eDataField.df321S)
+            ucvcTenMotV321.Val1 = _ProgLine(eDataField.df321V1)
+            ucvcTenMotV321.Val2 = _ProgLine(eDataField.df321V2)
             AddHandler ucvcTenMotV321.Source_Changed, AddressOf ucvcTenMotV321_Source_Changed
             AddHandler ucvcTenMotV321.Val_Changed, AddressOf ucvcTenMotV321_Val_Changed
             AddHandler ucvcTenMotV321.Val2_Changed, AddressOf ucvcTenMotV321_Val2_Changed
 
             ucvcTenMotV322.SourceLabel = "Repeats:"
             ucvcTenMotV322.UnitsLabel = "x"
-            ucvcTenMotV322.SourceSelectedIndex = _ProgLine(DataFieldEnum.df322S)
-            ucvcTenMotV322.Val1 = _ProgLine(DataFieldEnum.df322V1)
-            ucvcTenMotV322.Val2 = _ProgLine(DataFieldEnum.df322V2)
+            ucvcTenMotV322.SourceSelectedIndex = _ProgLine(eDataField.df322S)
+            ucvcTenMotV322.Val1 = _ProgLine(eDataField.df322V1)
+            ucvcTenMotV322.Val2 = _ProgLine(eDataField.df322V2)
             AddHandler ucvcTenMotV322.Source_Changed, AddressOf ucvcTenMotV322_Source_Changed
             AddHandler ucvcTenMotV322.Val_Changed, AddressOf ucvcTenMotV322_Val_Changed
             AddHandler ucvcTenMotV322.Val2_Changed, AddressOf ucvcTenMotV322_Val2_Changed
@@ -947,16 +947,16 @@ Public Class ucProgLineEdit
 
             ucvcTenMotV323.SourceLabel = "Delay:"
             ucvcTenMotV323.UnitsLabel = "mSec"
-            ucvcTenMotV323.SourceSelectedIndex = _ProgLine(DataFieldEnum.df323S)
-            ucvcTenMotV323.Val1 = _ProgLine(DataFieldEnum.df323V1)
-            ucvcTenMotV323.Val2 = _ProgLine(DataFieldEnum.df323V2)
+            ucvcTenMotV323.SourceSelectedIndex = _ProgLine(eDataField.df323S)
+            ucvcTenMotV323.Val1 = _ProgLine(eDataField.df323V1)
+            ucvcTenMotV323.Val2 = _ProgLine(eDataField.df323V2)
             AddHandler ucvcTenMotV323.Source_Changed, AddressOf ucvcTenMotV323_Source_Changed
             AddHandler ucvcTenMotV323.Val_Changed, AddressOf ucvcTenMotV323_Val_Changed
             AddHandler ucvcTenMotV323.Val2_Changed, AddressOf ucvcTenMotV323_Val2_Changed
 
 
             RemoveHandler chkTenMotPostDelay.CheckedChanged, AddressOf chkTenMotPostDelay_CheckedChanged
-            If (_ProgLine(DataFieldEnum.df323S) = 0) And (_ProgLine(DataFieldEnum.df323V1) = 0) Then
+            If (_ProgLine(eDataField.df323S) = 0) And (_ProgLine(eDataField.df323V1) = 0) Then
                 chkTenMotPostDelay.Checked = False
                 ucvcTenMotV323.Visible = False
             Else
@@ -966,12 +966,12 @@ Public Class ucProgLineEdit
             AddHandler chkTenMotPostDelay.CheckedChanged, AddressOf chkTenMotPostDelay_CheckedChanged
 
 
-            If (_ProgLine(DataFieldEnum.dfGotoTrue) = WaveformEnum.wfTriangle) Then
+            If (_ProgLine(eDataField.dfGotoTrue) = eWaveform.wfTriangle) Then
                 ucvcTenMotStart.SourceLabel = "Start:"
                 ucvcTenMotEnd.SourceLabel = "Peak:"
                 lblTenMotDutyCycle.Visible = True
                 txtTenMotDutyCycle.Visible = True
-                Dim tmpDutyCycle = _ProgLine(DataFieldEnum.dfGotoFalse)
+                Dim tmpDutyCycle = _ProgLine(eDataField.dfGotoFalse)
                 'If tmpDutyCycle < 1 Then tmpDutyCycle = 50
                 'If tmpDutyCycle > 100 Then tmpDutyCycle = 100
                 AddHandler txtTenMotDutyCycle.TextChanged, AddressOf txtTenMotDutyCycle_TextChanged
@@ -1035,7 +1035,7 @@ Public Class ucProgLineEdit
     Private Sub ShowGotoGroup(ByVal Visible As Boolean)
         If Visible = True Then
             AddHandler txtGotoLine.TextChanged, AddressOf txtGotoLine_TextChanged
-            txtGotoLine.Text = _ProgLine(DataFieldEnum.dfGotoTrue)
+            txtGotoLine.Text = _ProgLine(eDataField.dfGotoTrue)
             grpGoto.Visible = True
         Else
             RemoveHandler txtGotoLine.TextChanged, AddressOf txtGotoLine_TextChanged
@@ -1050,9 +1050,9 @@ Public Class ucProgLineEdit
 
             ucvcDelay.SourceLabel = "Duration:"
             ucvcDelay.UnitsLabel = "mSec"
-            ucvcDelay.SourceSelectedIndex = _ProgLine(DataFieldEnum.df323S)
-            ucvcDelay.Val1 = _ProgLine(DataFieldEnum.df323V1)
-            ucvcDelay.Val2 = _ProgLine(DataFieldEnum.df323V2)
+            ucvcDelay.SourceSelectedIndex = _ProgLine(eDataField.df323S)
+            ucvcDelay.Val1 = _ProgLine(eDataField.df323V1)
+            ucvcDelay.Val2 = _ProgLine(eDataField.df323V2)
 
             AddHandler ucvcDelay.Source_Changed, AddressOf ucvcDelay_Source_Changed
             AddHandler ucvcDelay.Val_Changed, AddressOf ucvcDelay_Val_Changed
@@ -1073,9 +1073,9 @@ Public Class ucProgLineEdit
             End If
             ucvcTestValLeft81.SourceLabel = "If "
             ucvcTestValLeft81.UnitsLabel = ""
-            ucvcTestValLeft81.SourceSelectedIndex = _ProgLine(DataFieldEnum.df81S)
-            ucvcTestValLeft81.Val1 = _ProgLine(DataFieldEnum.df81V1)
-            ucvcTestValLeft81.Val2 = _ProgLine(DataFieldEnum.df81V2)
+            ucvcTestValLeft81.SourceSelectedIndex = _ProgLine(eDataField.df81S)
+            ucvcTestValLeft81.Val1 = _ProgLine(eDataField.df81V1)
+            ucvcTestValLeft81.Val2 = _ProgLine(eDataField.df81V2)
             AddHandler ucvcTestValLeft81.Source_Changed, AddressOf ucvcTestValLeft81_Source_Changed
             AddHandler ucvcTestValLeft81.Val_Changed, AddressOf ucvcTestValLeft81_Val_Changed
             AddHandler ucvcTestValLeft81.Val2_Changed, AddressOf ucvcTestValLeft81_Val2_Changed
@@ -1085,10 +1085,10 @@ Public Class ucProgLineEdit
                 cboTestType82V1.Items.Clear()
                 cboTestType82V1.Items.AddRange(testOperationString)
             End If
-            If _ProgLine(DataFieldEnum.df82V1) >= testOperationString.Length Then
-                _ProgLine(DataFieldEnum.df82V1) = 0
+            If _ProgLine(eDataField.df82V1) >= testOperationString.Length Then
+                _ProgLine(eDataField.df82V1) = 0
             End If
-            cboTestType82V1.SelectedIndex = _ProgLine(DataFieldEnum.df82V1)
+            cboTestType82V1.SelectedIndex = _ProgLine(eDataField.df82V1)
             AddHandler cboTestType82V1.SelectedIndexChanged, AddressOf cboTestType82V1_SelectedIndexChanged
 
             If ucvcTestValRight321.SourceItems.Count < dataSourceString.Length Then
@@ -1096,9 +1096,9 @@ Public Class ucProgLineEdit
             End If
             ucvcTestValRight321.SourceLabel = ""
             ucvcTestValRight321.UnitsLabel = ""
-            ucvcTestValRight321.SourceSelectedIndex = _ProgLine(DataFieldEnum.df321S)
-            ucvcTestValRight321.Val1 = _ProgLine(DataFieldEnum.df321V1)
-            ucvcTestValRight321.Val2 = _ProgLine(DataFieldEnum.df321V2)
+            ucvcTestValRight321.SourceSelectedIndex = _ProgLine(eDataField.df321S)
+            ucvcTestValRight321.Val1 = _ProgLine(eDataField.df321V1)
+            ucvcTestValRight321.Val2 = _ProgLine(eDataField.df321V2)
             AddHandler ucvcTestValRight321.Source_Changed, AddressOf ucvcTestValRight321_Source_Changed
             AddHandler ucvcTestValRight321.Val_Changed, AddressOf ucvcTestValRight321_Val_Changed
             AddHandler ucvcTestValRight321.Val2_Changed, AddressOf ucvcTestValRight321_Val2_Changed
@@ -1109,10 +1109,10 @@ Public Class ucProgLineEdit
                 cboTestRightModOperator82V2.Items.Clear()
                 cboTestRightModOperator82V2.Items.AddRange(mathFunctionString)
             End If
-            If _ProgLine(DataFieldEnum.df82V2) >= testOperationString.Length Then
-                _ProgLine(DataFieldEnum.df82V2) = 0
+            If _ProgLine(eDataField.df82V2) >= testOperationString.Length Then
+                _ProgLine(eDataField.df82V2) = 0
             End If
-            cboTestRightModOperator82V2.SelectedIndex = _ProgLine(DataFieldEnum.df82V2)
+            cboTestRightModOperator82V2.SelectedIndex = _ProgLine(eDataField.df82V2)
             If cboTestRightModOperator82V2.SelectedIndex = 0 Then
                 ucvcTestValRight322.Visible = False
             Else
@@ -1125,20 +1125,20 @@ Public Class ucProgLineEdit
             End If
             ucvcTestValRight322.SourceLabel = mathFunctionString(cboTestRightModOperator82V2.SelectedIndex) + " "
             ucvcTestValRight322.UnitsLabel = ""
-            ucvcTestValRight322.SourceSelectedIndex = _ProgLine(DataFieldEnum.df322S)
-            ucvcTestValRight322.Val1 = _ProgLine(DataFieldEnum.df322V1)
-            ucvcTestValRight322.Val2 = _ProgLine(DataFieldEnum.df322V2)
+            ucvcTestValRight322.SourceSelectedIndex = _ProgLine(eDataField.df322S)
+            ucvcTestValRight322.Val1 = _ProgLine(eDataField.df322V1)
+            ucvcTestValRight322.Val2 = _ProgLine(eDataField.df322V2)
             AddHandler ucvcTestValRight322.Source_Changed, AddressOf ucvcTestValRight322_Source_Changed
             AddHandler ucvcTestValRight322.Val_Changed, AddressOf ucvcTestValRight322_Val_Changed
             AddHandler ucvcTestValRight322.Val2_Changed, AddressOf ucvcTestValRight322_Val2_Changed
 
             RemoveHandler txtTestGTT.TextChanged, AddressOf txtTestGTT_TextChanged
-            txtTestGTT.Text = _ProgLine(DataFieldEnum.dfGotoTrue)
+            txtTestGTT.Text = _ProgLine(eDataField.dfGotoTrue)
             HighlightGotoTextbox(txtTestGTT)
             AddHandler txtTestGTT.TextChanged, AddressOf txtTestGTT_TextChanged
 
             RemoveHandler txtTestGTF.TextChanged, AddressOf txtTestGTF_TextChanged
-            txtTestGTF.Text = _ProgLine(DataFieldEnum.dfGotoFalse)
+            txtTestGTF.Text = _ProgLine(eDataField.dfGotoFalse)
             HighlightGotoTextbox(txtTestGTF)
             AddHandler txtTestGTF.TextChanged, AddressOf txtTestGTF_TextChanged
 
@@ -1170,9 +1170,9 @@ Public Class ucProgLineEdit
             End If
             ucvcSetTarget81.SourceLabel = "Set "
             ucvcSetTarget81.UnitsLabel = ""
-            ucvcSetTarget81.SourceSelectedIndex = _ProgLine(DataFieldEnum.df81S)
-            ucvcSetTarget81.Val1 = _ProgLine(DataFieldEnum.df81V1)
-            ucvcSetTarget81.Val2 = _ProgLine(DataFieldEnum.df81V2)
+            ucvcSetTarget81.SourceSelectedIndex = _ProgLine(eDataField.df81S)
+            ucvcSetTarget81.Val1 = _ProgLine(eDataField.df81V1)
+            ucvcSetTarget81.Val2 = _ProgLine(eDataField.df81V2)
             AddHandler ucvcSetTarget81.Source_Changed, AddressOf ucvcSetTarget81_Source_Changed
             AddHandler ucvcSetTarget81.Val_Changed, AddressOf ucvcSetTarget81_Val1_Changed
             AddHandler ucvcSetTarget81.Val2_Changed, AddressOf ucvcSetTarget81_Val2_Changed
@@ -1182,9 +1182,9 @@ Public Class ucProgLineEdit
             End If
             ucvcSetSource321.SourceLabel = "= "
             ucvcSetSource321.UnitsLabel = ""
-            ucvcSetSource321.SourceSelectedIndex = _ProgLine(DataFieldEnum.df321S)
-            ucvcSetSource321.Val1 = _ProgLine(DataFieldEnum.df321V1)
-            ucvcSetSource321.Val2 = _ProgLine(DataFieldEnum.df321V2)
+            ucvcSetSource321.SourceSelectedIndex = _ProgLine(eDataField.df321S)
+            ucvcSetSource321.Val1 = _ProgLine(eDataField.df321V1)
+            ucvcSetSource321.Val2 = _ProgLine(eDataField.df321V2)
             AddHandler ucvcSetSource321.Source_Changed, AddressOf ucvcSetSource321_Source_Changed
             AddHandler ucvcSetSource321.Val_Changed, AddressOf ucvcSetSource321_Val1_Changed
             AddHandler ucvcSetSource321.Val2_Changed, AddressOf ucvcSetSource321_Val2_Changed
@@ -1194,10 +1194,10 @@ Public Class ucProgLineEdit
                 cboSetModOperator82V2.Items.Clear()
                 cboSetModOperator82V2.Items.AddRange(mathFunctionString)
             End If
-            If _ProgLine(DataFieldEnum.df82V2) >= mathFunctionString.Length Then
-                _ProgLine(DataFieldEnum.df82V2) = 0
+            If _ProgLine(eDataField.df82V2) >= mathFunctionString.Length Then
+                _ProgLine(eDataField.df82V2) = 0
             Else
-                cboSetModOperator82V2.SelectedIndex = _ProgLine(DataFieldEnum.df82V2)
+                cboSetModOperator82V2.SelectedIndex = _ProgLine(eDataField.df82V2)
             End If
             If cboSetModOperator82V2.SelectedIndex = 0 Then
                 ucvcSetModifierVal322.Visible = False
@@ -1211,9 +1211,9 @@ Public Class ucProgLineEdit
             End If
             ucvcSetModifierVal322.SourceLabel = mathFunctionString(cboSetModOperator82V2.SelectedIndex) + " "
             ucvcSetModifierVal322.UnitsLabel = ""
-            ucvcSetModifierVal322.SourceSelectedIndex = _ProgLine(DataFieldEnum.df322S)
-            ucvcSetModifierVal322.Val1 = _ProgLine(DataFieldEnum.df322V1)
-            ucvcSetModifierVal322.Val2 = _ProgLine(DataFieldEnum.df322V2)
+            ucvcSetModifierVal322.SourceSelectedIndex = _ProgLine(eDataField.df322S)
+            ucvcSetModifierVal322.Val1 = _ProgLine(eDataField.df322V1)
+            ucvcSetModifierVal322.Val2 = _ProgLine(eDataField.df322V2)
             AddHandler ucvcSetModifierVal322.Source_Changed, AddressOf ucvcSetModifierVal322_Source_Changed
             AddHandler ucvcSetModifierVal322.Val_Changed, AddressOf ucvcSetModifierVal322_Val_Changed
             AddHandler ucvcSetModifierVal322.Val2_Changed, AddressOf ucvcSetModifierVal322_Val2_Changed
@@ -1252,15 +1252,15 @@ Public Class ucProgLineEdit
                 cboProgControlOperation.Items.Clear()
                 cboProgControlOperation.Items.AddRange(programOpTypeString)
             End If
-            If _ProgLine(DataFieldEnum.df81V1) >= programOpTypeString.Length Then
-                _ProgLine(DataFieldEnum.df81V1) = 0
+            If _ProgLine(eDataField.df81V1) >= programOpTypeString.Length Then
+                _ProgLine(eDataField.df81V1) = 0
             End If
-            Dim tmpVal As Integer = _ProgLine(DataFieldEnum.df81V1)
+            Dim tmpVal As Integer = _ProgLine(eDataField.df81V1)
             cboProgControlOperation.SelectedIndex = tmpVal
             If tmpVal > 0 Then
                 lblProgControlChannel.Visible = True
                 cboProgControlChannel.Visible = True
-                If (tmpVal = OpTypeEnum.opLoadProgramAndPause) Or (tmpVal = OpTypeEnum.opLoadProgramAndRun) Then
+                If (tmpVal = eOpType.opLoadProgramAndPause) Or (tmpVal = eOpType.opLoadProgramAndRun) Then
                     ucvcProgControlProgNum321.Visible = True
                 Else
                     ucvcProgControlProgNum321.Visible = False
@@ -1277,10 +1277,10 @@ Public Class ucProgLineEdit
                 cboProgControlChannel.Items.Clear()
                 cboProgControlChannel.Items.AddRange(devRef.allChannelsStringPlusThisChan)
             End If
-            If _ProgLine(DataFieldEnum.dfChannel) >= devRef.allChannelsStringPlusThisChan.Length Then
-                _ProgLine(DataFieldEnum.dfChannel) = 0
+            If _ProgLine(eDataField.dfChannel) >= devRef.allChannelsStringPlusThisChan.Length Then
+                _ProgLine(eDataField.dfChannel) = 0
             End If
-            cboProgControlChannel.SelectedIndex = _ProgLine(DataFieldEnum.dfChannel)
+            cboProgControlChannel.SelectedIndex = _ProgLine(eDataField.dfChannel)
             AddHandler cboProgControlChannel.SelectedIndexChanged, AddressOf cboProgControlChannel_SelectedIndexChanged
 
             If ucvcProgControlProgNum321.SourceItems.Count < dataSourceString.Length Then
@@ -1288,9 +1288,9 @@ Public Class ucProgLineEdit
             End If
             ucvcProgControlProgNum321.SourceLabel = "Prog #:"
             ucvcProgControlProgNum321.UnitsLabel = ""
-            ucvcProgControlProgNum321.SourceSelectedIndex = _ProgLine(DataFieldEnum.df321S)
-            ucvcProgControlProgNum321.Val1 = _ProgLine(DataFieldEnum.df321V1)
-            ucvcProgControlProgNum321.Val2 = _ProgLine(DataFieldEnum.df321V2)
+            ucvcProgControlProgNum321.SourceSelectedIndex = _ProgLine(eDataField.df321S)
+            ucvcProgControlProgNum321.Val1 = _ProgLine(eDataField.df321V1)
+            ucvcProgControlProgNum321.Val2 = _ProgLine(eDataField.df321V2)
             AddHandler ucvcProgControlProgNum321.Source_Changed, AddressOf ucvcProgControlProgNum321_Source_Changed
             AddHandler ucvcProgControlProgNum321.Val_Changed, AddressOf ucvcProgControlProgNum321_Val_Changed
             AddHandler ucvcProgControlProgNum321.Val2_Changed, AddressOf ucvcProgControlProgNum321_Val2_Changed
@@ -1426,95 +1426,95 @@ Public Class ucProgLineEdit
     End Sub
 
     Private Sub cboCommand_SelectedIndexChanged(sender As Object, e As EventArgs)
-        'If cboCommand.SelectedIndex = _ProgLine(DataFieldEnum.dfCommand) Then Exit Sub
+        'If cboCommand.SelectedIndex = _ProgLine(eDataField.dfCommand) Then Exit Sub
 
         HideControlGroups()
 
-        If cboCommand.SelectedIndex = CommandEnum.cmdTenMotOutput Then
+        If cboCommand.SelectedIndex = eCommand.cmdTenMotOutput Then
             pnlTenMot.Top = TopPanelY
             pnlTenMot.Visible = True
             grpWaveform.Visible = True
 
             'Set the waveform rdo button
-            Select Case _ProgLine(DataFieldEnum.dfGotoTrue) 'Waveform field for tenMot output
-                Case WaveformEnum.wfRamp
+            Select Case _ProgLine(eDataField.dfGotoTrue) 'Waveform field for tenMot output
+                Case eWaveform.wfRamp
                     If rdoWaveformRamp.Checked = False Then
                         rdoWaveformRamp.Checked = True
                     Else
                         WaveformShapeRadioCheckChanged(Nothing, Nothing)
                     End If
-                Case WaveformEnum.wfTriangle
+                Case eWaveform.wfTriangle
                     If rdoWaveformTriangle.Checked = False Then
                         rdoWaveformTriangle.Checked = True
                     Else
                         WaveformShapeRadioCheckChanged(Nothing, Nothing)
                     End If
-                Case WaveformEnum.wfSine
+                Case eWaveform.wfSine
                     If rdoWaveformSine.Checked = False Then
                         rdoWaveformSine.Checked = True
                     Else
                         WaveformShapeRadioCheckChanged(Nothing, Nothing)
                     End If
                 Case Else
-                    _ProgLine(DataFieldEnum.dfGotoTrue) = 0 'Waveform field for tenMot output
+                    _ProgLine(eDataField.dfGotoTrue) = 0 'Waveform field for tenMot output
                     ShowTenMotGroup(False)
             End Select
 
-        ElseIf cboCommand.SelectedIndex = CommandEnum.cmdGoTo Then
+        ElseIf cboCommand.SelectedIndex = eCommand.cmdGoTo Then
             grpGoto.Top = TopPanelY
             ShowGotoGroup(True)
-        ElseIf cboCommand.SelectedIndex = CommandEnum.cmdDelay Then
+        ElseIf cboCommand.SelectedIndex = eCommand.cmdDelay Then
             grpDelay.Top = TopPanelY
             ShowDelayGroup(True)
-        ElseIf cboCommand.SelectedIndex = CommandEnum.cmdTest Then
+        ElseIf cboCommand.SelectedIndex = eCommand.cmdTest Then
             grpTest.Top = TopPanelY
             ShowTestGroup(True)
-        ElseIf cboCommand.SelectedIndex = CommandEnum.cmdSet Then
+        ElseIf cboCommand.SelectedIndex = eCommand.cmdSet Then
             grpSet.Top = TopPanelY
             ShowSetGroup(True)
-            'ElseIf cboCommand.SelectedIndex = CommandEnum.cmdSetModifier Then
+            'ElseIf cboCommand.SelectedIndex = eCommand.cmdSetModifier Then
             '    grpModifier.Top = TopPanelY
             '    ShowModifierGroup(True)
-        ElseIf cboCommand.SelectedIndex = CommandEnum.cmdProgControl Then
+        ElseIf cboCommand.SelectedIndex = eCommand.cmdProgControl Then
             grpProgControl.Top = TopPanelY
             ShowProgControlGroup(True)
-        ElseIf cboCommand.SelectedIndex = CommandEnum.cmdDisplay Then
+        ElseIf cboCommand.SelectedIndex = eCommand.cmdDisplay Then
             grpDisplay.Top = TopPanelY
             ShowDisplayGroup(True)
-        ElseIf cboCommand.SelectedIndex = CommandEnum.cmdSendMsg Then
+        ElseIf cboCommand.SelectedIndex = eCommand.cmdSendMsg Then
             grpSendMsg.Top = TopPanelY
             ShowSendMsgGroup(True)
         End If
 
-        _ProgLine(DataFieldEnum.dfCommand) = cboCommand.SelectedIndex
+        _ProgLine(eDataField.dfCommand) = cboCommand.SelectedIndex
     End Sub
 
 
 #Region "TenMot_Events"
 
     Private Sub ucvcTenMotStart_Source_Changed(sender As Object, newSourceIndex As Integer)
-        _ProgLine(DataFieldEnum.df81S) = newSourceIndex
+        _ProgLine(eDataField.df81S) = newSourceIndex
     End Sub
     Private Sub ucvcTenMotStart_Val_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df81V1) = newVal
+        _ProgLine(eDataField.df81V1) = newVal
     End Sub
     Private Sub ucvcTenMotStart_Val2_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df81V2) = newVal
+        _ProgLine(eDataField.df81V2) = newVal
     End Sub
 
 
     Private Sub ucvcTenMotEnd_Source_Changed(sender As Object, newSourceIndex As Integer)
-        _ProgLine(DataFieldEnum.df82S) = newSourceIndex
+        _ProgLine(eDataField.df82S) = newSourceIndex
     End Sub
     Private Sub ucvcTenMotEnd_Val_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df82V1) = newVal
+        _ProgLine(eDataField.df82V1) = newVal
     End Sub
     Private Sub ucvcTenMotEnd_Val2_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df82V2) = newVal
+        _ProgLine(eDataField.df82V2) = newVal
     End Sub
 
     Private Sub CboPolarity_SelectedIndexChanged(sender As Object, e As EventArgs)
-        _ProgLine(DataFieldEnum.dfPolarity) = cboPolarity.SelectedIndex
+        _ProgLine(eDataField.dfPolarity) = cboPolarity.SelectedIndex
     End Sub
 
     Private Sub txtTenMotDutyCycle_TextChanged(sender As Object, e As EventArgs)
@@ -1542,28 +1542,28 @@ Public Class ucProgLineEdit
             tmpVal = CInt(txtTenMotDutyCycle.Text)
         End If
 
-        _ProgLine(DataFieldEnum.dfGotoFalse) = tmpVal
+        _ProgLine(eDataField.dfGotoFalse) = tmpVal
     End Sub
 
 
     Private Sub ucvcTenMotV321_Source_Changed(sender As Object, newSourceIndex As Integer)
-        _ProgLine(DataFieldEnum.df321S) = newSourceIndex
+        _ProgLine(eDataField.df321S) = newSourceIndex
     End Sub
     Private Sub ucvcTenMotV321_Val_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df321V1) = newVal
+        _ProgLine(eDataField.df321V1) = newVal
     End Sub
     Private Sub ucvcTenMotV321_Val2_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df321V2) = newVal
+        _ProgLine(eDataField.df321V2) = newVal
     End Sub
 
     Private Sub ucvcTenMotV322_Source_Changed(sender As Object, newSourceIndex As Integer)
-        _ProgLine(DataFieldEnum.df322S) = newSourceIndex
+        _ProgLine(eDataField.df322S) = newSourceIndex
     End Sub
     Private Sub ucvcTenMotV322_Val_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df322V1) = newVal
+        _ProgLine(eDataField.df322V1) = newVal
     End Sub
     Private Sub ucvcTenMotV322_Val2_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df322V2) = newVal
+        _ProgLine(eDataField.df322V2) = newVal
     End Sub
 
     Private Sub chkTenMotPostDelay_CheckedChanged(sender As Object, e As EventArgs)
@@ -1571,75 +1571,75 @@ Public Class ucProgLineEdit
         If tmpVal = 1 Then
             ucvcTenMotV323.Visible = True
         Else
-            _ProgLine(DataFieldEnum.df323S) = 0
-            _ProgLine(DataFieldEnum.df323V1) = 0
-            _ProgLine(DataFieldEnum.df323V2) = 0
+            _ProgLine(eDataField.df323S) = 0
+            _ProgLine(eDataField.df323V1) = 0
+            _ProgLine(eDataField.df323V2) = 0
             ucvcTenMotV323.Visible = False
         End If
-        ucvcTenMotV323.SourceSelectedIndex = _ProgLine(DataFieldEnum.df323S)
-        ucvcTenMotV323.Val1 = _ProgLine(DataFieldEnum.df323V1)
-        ucvcTenMotV323.Val2 = _ProgLine(DataFieldEnum.df323V2)
+        ucvcTenMotV323.SourceSelectedIndex = _ProgLine(eDataField.df323S)
+        ucvcTenMotV323.Val1 = _ProgLine(eDataField.df323V1)
+        ucvcTenMotV323.Val2 = _ProgLine(eDataField.df323V2)
     End Sub
 
     Private Sub ucvcTenMotV323_Source_Changed(sender As Object, newSourceIndex As Integer)
-        _ProgLine(DataFieldEnum.df323S) = newSourceIndex
+        _ProgLine(eDataField.df323S) = newSourceIndex
     End Sub
     Private Sub ucvcTenMotV323_Val_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df323V1) = newVal
+        _ProgLine(eDataField.df323V1) = newVal
     End Sub
     Private Sub ucvcTenMotV323_Val2_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df323V2) = newVal
+        _ProgLine(eDataField.df323V2) = newVal
     End Sub
 
 #End Region
 #Region "Delay_Events"
 
     Private Sub ucvcDelay_Source_Changed(sender As Object, newSourceIndex As Integer)
-        _ProgLine(DataFieldEnum.df323S) = newSourceIndex
+        _ProgLine(eDataField.df323S) = newSourceIndex
     End Sub
     Private Sub ucvcDelay_Val_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df323V1) = newVal
+        _ProgLine(eDataField.df323V1) = newVal
     End Sub
     Private Sub ucvcDelay_Val2_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df323V2) = newVal
+        _ProgLine(eDataField.df323V2) = newVal
     End Sub
 
 #End Region
 #Region "Goto_Events"
     Private Sub txtGotoLine_TextChanged(sender As Object, e As EventArgs)
         Dim tmpVal As Integer = GetGotoTextBoxValue(txtGotoLine)
-        _ProgLine(DataFieldEnum.dfGotoTrue) = tmpVal
+        _ProgLine(eDataField.dfGotoTrue) = tmpVal
     End Sub
 #End Region
 #Region "Test_Events"
 
     Private Sub ucvcTestValLeft81_Source_Changed(sender As Object, newSourceIndex As Integer)
-        _ProgLine(DataFieldEnum.df81S) = newSourceIndex
+        _ProgLine(eDataField.df81S) = newSourceIndex
     End Sub
     Private Sub ucvcTestValLeft81_Val_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df81V1) = newVal
+        _ProgLine(eDataField.df81V1) = newVal
     End Sub
     Private Sub ucvcTestValLeft81_Val2_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df81V2) = newVal
+        _ProgLine(eDataField.df81V2) = newVal
     End Sub
 
     Private Sub cboTestType82V1_SelectedIndexChanged(sender As Object, e As EventArgs)
-        _ProgLine(DataFieldEnum.df82V1) = cboTestType82V1.SelectedIndex
+        _ProgLine(eDataField.df82V1) = cboTestType82V1.SelectedIndex
     End Sub
 
     Private Sub ucvcTestValRight321_Source_Changed(sender As Object, newSourceIndex As Integer)
-        _ProgLine(DataFieldEnum.df321S) = newSourceIndex
+        _ProgLine(eDataField.df321S) = newSourceIndex
     End Sub
     Private Sub ucvcTestValRight321_Val_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df321V1) = newVal
+        _ProgLine(eDataField.df321V1) = newVal
     End Sub
     Private Sub ucvcTestValRight321_Val2_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df321V2) = newVal
+        _ProgLine(eDataField.df321V2) = newVal
     End Sub
 
     Private Sub cboTestRightModOperator82V2_SelectedIndexChanged(sender As Object, e As EventArgs)
         Dim tmpVal = cboTestRightModOperator82V2.SelectedIndex
-        _ProgLine(DataFieldEnum.df82V2) = tmpVal
+        _ProgLine(eDataField.df82V2) = tmpVal
         ucvcTestValRight322.SourceLabel = mathFunctionString(cboTestRightModOperator82V2.SelectedIndex) + " "
         If tmpVal = 0 Then 'Public mathFunctionString As String() = {" ", "+", "-", "x", "/", "mod"}
             ucvcTestValRight322.Visible = False
@@ -1649,50 +1649,50 @@ Public Class ucProgLineEdit
     End Sub
 
     Private Sub ucvcTestValRight322_Source_Changed(sender As Object, newSourceIndex As Integer)
-        _ProgLine(DataFieldEnum.df322S) = newSourceIndex
+        _ProgLine(eDataField.df322S) = newSourceIndex
     End Sub
     Private Sub ucvcTestValRight322_Val_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df322V1) = newVal
+        _ProgLine(eDataField.df322V1) = newVal
     End Sub
     Private Sub ucvcTestValRight322_Val2_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df322V2) = newVal
+        _ProgLine(eDataField.df322V2) = newVal
     End Sub
 
     Private Sub txtTestGTT_TextChanged(sender As Object, e As EventArgs) Handles txtTestGTT.TextChanged
         Dim tmpVal As Integer = GetGotoTextBoxValue(txtTestGTT)
-        _ProgLine(DataFieldEnum.dfGotoTrue) = tmpVal
+        _ProgLine(eDataField.dfGotoTrue) = tmpVal
     End Sub
     Private Sub txtTestGTF_TextChanged(sender As Object, e As EventArgs) Handles txtTestGTF.TextChanged
         Dim tmpVal As Integer = GetGotoTextBoxValue(txtTestGTF)
-        _ProgLine(DataFieldEnum.dfGotoFalse) = tmpVal
+        _ProgLine(eDataField.dfGotoFalse) = tmpVal
     End Sub
 
 #End Region
 #Region "Set_Events"
 
     Private Sub ucvcSetTarget81_Source_Changed(sender As Object, newSourceIndex As Integer)
-        _ProgLine(DataFieldEnum.df81S) = newSourceIndex
+        _ProgLine(eDataField.df81S) = newSourceIndex
     End Sub
     Private Sub ucvcSetTarget81_Val1_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df81V1) = newVal
+        _ProgLine(eDataField.df81V1) = newVal
     End Sub
     Private Sub ucvcSetTarget81_Val2_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df81V2) = newVal
+        _ProgLine(eDataField.df81V2) = newVal
     End Sub
 
     Private Sub ucvcSetSource321_Source_Changed(sender As Object, newSourceIndex As Integer)
-        _ProgLine(DataFieldEnum.df321S) = newSourceIndex
+        _ProgLine(eDataField.df321S) = newSourceIndex
     End Sub
     Private Sub ucvcSetSource321_Val1_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df321V1) = newVal
+        _ProgLine(eDataField.df321V1) = newVal
     End Sub
     Private Sub ucvcSetSource321_Val2_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df321V2) = newVal
+        _ProgLine(eDataField.df321V2) = newVal
     End Sub
 
     Private Sub cboSetModOperator82V2_SelectedIndexChanged(sender As Object, e As EventArgs)
         Dim tmpVal As Integer = cboSetModOperator82V2.SelectedIndex
-        _ProgLine(DataFieldEnum.df82V2) = tmpVal
+        _ProgLine(eDataField.df82V2) = tmpVal
         ucvcSetModifierVal322.SourceLabel = mathFunctionString(cboSetModOperator82V2.SelectedIndex) + " "
         If tmpVal = 0 Then 'Public mathFunctionString As String() = {" ", "+", "-", "x", "/", "mod"}
             ucvcSetModifierVal322.Visible = False
@@ -1702,13 +1702,13 @@ Public Class ucProgLineEdit
     End Sub
 
     Private Sub ucvcSetModifierVal322_Source_Changed(sender As Object, newSourceIndex As Integer)
-        _ProgLine(DataFieldEnum.df322S) = newSourceIndex
+        _ProgLine(eDataField.df322S) = newSourceIndex
     End Sub
     Private Sub ucvcSetModifierVal322_Val_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df322V1) = newVal
+        _ProgLine(eDataField.df322V1) = newVal
     End Sub
     Private Sub ucvcSetModifierVal322_Val2_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df322V2) = newVal
+        _ProgLine(eDataField.df322V2) = newVal
     End Sub
 
 #End Region
@@ -1719,11 +1719,11 @@ Public Class ucProgLineEdit
 
     Private Sub cboProgControlOperation_SelectedIndexChanged(sender As Object, e As EventArgs)
         Dim tmpVal As Integer = cboProgControlOperation.SelectedIndex
-        _ProgLine(DataFieldEnum.df81V1) = tmpVal
+        _ProgLine(eDataField.df81V1) = tmpVal
         If tmpVal > 0 Then
             lblProgControlChannel.Visible = True
             cboProgControlChannel.Visible = True
-            If (tmpVal = OpTypeEnum.opLoadProgramAndPause) Or (tmpVal = OpTypeEnum.opLoadProgramAndRun) Then
+            If (tmpVal = eOpType.opLoadProgramAndPause) Or (tmpVal = eOpType.opLoadProgramAndRun) Then
                 ucvcProgControlProgNum321.Visible = True
             Else
                 ucvcProgControlProgNum321.Visible = False
@@ -1736,17 +1736,17 @@ Public Class ucProgLineEdit
     End Sub
 
     Private Sub cboProgControlChannel_SelectedIndexChanged(sender As Object, e As EventArgs)
-        _ProgLine(DataFieldEnum.dfChannel) = cboProgControlChannel.SelectedIndex
+        _ProgLine(eDataField.dfChannel) = cboProgControlChannel.SelectedIndex
     End Sub
 
     Private Sub ucvcProgControlProgNum321_Source_Changed(sender As Object, newSourceIndex As Integer)
-        _ProgLine(DataFieldEnum.df321S) = newSourceIndex
+        _ProgLine(eDataField.df321S) = newSourceIndex
     End Sub
     Private Sub ucvcProgControlProgNum321_Val_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df321V1) = newVal
+        _ProgLine(eDataField.df321V1) = newVal
     End Sub
     Private Sub ucvcProgControlProgNum321_Val2_Changed(sender As Object, newVal As Integer)
-        _ProgLine(DataFieldEnum.df321V2) = newVal
+        _ProgLine(eDataField.df321V2) = newVal
     End Sub
 
 
@@ -1764,12 +1764,12 @@ Public Class ucProgLineEdit
 
 #End Region
     'Private Sub _Source_Changed(sender As Object, newSourceIndex As Integer)
-    '    _ProgLine(DataFieldEnum.df) = newSourceIndex
+    '    _ProgLine(eDataField.df) = newSourceIndex
     'End Sub
     'Private Sub _Val_Changed(sender As Object, newVal As Integer)
-    '    _ProgLine(DataFieldEnum.df) = newVal
+    '    _ProgLine(eDataField.df) = newVal
     'End Sub
     'Private Sub _Val2_Changed(sender As Object, newVal As Integer)
-    '    _ProgLine(DataFieldEnum.df) = newVal
+    '    _ProgLine(eDataField.df) = newVal
     'End Sub
 End Class

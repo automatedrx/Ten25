@@ -782,7 +782,7 @@ Partial Class Form1
         tabpageVariables.Location = New Point(4, 24)
         tabpageVariables.Name = "tabpageVariables"
         tabpageVariables.Padding = New Padding(3)
-        tabpageVariables.Size = New Size(418, 414)
+        tabpageVariables.Size = New Size(192, 72)
         tabpageVariables.TabIndex = 1
         tabpageVariables.Text = "Variables"
         tabpageVariables.UseVisualStyleBackColor = True
@@ -802,7 +802,7 @@ Partial Class Form1
         ' SplitContainerVariables.Panel2
         ' 
         SplitContainerVariables.Panel2.Controls.Add(dgvVariables)
-        SplitContainerVariables.Size = New Size(412, 408)
+        SplitContainerVariables.Size = New Size(186, 66)
         SplitContainerVariables.SplitterDistance = 36
         SplitContainerVariables.TabIndex = 0
         ' 
@@ -824,7 +824,7 @@ Partial Class Form1
         dgvVariables.Name = "dgvVariables"
         dgvVariables.ReadOnly = True
         dgvVariables.RowHeadersVisible = False
-        dgvVariables.Size = New Size(412, 368)
+        dgvVariables.Size = New Size(186, 26)
         dgvVariables.TabIndex = 0
         ' 
         ' tabpageTimers
@@ -833,7 +833,7 @@ Partial Class Form1
         tabpageTimers.Location = New Point(4, 24)
         tabpageTimers.Name = "tabpageTimers"
         tabpageTimers.Padding = New Padding(3)
-        tabpageTimers.Size = New Size(418, 414)
+        tabpageTimers.Size = New Size(192, 72)
         tabpageTimers.TabIndex = 2
         tabpageTimers.Text = "Timers"
         tabpageTimers.UseVisualStyleBackColor = True
@@ -853,7 +853,7 @@ Partial Class Form1
         ' SplitContainerTimers.Panel2
         ' 
         SplitContainerTimers.Panel2.Controls.Add(dgvTimers)
-        SplitContainerTimers.Size = New Size(412, 408)
+        SplitContainerTimers.Size = New Size(186, 66)
         SplitContainerTimers.SplitterDistance = 36
         SplitContainerTimers.TabIndex = 1
         ' 
@@ -875,7 +875,7 @@ Partial Class Form1
         dgvTimers.Name = "dgvTimers"
         dgvTimers.ReadOnly = True
         dgvTimers.RowHeadersVisible = False
-        dgvTimers.Size = New Size(412, 368)
+        dgvTimers.Size = New Size(186, 26)
         dgvTimers.TabIndex = 1
         ' 
         ' pnlProgramList
@@ -1458,7 +1458,7 @@ Partial Class Form1
         ' 
         ' Form1
         ' 
-        AutoScaleDimensions = New SizeF(7F, 15F)
+        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(1314, 941)
         Controls.Add(SplitContainer9)

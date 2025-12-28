@@ -54,7 +54,7 @@ Public Class ucChanControl
     Dim _startPulseWidth As Integer = -1
     Dim _endPulseWidth As Integer = -1
 
-    Dim _chanType As enumChantype = enumChantype.Unknown
+    Dim _chanType As eChanType = eChanType.Unknown
     Dim _origWidth As Integer = 177 'need to update this if the control gets wider.  
 
 
@@ -99,27 +99,27 @@ Public Class ucChanControl
         Set(value As Integer)
             If _chanType <> value Then
                 _chanType = value
-                If _chanType = enumChantype.Tens Then
+                If _chanType = eChanType.Tens Then
                     grpIntensity.Visible = True
                     grpOutputIntensity.Visible = True
                     grpProgInfo.Visible = True
                     grpPulseWidth.Visible = True
                     Me.Width = WidthWithTens
-                ElseIf _chanType = enumChantype.Motor Then
+                ElseIf _chanType = eChanType.Motor Then
                     grpIntensity.Visible = True
                     grpOutputIntensity.Visible = False
                     Width -= (grpOutputIntensity.Width + 2)
                     grpProgInfo.Visible = True
                     grpPulseWidth.Visible = True
                     Me.Width = WidthWithTens
-                ElseIf _chanType = enumChantype.Master Then
+                ElseIf _chanType = eChanType.Master Then
                     grpIntensity.Visible = False
                     grpOutputIntensity.Visible = False
                     Width -= (grpOutputIntensity.Width + 2)
                     grpProgInfo.Visible = False
                     grpPulseWidth.Visible = False
                     Me.Width = WidthWithoutTens
-                ElseIf _chanType = enumChantype.Aux Then
+                ElseIf _chanType = eChanType.Aux Then
                     grpIntensity.Visible = False
                     grpOutputIntensity.Visible = False
                     Width -= (grpOutputIntensity.Width + 2)
@@ -166,19 +166,19 @@ Public Class ucChanControl
             End If
             Dim txtVal As String = ""
             Select Case _progState
-                Case ProgStateEnum.progState_Unknown
+                Case eProgState.progState_Unknown
                     txtVal = "Unknown"
-                Case ProgStateEnum.progState_Empty
+                Case eProgState.progState_Empty
                     txtVal = "Empty"
-                Case ProgStateEnum.progState_Stopped
+                Case eProgState.progState_Stopped
                     txtVal = "Stopped"
-                Case ProgStateEnum.progState_Paused
+                Case eProgState.progState_Paused
                     txtVal = "Paused"
-                Case ProgStateEnum.progState_Running
+                Case eProgState.progState_Running
                     txtVal = "Running"
-                Case ProgStateEnum.progState_LineComplete
+                Case eProgState.progState_LineComplete
                     txtVal = "Line Complete"
-                Case ProgStateEnum.progState_End
+                Case eProgState.progState_End
                     txtVal = "End"
             End Select
             If lblProgState.Text <> txtVal Then
@@ -364,20 +364,20 @@ Public Class ucChanControl
 
                 Dim tmpCmdText As String = ""
                 Dim pLine() As Integer = _progRef(_progNum).progLine(_lineNum)
-                Select Case pLine(DataFieldEnum.dfCommand)
-                    Case CommandEnum.cmdNoop
+                Select Case pLine(eDataField.dfCommand)
+                    Case eCommand.cmdNoop
                         tmpCmdText = "-No Op-"
-                    Case CommandEnum.cmdTenMotOutput
+                    Case eCommand.cmdTenMotOutput
                         tmpCmdText = "Ten/Mot Output"
-                    Case CommandEnum.cmdGoTo
+                    Case eCommand.cmdGoTo
                         tmpCmdText = "GoTo"
-                    Case CommandEnum.cmdEnd
+                    Case eCommand.cmdEnd
                         tmpCmdText = "End"
-                    Case CommandEnum.cmdTest
+                    Case eCommand.cmdTest
                         tmpCmdText = "Test"
-                    Case CommandEnum.cmdSet
+                    Case eCommand.cmdSet
                         tmpCmdText = "Set"
-                    Case CommandEnum.cmdDelay
+                    Case eCommand.cmdDelay
                         tmpCmdText = "Delay"
                     Case Else
                         tmpCmdText = ""
@@ -402,7 +402,7 @@ Public Class ucChanControl
                 If grpProgInfo.Visible = True Then
                     Dim tmpPolText As String = ""
                     Dim pLine() As Integer = _progRef(_progNum).progLine(_lineNum)
-                    If pLine(DataFieldEnum.dfCommand) = CommandEnum.cmdTenMotOutput Then
+                    If pLine(eDataField.dfCommand) = eCommand.cmdTenMotOutput Then
                         Select Case _polarity
                             Case 0
                                 tmpPolText = "Fwd"
@@ -503,8 +503,8 @@ Public Class ucChanControl
                 If _lineNum >= _progRef(_progNum).progLine.Count Then Exit Property
 
                 Dim pLine() As Integer = _progRef(_progNum).progLine(_lineNum)
-                Dim tmpCmd As CommandEnum = pLine(DataFieldEnum.dfCommand)
-                If (tmpCmd = CommandEnum.cmdDelay) And (lblCommand.Text <> "Delay (" & value & ")") Then
+                Dim tmpCmd As eCommand = pLine(eDataField.dfCommand)
+                If (tmpCmd = eCommand.cmdDelay) And (lblCommand.Text <> "Delay (" & value & ")") Then
                     lblCommand.Text = "Delay (" & value & ")"
                 End If
             Else

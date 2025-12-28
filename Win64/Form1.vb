@@ -1,14 +1,15 @@
-﻿Imports System.Drawing.Text
+﻿Imports System.ComponentModel
+Imports System.Drawing.Text
 Imports System.IO
 Imports System.IO.Ports
-Imports Tens2502.comDef
+Imports System.Net
+Imports System.Reflection
+Imports System.Runtime.Intrinsics
+Imports System.Windows.Forms.AxHost
 Imports Newtonsoft.Json
 Imports Newtonsoft.Json.Linq
-Imports System.Net
-Imports System.ComponentModel
-Imports System.Reflection
+Imports Tens2502.comDef
 Imports Tens2502.My
-Imports System.Runtime.Intrinsics
 
 Public Class Form1
 
@@ -85,7 +86,7 @@ Public Class Form1
 
     Private simState As eSimState = eSimState.Stopped
     Private simChannelStates() As ChannelSimState  ' One per channel
-    Private simTimer As New Timer With {.Interval = 50}  ' 20 Hz simulation tick
+    Private tmrSim As New Timer With {.Interval = 50}  ' 20 Hz simulation tick
     Private simBreakpoints As New HashSet(Of Integer)  ' Line numbers with breakpoints (0-based)
 
     Private Class ChannelSimState
@@ -102,6 +103,19 @@ Public Class Form1
         Public OutputDuration As Integer = 0
         Public OutputStartVal As Integer = 0
         Public OutputEndVal As Integer = 0
+        Public OutputCurVal As Integer = 0
+        Public DelayDuration As Integer = 0
+
+        Public OutputMaxPulsewidthPercent As Integer = 50
+
+
+        Public Speed As Integer = 100
+        Public Polarity As ePolarity = ePolarity.polForward
+        Public PolaritySwapped As Boolean = False
+        Public TensIntensityCurLevel As Integer = 20
+        Public TensIntensityMinLevel As Integer = 0
+        Public TensIntensityMaxLevel As Integer = 40
+
     End Class
 
 
@@ -794,8 +808,8 @@ Public Class Form1
             ' All values initialized to 0 by default
         Next
 
-        AddHandler simTimer.Tick, AddressOf SimulatorTick
-        simTimer.Enabled = False
+        AddHandler tmrSim.Tick, AddressOf tmrSim_Tick
+        tmrSim.Enabled = False
     End Sub
 
     Private Sub InitializeDebugTabs()
@@ -896,14 +910,24 @@ Public Class Form1
     End Sub
 
 
-    Private Sub SimulatorTick(sender As Object, e As EventArgs)
+    Private Sub tmrSim_Tick(sender As Object, e As EventArgs)
         If simState = eSimState.Running OrElse simState = eSimState.Stepping Then
-            ExecuteOneSimulationCycle()
+            ' Advance one line on every channel (simple demo)
+            For i = 0 To simChannelStates.Length - 1
+                simChannelStates(i).CurLineNum += 1
+                If simChannelStates(i).CurLineNum >= editorDev.Prog(simChannelStates(i).CurProgNum).progLine.Count Then
+                    simChannelStates(i).CurLineNum = 0
+                End If
+            Next
+
             UpdateAllDebugGridsAndHighlight()
 
+            ' If we were stepping, pause after one cycle
             If simState = eSimState.Stepping Then
                 simState = eSimState.Paused
-                simTimer.Enabled = False
+                tmrSim.Enabled = False
+                tsbtnDebugRun.Enabled = True
+                tsbtnDebugPause.Enabled = False
                 tsbtnDebugStep.Enabled = True
             End If
         End If
@@ -924,7 +948,7 @@ Public Class Form1
             ' Check breakpoint
             If simBreakpoints.Contains(state.CurLineNum) Then
                 simState = eSimState.Paused
-                simTimer.Enabled = False
+                tmrSim.Enabled = False
                 tsbtnDebugRun.Enabled = True
                 tsbtnDebugPause.Enabled = False
                 tsbtnDebugStep.Enabled = True
@@ -936,18 +960,14 @@ Public Class Form1
                     ' Do nothing
 
                 Case eCommand.cmdSet
-                    Dim targetVar As Integer = line(eDataField.dfParam1)
-                    Dim value As Integer = line(eDataField.dfParam2)
-                    If targetVar >= 0 AndAlso targetVar < state.Variables.Length Then
-                        state.Variables(targetVar) = value
-                    End If
+                    SimulatorSetCommand(chanIdx, line)
 
                 Case eCommand.cmdGoTo
                     state.CurLineNum = line(eDataField.dfGotoTrue) - 1
                     Continue For  ' Skip increment
 
                 Case eCommand.cmdTest
-                    Dim testResult As Boolean = EvaluateTest(line, state)
+                    Dim testResult As Boolean = SimulatorTestCommand(chanIdx, line)
                     If testResult Then
                         state.CurLineNum = line(eDataField.dfGotoTrue) - 1
                     Else
@@ -957,14 +977,7 @@ Public Class Form1
 
                 Case eCommand.cmdTenMotOutput
                     ' Simulate output activation
-                    state.OutputActive = True
-                    state.OutputStartTime = Environment.TickCount
-                    state.OutputDuration = line(eDataField.dfDuration)
-                    state.OutputStartVal = line(eDataField.dfStartVal)
-                    state.OutputEndVal = line(eDataField.dfEndVal)
-                    state.RepeatsRemaining = line(eDataField.dfRepeats)
-
-                    ' Add more commands as needed...
+                    SimulatorTenMotOutputCommand(chanIdx, state, line)
             End Select
 
             ' Increment line
@@ -975,40 +988,383 @@ Public Class Form1
         Next
     End Sub
 
-    Private Function EvaluateTest(line() As Integer, state As ChannelSimState) As Boolean
-        ' Simplified — expand as needed
-        Dim varNum As Integer = line(eDataField.dfParam1)
-        Dim compareVal As Integer = line(eDataField.dfParam2)
-        Dim operator As Integer = line(eDataField.dfOperator)  ' Assume you have enum
+    Private Sub SimulatorSetCommand(chanNum As Integer, curProgLine As Integer())
+        If chanNum >= editorDev.Channel.Count Then Exit Sub
 
-        If varNum < 0 OrElse varNum >= state.Variables.Length Then Return False
-        Dim varVal As Integer = state.Variables(varNum)
+        'Determine the math result (answer), then determine where to put it (variable, dig output value, etc.)
+        Dim maxResult = 2000000000
+        Dim setResult = SimulatorGetValue(curProgLine(eDataField.df321S), curProgLine(eDataField.df321V1), curProgLine(eDataField.df321V2), chanNum, 0)
+        If curProgLine(eDataField.df82V2) > eMathOp.mathOpNone Then
+            'Determine the modifier value:
+            Dim setModifierVal = SimulatorGetValue(curProgLine(eDataField.df322S), curProgLine(eDataField.df322V1), curProgLine(eDataField.df322V2), chanNum, 0)
 
-        Select Case operator
-            Case 0 : Return varVal = compareVal   ' ==
-            Case 1 : Return varVal <> compareVal  ' !=
-            Case 2 : Return varVal > compareVal
-            Case 3 : Return varVal >= compareVal
-            Case 4 : Return varVal < compareVal
-            Case 5 : Return varVal <= compareVal
-            Case Else : Return False
+            Select Case curProgLine(eDataField.df82V2)
+                Case eMathOp.mathOpAdd
+                    If maxResult - setResult > setModifierVal Then
+                        setResult += setModifierVal
+                    Else
+                        setResult = maxResult
+                    End If
+                Case eMathOp.mathOpSubtract
+                    If setResult > setModifierVal Then
+                        setResult -= setModifierVal
+                    Else
+                        setResult = 0
+                    End If
+                Case eMathOp.mathOpMultiply
+                    If setResult = 0 OrElse setModifierVal = 0 Then
+                        setResult = 0
+                    ElseIf maxResult / setResult > setModifierVal Then
+                        setResult *= setModifierVal
+                    Else
+                        setResult = maxResult
+                    End If
+                Case eMathOp.mathOpDivide
+                    If setResult >= setModifierVal AndAlso setModifierVal > 0 Then
+                        setResult = setResult / setModifierVal
+                    Else
+                        setResult = 0
+                    End If
+                Case eMathOp.mathOpRemainder
+                    If setModifierVal > 0 Then
+                        setResult += setResult Mod setModifierVal
+                    Else
+                        setResult = 0
+                    End If
+
+                Case Else
+                    Exit Sub
+            End Select
+
+            'Now figure out what to do with the result we just calculated:
+            Dim tmpIndex = curProgLine(eDataField.df81V1)
+            Select Case curProgLine(eDataField.df81S)
+                Case eDataSource.dsDirect
+                    'Nothing to do here.
+                Case eDataSource.dsProgramVar
+                    simChannelStates(chanNum).Variables(tmpIndex) = setResult
+                Case eDataSource.dsSysVar
+                    simChannelStates(0).Variables(tmpIndex) = setResult
+                Case eDataSource.dsChanSetting
+                    'Any program can be run on any channel.  So if the program needs to specifically reference the channel that it's running
+                    'on, it will specify the channel index == NUM_CHANNELS.  So if dataVal2 (requested channel) = NUM_CHANNELS then it's looking for this channel.
+                    Dim targetChan As Integer = curProgLine(eDataField.df81V2)
+                    If targetChan = editorDev.Channel.Count Then
+                        targetChan = chanNum
+                    End If
+
+                    Select Case curProgLine(eDataField.df81V1)
+                        Case eDataSourceChanSetting.dscsSpeed
+                            simChannelStates(targetChan).Speed = setResult
+
+                            'The commented options below can be skipped:
+                        'Case eDataSourceChanSetting.dscsOrigOpDuration
+                        'Case eDataSourceChanSetting.dscsOrigPdDuration
+                        'Case eDataSourceChanSetting.dscsOrigTotalDuration
+                        'Case eDataSourceChanSetting.dscsModOpDuration
+                        'Case eDataSourceChanSetting.dscsModPdDuration
+                        'Case eDataSourceChanSetting.dscsModTotalDuration
+                        'Case eDataSourceChanSetting.dscsElapsedOpDuration
+                        'Case eDataSourceChanSetting.dscsElapsedPdDuration
+                        'Case eDataSourceChanSetting.dscsElapsedTotalDuration
+                        'Case eDataSourceChanSetting.dscsRemainingOpDuration
+                        'Case eDataSourceChanSetting.dscsRemainingPdDuration
+                        'Case eDataSourceChanSetting.dscsRemainingTotalDuration
+                        'Case eDataSourceChanSetting.dscsPercentComplete
+                        'Case eDataSourceChanSetting.dscsStartVal
+                        'Case eDataSourceChanSetting.dscsEndVal
+                        'Case eDataSourceChanSetting.dscsCurVal
+
+                        Case eDataSourceChanSetting.dscsPolarity
+                            'This will change the polarity override of the channel.
+                            Select Case setResult
+                                Case 0 'Normal polarity
+                                    simChannelStates(targetChan).PolaritySwapped = False
+                                Case 1 'Reverse polarity
+                                    simChannelStates(targetChan).PolaritySwapped = True
+                                Case Else 'Toggle polarity
+                                    simChannelStates(targetChan).PolaritySwapped = Not simChannelStates(targetChan).PolaritySwapped
+                            End Select
+                        Case eDataSourceChanSetting.dscsIntensity
+                            'Set the current voltage level of the tens unit (0-100%)
+                            simChannelStates(targetChan).TensIntensityCurLevel = setResult
+
+                        Case eDataSourceChanSetting.dscsIntensityMin
+                            'Set the minimum voltage level of the tens unit (0-100%)
+                            simChannelStates(targetChan).TensIntensityMinLevel = setResult
+
+                        Case eDataSourceChanSetting.dscsIntensityMax
+                            'Set the maximum voltage level of the tens unit (0-100%)
+                            simChannelStates(targetChan).TensIntensityMaxLevel = setResult
+
+                        'Case eDataSourceChanSetting.dscsCurProgNum
+                        'Case eDataSourceChanSetting.dscsCurLineNum
+                        'Case eDataSourceChanSetting.dscsCurChanNum
+                        Case eDataSourceChanSetting.dscsOutputPulsewidthMaxPercent
+                            'Set the max pulsewidth (output volume control for pulsewidth) for scaling:
+                            simChannelStates(targetChan).OutputMaxPulsewidthPercent = setResult
+
+                    End Select
+
+                Case eDataSource.dsSysSetting
+                    Select Case curProgLine(eDataField.df81V1)
+                        Case eDataSourceSysSetting.dsssZRotation
+                            'Grok, we need to set our simulated imu Z rotation value.  ZRotation = setResult
+                        'Case eDataSourceSysSetting.dsssUpDirection
+                        Case eDataSourceSysSetting.dsssStepCount
+                            'Grok, we need to set our fake step counter = setResult.
+
+                            'We can igore these commented cases:
+                            'Case eDataSourceSysSetting.dsssAudioTotal
+                            'Case eDataSourceSysSetting.dsssAudioLow
+                            'Case eDataSourceSysSetting.dsssAudioMid
+                            'Case eDataSourceSysSetting.dsssAudioHigh
+
+                    End Select
+                Case eDataSource.dsDigIn
+                    'Ignore, we can't "set" a digital input.
+                Case eDataSource.dsDigOut
+                    'Grok, if we wanted to simulate digital outputs, here's where we'd set an output.
+                Case eDataSource.dsRandom
+                    'Ignore, nothing to do here.
+                Case eDataSource.dsTimer
+                    If tmpIndex < simChannelStates(chanNum).Timers.Count Then
+                        'simChannelStates(chanNum).Timers(tmpIndex) = 'Grok- here's where we need to set the timer variable = HAL_GetTicks().  How could we do this in our simulation?
+                    End If
+            End Select
+        End If
+    End Sub
+
+    Private Function SimulatorGetValue(datasource As eDataSource, dataVal1 As Integer, dataval2 As Integer, chanNum As Integer, maxVal As Integer) As Integer
+        Dim retVal As Integer = 0
+
+        Select Case datasource
+            Case eDataSource.dsDirect
+                retVal = dataVal1
+            Case eDataSource.dsProgramVar
+                If dataVal1 >= 0 AndAlso dataVal1 < simChannelStates(chanNum).Variables.Length Then
+                    retVal = simChannelStates(chanNum).Variables(dataVal1)
+                End If
+            Case eDataSource.dsSysVar
+                If dataVal1 >= 0 AndAlso dataVal1 < simChannelStates(0).Variables.Length Then
+                    retVal = simChannelStates(0).Variables(dataVal1)
+                End If
+            Case eDataSource.dsChanSetting
+                'Any program can be run on any channel.  So if the program needs to specifically reference the channel that it's running
+                'on, it will specify the channel index == NUM_CHANNELS.  So if dataVal2 (requested channel) = NUM_CHANNELS then it's looking for this channel.
+                Dim targetChan As Integer = dataval2
+                If targetChan = editorDev.Channel.Count Then
+                    targetChan = chanNum
+                End If
+                Select Case dataVal1
+                    Case eDataSourceChanSetting.dscsSpeed
+                        retVal = simChannelStates(targetChan).Speed
+                    Case eDataSourceChanSetting.dscsOrigOpDuration
+                        retVal = simChannelStates(targetChan).OutputDuration
+                    Case eDataSourceChanSetting.dscsOrigPdDuration
+                        retVal = simChannelStates(targetChan).DelayDuration
+                    'Case eDataSourceChanSetting.dscsOrigTotalDuration
+                    'Case eDataSourceChanSetting.dscsModOpDuration
+                    'Case eDataSourceChanSetting.dscsModPdDuration
+                    'Case eDataSourceChanSetting.dscsModTotalDuration
+                    'Case eDataSourceChanSetting.dscsElapsedOpDuration
+                    'Case eDataSourceChanSetting.dscsElapsedPdDuration
+                    'Case eDataSourceChanSetting.dscsElapsedTotalDuration
+                    'Case eDataSourceChanSetting.dscsRemainingOpDuration
+                    'Case eDataSourceChanSetting.dscsRemainingPdDuration
+                    'Case eDataSourceChanSetting.dscsRemainingTotalDuration
+                    'Case eDataSourceChanSetting.dscsPercentComplete
+
+                    Case eDataSourceChanSetting.dscsStartVal
+                        retVal = simChannelStates(targetChan).OutputStartVal
+                    Case eDataSourceChanSetting.dscsEndVal
+                        retVal = simChannelStates(targetChan).OutputEndVal
+                    Case eDataSourceChanSetting.dscsCurVal
+                        retVal = simChannelStates(targetChan).Outputcurval
+                    Case eDataSourceChanSetting.dscsPolarity
+                        retVal = simChannelStates(targetChan).polarity
+                    Case eDataSourceChanSetting.dscsIntensity
+                        retVal = simChannelStates(targetChan).TensIntensityCurLevel
+                    Case eDataSourceChanSetting.dscsIntensityMin
+                        retVal = simChannelStates(targetChan).TensIntensityMinLevel
+                    Case eDataSourceChanSetting.dscsIntensityMax
+                        retVal = simChannelStates(targetChan).TensIntensityMaxLevel
+                    Case eDataSourceChanSetting.dscsCurProgNum
+                        retVal = simChannelStates(targetChan).CurProgNum
+                    Case eDataSourceChanSetting.dscsCurLineNum
+                        retVal = simChannelStates(targetChan).CurLineNum
+                    Case eDataSourceChanSetting.dscsCurChanNum
+                        retVal = chanNum
+                    Case eDataSourceChanSetting.dscsOutputPulsewidthMaxPercent
+                        retVal = simChannelStates(targetChan).OutputMaxPulsewidthPercent
+                    Case Else
+                        retVal = 0
+                End Select
+
+            Case eDataSource.dsSysSetting
+                Select Case dataVal1
+                    Case eDataSourceSysSetting.dsssZRotation
+                        ' Simulate drifting compass (0-360)
+                        Static lastZ As Integer = 180
+                        lastZ += New Random().Next(-10, 11)
+                        If lastZ < 0 Then lastZ = 360 + lastZ 'adding a negative number to subtract from 360.
+                        If lastZ > 360 Then lastZ = lastZ - 360
+                        retVal = lastZ
+                    Case eDataSourceSysSetting.dsssUpDirection
+                        ' Simulate which axis is up (0-5)
+                        Static lastUp As Integer = 2
+                        If New Random().Next(0, 10) = 0 Then ' Occasional drift
+                            lastUp = (lastUp + New Random().Next(-1, 2) + 6) Mod 6
+                        End If
+                        retVal = lastUp
+
+                    Case eDataSourceSysSetting.dsssStepCount
+                        ' Increment occasionally
+                        Static steps As Integer = 0
+                        If New Random().Next(0, 20) = 0 Then steps += 1
+                        retVal = steps
+
+                    Case eDataSourceSysSetting.dsssAudioTotal,
+                         eDataSourceSysSetting.dsssAudioLow,
+                         eDataSourceSysSetting.dsssAudioMid,
+                         eDataSourceSysSetting.dsssAudioHigh
+                        retVal = New Random().Next(0, 101) ' 0-100
+                    Case Else
+                        retVal = 0
+                End Select
+
+            Case eDataSource.dsDigIn
+                'We can ignore this for now.
+                retVal = 0
+            Case eDataSource.dsDigOut
+                'We can ignore this for now.
+                retVal = 0
+            Case eDataSource.dsRandom
+                If dataVal1 <= dataval2 Then
+                    retVal = New Random().Next(dataVal1, dataval2 + 1)
+                Else
+                    retVal = New Random().Next(dataval2, dataVal1 + 1)
+                End If
+
+            Case eDataSource.dsTimer
+                If dataVal1 >= 0 AndAlso dataVal1 < simChannelStates(chanNum).Timers.Length Then
+                    If simChannelStates(chanNum).TimerRunning(dataVal1) Then
+                        retVal = Environment.TickCount - simChannelStates(chanNum).TimerStartTicks(dataVal1)
+                    Else
+                        retVal = simChannelStates(chanNum).Timers(dataVal1)
+                    End If
+                End If
+            Case Else
+                retVal = 0
         End Select
+
+        ' Apply max limit if requested
+        If maxVal > 0 AndAlso retVal > maxVal Then
+            retVal = maxVal
+        End If
+        Return retVal
     End Function
 
-    Private Sub UpdateAllDebugGridsAndHighlight()
-        ' Highlight current line for selected program
-        If editorDev.CurProgNum >= 0 AndAlso editorDev.CurProgNum < editorDev.Prog.Count Then
-            Dim chanIdx As Integer = cboVariablesChannel.SelectedIndex
-            If chanIdx >= 0 AndAlso chanIdx < simChannelStates.Length Then
-                Dim lineNum As Integer = simChannelStates(chanIdx).CurLineNum
-                If lineNum >= 0 AndAlso lineNum < lstProgDisplay.Items.Count Then
-                    lstProgDisplay.SelectedIndex = lineNum
-                    lstProgDisplay.TopIndex = Math.Max(0, lineNum - 5)
+    Private Function SimulatorTestCommand(chanNum As Integer, curProgLine() As Integer) As Boolean
+        If chanNum >= editorDev.Channel.Count Then Return False
+
+        Dim testValLeft = SimulatorGetValue(curProgLine(eDataField.df81S), curProgLine(eDataField.df81V1), curProgLine(eDataField.df81V2), chanNum, 0)
+        Dim testValRight = SimulatorGetValue(curProgLine(eDataField.df321S), curProgLine(eDataField.df321V1), curProgLine(eDataField.df321V2), chanNum, 0)
+        Dim testValRight2 = SimulatorGetValue(curProgLine(eDataField.df322S), curProgLine(eDataField.df322V1), curProgLine(eDataField.df322V2), chanNum, 0)
+
+        'Figure out if the Right value gets modified, and if so then how:
+        Select Case curProgLine(eDataField.df82V2)
+            Case eMathOp.mathOpNone
+                'testValRight = testValRight
+            Case eMathOp.mathOpAdd
+                If testValRight < MAX_32BIT AndAlso testValRight2 < MAX_32BIT Then
+                    testValRight += testValRight2
+                Else
+                    testValRight = MAX_32BIT
                 End If
+            Case eMathOp.mathOpSubtract
+                If testValRight >= testValRight2 Then
+                    testValRight -= testValRight2
+                Else
+                    testValRight = 0
+                End If
+            Case eMathOp.mathOpMultiply
+                testValRight *= testValRight2
+            Case eMathOp.mathOpDivide
+                If testValRight >= testValRight2 AndAlso testValRight2 > 0 Then
+                    testValRight = testValRight / testValRight2
+                Else
+                    testValRight = 0
+                End If
+            Case eMathOp.mathOpRemainder
+                If testValRight2 > 0 Then
+                    testValRight = testValRight Mod testValRight2
+                Else
+                    testValRight = 0
+                End If
+        End Select
+
+        'Now perform the test:
+        Select Case curProgLine(eDataField.df82V1)
+            Case eCompare.tensCompare_LessThan
+                Return testValLeft < testValRight
+            Case eCompare.tensCompare_LessThanOrEqual
+                Return testValLeft <= testValRight
+            Case eCompare.tensCompare_Equal
+                Return testValLeft = testValRight
+            Case eCompare.tensCompare_NotEqual
+                Return testValLeft <> testValRight
+            Case eCompare.tensCompare_GreaterThanOrEqual
+                Return testValLeft >= testValRight
+            Case eCompare.tensCompare_GreaterThan
+                Return testValLeft > testValRight
+            Case eCompare.tensCompare_IsBetween
+                Return (testValLeft > testValRight) And (testValLeft < testValRight2)
+            Case eCompare.tensCompare_IsBetweenOrEqual
+                Return (testValLeft >= testValRight) And (testValLeft <= testValRight2)
+            Case eCompare.tensCompare_IsNotBetween
+                Return (testValLeft < testValRight) Or (testValLeft > testValRight2)
+        End Select
+        Return False
+    End Function
+
+    Private Sub SimulatorTenMotOutputCommand(chanNum As Integer, State As ChannelSimState, line As Integer())
+        If chanNum >= editorDev.Channel.Count Then Exit Sub
+
+        State.OutputActive = True
+        State.OutputStartTime = Environment.TickCount
+        State.OutputDuration = SimulatorGetValue(line(eDataField.df321S), line(eDataField.df321V1), line(eDataField.df321V2), chanNum, 0)
+        State.DelayDuration = SimulatorGetValue(line(eDataField.df323S), line(eDataField.df323V1), line(eDataField.df323V2), chanNum, 0)
+        State.RepeatsRemaining = SimulatorGetValue(line(eDataField.df322S), line(eDataField.df322V1), line(eDataField.df322V2), chanNum, 0)
+        State.OutputStartVal = SimulatorGetValue(line(eDataField.df81S), line(eDataField.df81V1), line(eDataField.df81V2), chanNum, 0)
+        State.OutputEndVal = SimulatorGetValue(line(eDataField.df82S), line(eDataField.df82V1), line(eDataField.df82V2), chanNum, 0)
+
+    End Sub
+
+    Private Sub UpdateAllDebugGridsAndHighlight()
+        If IsNothing(editorDev) Then Exit Sub
+
+        Dim chanIdx As Integer = cboVariablesChannel.SelectedIndex
+        If chanIdx < 0 OrElse chanIdx >= simChannelStates.Length Then Exit Sub
+
+        Dim state As ChannelSimState = simChannelStates(chanIdx)
+        Dim progNum As Integer = state.CurProgNum
+
+        If progNum < 0 OrElse progNum >= editorDev.Prog.Count Then Exit Sub
+
+        ' Highlight current line in lstProgDisplay
+        Dim lineCount As Integer = editorDev.Prog(progNum).progLine.Count
+        If lineCount > 0 Then
+            Dim displayLine As Integer = state.CurLineNum
+            If displayLine >= lineCount Then displayLine = 0
+
+            If displayLine >= 0 AndAlso displayLine < lstProgDisplay.Items.Count Then
+                lstProgDisplay.SelectedIndex = displayLine
+                lstProgDisplay.TopIndex = Math.Max(0, displayLine - 5)
             End If
         End If
 
-        ' Update grids
+        ' Refresh grids (even if just showing 0s — proves update works)
         UpdateVariablesGrid()
         UpdateTimersGrid()
     End Sub
@@ -2567,7 +2923,7 @@ Public Class Form1
         End If
 
         simState = eSimState.Running
-        simTimer.Enabled = True
+        tmrSim.Enabled = True
 
         tsbtnDebugRun.Enabled = False
         tsbtnDebugPause.Enabled = True
@@ -2576,7 +2932,7 @@ Public Class Form1
 
     Private Sub tsbtnDebugPause_Click(sender As Object, e As EventArgs) Handles tsbtnDebugPause.Click
         simState = eSimState.Paused
-        simTimer.Enabled = False
+        tmrSim.Enabled = False
 
         tsbtnDebugRun.Enabled = True
         tsbtnDebugPause.Enabled = False
@@ -2586,14 +2942,9 @@ Public Class Form1
     Private Sub tsbtnDebugStep_Click(sender As Object, e As EventArgs) Handles tsbtnDebugStep.Click
         If simState = eSimState.Stopped Then
             InitializeSimulator()
-            simState = eSimState.Paused
         End If
-
         simState = eSimState.Stepping
-        ExecuteOneSimulationCycle()
-        UpdateAllDebugGridsAndHighlight()
-
-        tsbtnDebugStep.Enabled = False  ' Re-enable on next pause
+        tmrSim.Enabled = True  ' One tick will run and then pause
     End Sub
 
 #End Region

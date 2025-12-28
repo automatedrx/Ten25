@@ -18,6 +18,14 @@ Module comDef
         Dim timerName As List(Of String)
     End Structure
 
+    Public Enum ePolarity As Integer
+        polForward = 0
+        polReverse
+        polForward_TogglePulse      '//Toggle polarity Each pulse output.  Start With forward polarity
+        polReverse_TogglePulse      '//Toggle polarity Each pulse output.  Start With reverse polarity
+        polForward_ToggleCycle      '//Toggle polarity Each full cycle Of a program line.  (toggle between repeats Of the line). Start With forward
+        polReverse_ToggleCycle
+    End Enum
 
     Public Enum eDataField As Integer 'index number for fields in each line of program data
         dfCommand = 0
@@ -226,13 +234,29 @@ Module comDef
 
     Public Enum eMathOp As Integer
         mathOpNone = 0
-        mathOpPlus = 1
-        mathOpMinus = 2
-        mathOpMultiply = 3
-        mathOpDivide = 4
-        mathOpModulo = 5
+        mathOpAdd = 1               ' +
+        mathOpSubtract = 2          ' -
+        mathOpMultiply = 3          ' *
+        mathOpDivide = 4            ' /
+        mathOpRemainder = 5         ' %
+        'mathOpCompoundAdd = 6       ' +=
+        'mathOpCompoundSubtract = 7  ' -=
+        'mathOpCompoundMultiply = 8  ' *=
+        'mathOpCompoundDivide = 9    ' /=
+        'mathOpCompoundRemainder = 10    ' %=
     End Enum
 
+    Public Enum eCompare As Integer
+        tensCompare_LessThan = 0
+        tensCompare_LessThanOrEqual = 1
+        tensCompare_Equal = 2
+        tensCompare_NotEqual = 3
+        tensCompare_GreaterThanOrEqual = 4
+        tensCompare_GreaterThan = 5
+        tensCompare_IsBetween = 6
+        tensCompare_IsBetweenOrEqual = 7
+        tensCompare_IsNotBetween = 8
+    End Enum
 
     Public Enum fileDataEnum As Byte
         numChannelProgs = AscW("a")

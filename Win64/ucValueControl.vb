@@ -12,7 +12,7 @@ Public Class ucValueControl
 
     Dim controlPadding = 3
 
-    Dim srcIndex As DataSourceEnum = DataSourceEnum.dsDirect
+    Dim srcIndex As eDataSource = eDataSource.dsDirect
     Dim _val1 As Integer = 0
     Dim _val2 As Integer = 0
     Dim _maxVal As Integer = 255
@@ -264,7 +264,7 @@ Public Class ucValueControl
         RemoveHandler txtVal1.TextChanged, AddressOf txtVal1_TextChanged
         RemoveHandler txtVal2.TextChanged, AddressOf txtVal2_TextChanged
 
-        If srcIndex = DataSourceEnum.dsChanSetting Then
+        If srcIndex = eDataSource.dsChanSetting Then
             PopulateCboVal1List(srcIndex)
 
             If (_val1 < 0) Or (_val1 >= dataSourceChanSettingString.Length) Then
@@ -275,7 +275,7 @@ Public Class ucValueControl
 
             'If cboChannel.Items.Count <> allChannelsStringPlusThisChan.Length Then
             RemoveHandler cboChannel.SelectedIndexChanged, AddressOf cboChannel_selectedIndexChanged
-                cboChannel.Items.Clear()
+            cboChannel.Items.Clear()
             cboChannel.Items.AddRange(devRef.allChannelsStringPlusThisChan)
             'End If
             AddHandler cboChannel.SelectedIndexChanged, AddressOf cboChannel_selectedIndexChanged
@@ -304,7 +304,7 @@ Public Class ucValueControl
 
         End If
 
-        If srcIndex = DataSourceEnum.dsDirect Then
+        If srcIndex = eDataSource.dsDirect Then
             lblMin.Visible = False
             lblMax.Visible = False
             cboVal1.Visible = False
@@ -318,9 +318,9 @@ Public Class ucValueControl
             lblUnits.Left = txtVal1.Left + txtVal1.Width + controlPadding
             lblUnits.Visible = True
 
-        ElseIf (srcIndex = DataSourceEnum.dsProgramVar) Or (srcIndex = DataSourceEnum.dsSysVar) Or
-                 (srcIndex = DataSourceEnum.dsSysSetting) Or (srcIndex = DataSourceEnum.dsDigIn) Or
-                 (srcIndex = DataSourceEnum.dsDigOut) Or (srcIndex = DataSourceEnum.dsTimer) Then
+        ElseIf (srcIndex = eDataSource.dsProgramVar) Or (srcIndex = eDataSource.dsSysVar) Or
+                 (srcIndex = eDataSource.dsSysSetting) Or (srcIndex = eDataSource.dsDigIn) Or
+                 (srcIndex = eDataSource.dsDigOut) Or (srcIndex = eDataSource.dsTimer) Then
 
             lblMin.Visible = False
             lblMax.Visible = False
@@ -344,7 +344,7 @@ Public Class ucValueControl
             lblUnits.Left = cboVal1.Left + cboVal1.Width + controlPadding
             lblUnits.Visible = False 'True
 
-        ElseIf srcIndex = DataSourceEnum.dsRandom Then
+        ElseIf srcIndex = eDataSource.dsRandom Then
             cboVal1.Visible = False
             lblMin.Left = cboSource.Left + cboSource.Width + controlPadding
             lblMin.Visible = True
@@ -377,21 +377,21 @@ Public Class ucValueControl
         RaiseEvent Source_Changed(Me, cboSource.SelectedIndex)
     End Sub
 
-    Private Sub PopulateCboVal1List(ByVal srcIndex As DataSourceEnum)
+    Private Sub PopulateCboVal1List(ByVal srcIndex As eDataSource)
         Dim tmpEditVarNameButtonVisible As Boolean = False
 
         cboVal1.Items.Clear()
         cboVal1.Text = ""
-        If (srcIndex = DataSourceEnum.dsDigIn) Or (srcIndex = DataSourceEnum.dsDigOut) Then
+        If (srcIndex = eDataSource.dsDigIn) Or (srcIndex = eDataSource.dsDigOut) Then
             Dim tmpCount As Integer = 0
-            If srcIndex = DataSourceEnum.dsDigIn Then tmpCount = _digInCount
-            If srcIndex = DataSourceEnum.dsDigOut Then tmpCount = _digOutCount
+            If srcIndex = eDataSource.dsDigIn Then tmpCount = _digInCount
+            If srcIndex = eDataSource.dsDigOut Then tmpCount = _digOutCount
 
             cboVal1.Width = 45
             For n As Integer = 0 To tmpCount - 1
                 cboVal1.Items.Add(n)
             Next
-        ElseIf srcIndex = DataSourceEnum.dsProgramVar Then
+        ElseIf srcIndex = eDataSource.dsProgramVar Then
             RemoveHandler cboVal1.SelectedIndexChanged, AddressOf cboVal1_SelectedIndexChanged
             cboVal1.Items.Clear()
             For n As Integer = 0 To _progVarCount - 1
@@ -404,7 +404,7 @@ Public Class ucValueControl
             AddHandler cboVal1.SelectedIndexChanged, AddressOf cboVal1_SelectedIndexChanged
             cboVal1.Width = 157 '194
 
-        ElseIf srcIndex = DataSourceEnum.dsSysVar Then
+        ElseIf srcIndex = eDataSource.dsSysVar Then
             RemoveHandler cboVal1.SelectedIndexChanged, AddressOf cboVal1_SelectedIndexChanged
             cboVal1.Items.Clear()
             For n As Integer = 0 To _progVarCount - 1
@@ -417,13 +417,13 @@ Public Class ucValueControl
             AddHandler cboVal1.SelectedIndexChanged, AddressOf cboVal1_SelectedIndexChanged
             cboVal1.Width = 157 '194
 
-        ElseIf srcIndex = DataSourceEnum.dsChanSetting Then
+        ElseIf srcIndex = eDataSource.dsChanSetting Then
             cboVal1.Items.AddRange(dataSourceChanSettingString)
             cboVal1.Width = 90
-        ElseIf srcIndex = DataSourceEnum.dsSysSetting Then
+        ElseIf srcIndex = eDataSource.dsSysSetting Then
             cboVal1.Items.AddRange(dataSourceSysSettingString)
             cboVal1.Width = 90
-        ElseIf srcIndex = DataSourceEnum.dsTimer Then
+        ElseIf srcIndex = eDataSource.dsTimer Then
             RemoveHandler cboVal1.SelectedIndexChanged, AddressOf cboVal1_SelectedIndexChanged
             cboVal1.Items.Clear()
             For n As Integer = 0 To _progTimerCount - 1
@@ -445,7 +445,7 @@ Public Class ucValueControl
     Private Sub cboVal1_SelectedIndexChanged(sender As Object, e As EventArgs)
         _val1 = cboVal1.SelectedIndex
 
-        If (cboSource.SelectedIndex = DataSourceEnum.dsSysVar) Or (cboSource.SelectedIndex = DataSourceEnum.dsProgramVar) Then
+        If (cboSource.SelectedIndex = eDataSource.dsSysVar) Or (cboSource.SelectedIndex = eDataSource.dsProgramVar) Then
             cmdEditVarName.Visible = True
         Else
             cmdEditVarName.Visible = False
@@ -515,9 +515,9 @@ Public Class ucValueControl
         Dim varIndex As Integer = cboVal1.SelectedIndex
         Dim srcIndex As Integer = cboSource.SelectedIndex
 
-        If srcIndex = DataSourceEnum.dsSysVar Then
+        If srcIndex = eDataSource.dsSysVar Then
             progIndex = 0
-        ElseIf srcIndex = DataSourceEnum.dsProgramVar Then
+        ElseIf srcIndex = eDataSource.dsProgramVar Then
             progIndex = _curProgNum
         Else
             cmdEditVarName.Visible = False
