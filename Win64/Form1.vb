@@ -172,6 +172,7 @@ Public Class Form1
         comportIsOpen(False)
         CreateNewProject(editorDev)
         InitializeDebugTabs()
+        UpdateDebugButtonStates()
     End Sub
 
 
@@ -290,10 +291,19 @@ Public Class Form1
     End Sub
 
     Private Sub UpdateDebugButtonStates()
-        Dim connectedAndValid As Boolean = ComPort.IsOpen AndAlso validDevice
-        tsbtnDebugRun.Enabled = connectedAndValid AndAlso Not tsbtnDebugPause.Enabled
-        tsbtnDebugPause.Enabled = connectedAndValid AndAlso (autoStatus = eAutoStatus.asOn) ' or some running state
-        tsbtnDebugStep.Enabled = connectedAndValid AndAlso tsbtnDebugPause.Enabled
+        Dim enabled As Boolean
+
+        If tsbtnRealOrSimulated.Checked Then
+            ' Simulator mode — always enable debug controls
+            enabled = True
+        Else
+            ' Device mode — only when connected and valid
+            enabled = ComPort.IsOpen AndAlso validDevice
+        End If
+
+        tsbtnDebugRun.Enabled = enabled AndAlso simState <> eSimState.Running
+        tsbtnDebugPause.Enabled = enabled AndAlso simState = eSimState.Running
+        tsbtnDebugStep.Enabled = enabled AndAlso (simState = eSimState.Paused OrElse simState = eSimState.Stopped)
     End Sub
     Private Sub tmrCheckComportStatus_Tick(sender As Object, e As EventArgs) Handles tmrCheckComportStatus.Tick
         'This timer monitors the comport for any unplanned disconnection (device unplugged, powered off, etc.).
@@ -2945,6 +2955,26 @@ Public Class Form1
         End If
         simState = eSimState.Stepping
         tmrSim.Enabled = True  ' One tick will run and then pause
+    End Sub
+
+
+    Private Sub tsbtnRealOrSimulated_CheckedChanged(sender As Object, e As EventArgs) Handles tsbtnRealOrSimulated.CheckedChanged
+        If tsbtnRealOrSimulated.Checked Then
+            ' Entering simulator mode
+            lblDevStatus.Text = "Simulator Mode (Offline)"
+            ' Optionally disable COM controls
+            cboComPorts.Enabled = False
+            cmdRefreshComportList.Enabled = False
+            cmdConnect.Enabled = False
+        Else
+            ' Back to device mode
+            comportIsOpen(ComPort.IsOpen) ' Restore normal status
+            cboComPorts.Enabled = True
+            cmdRefreshComportList.Enabled = True
+            cmdConnect.Enabled = True
+        End If
+
+        UpdateDebugButtonStates()
     End Sub
 
 #End Region

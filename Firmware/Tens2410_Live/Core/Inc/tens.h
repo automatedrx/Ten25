@@ -329,12 +329,15 @@ typedef struct {
 	char				displayReqChars[DISPLAY_REQ_MAXLEN];
 	char				displayReqCharsLast[DISPLAY_REQ_MAXLEN];
 	uint8_t				displayReqLen;
-	uint32_t			notInUse[4];	//testing to see if this prevents overwriting of audio data
-	Audio_HandleTypeDef* audioRef;		//Allows tens programs to access the audio data
-	uint32_t			notInUse2[4];	//testing to see if this prevents overwriting of audio data
+	uint32_t			notInUse[4];		//testing to see if this prevents overwriting of audio data
+	Audio_HandleTypeDef* audioRef;			//Allows tens programs to access the audio data
+	uint32_t			notInUse2[4];		//testing to see if this prevents overwriting of audio data
 
-	IMU_HandleTypeDef*	imuRef;			//Allows tens programs to access the imu data
-	TIM_HandleTypeDef* 	loopTimer;		//Reference to the timer that calls tensLoop.
+	uint8_t				debugMode;			// 0 = normal, 1 = paused/step mode
+	uint8_t				debugPendingStep;	// Flag for single step request
+
+	IMU_HandleTypeDef*	imuRef;				//Allows tens programs to access the imu data
+	TIM_HandleTypeDef* 	loopTimer;			//Reference to the timer that calls tensLoop.
 
 
 } Tens_HandleTypeDef;

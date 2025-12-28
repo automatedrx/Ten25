@@ -183,6 +183,11 @@ Module comDef
 
         ResetDevice = AscW("R")
         EraseDevice = AscW("X")
+
+        DebugPause = AscW("s")
+        DebugResume = AscW("t")
+        DebugStep = AscW("u")
+        DebugSetBreakpoint = AscW("v")
     End Enum
 
     Public Enum pStatEnum As Byte
@@ -271,6 +276,7 @@ Module comDef
         chanStats = AscW("3") 'Index req'd    ' chanEnabled, progState, curLineNum, startVal, endVal, modDuration, percentComplete, RepeatsRemaining, chanCurVal, chanCurIntensity
         'sysStats = AscW("4")
         progLineData = AscW("5") 'TWO indexes req'd: one for progNum and one for lineNum
+        chanDebugData = AscW("6")   'Index req'd
     End Enum
 
     Public commandVals As String() = {"No Op", "Tens/Motor", "GoTo", "End", "Test", "Set", "Delay", "ProgControl", "Display", "Send Msg"}

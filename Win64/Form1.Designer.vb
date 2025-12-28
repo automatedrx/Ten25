@@ -72,6 +72,7 @@ Partial Class Form1
         tscmdSaveProgramToDevice = New ToolStripButton()
         ToolStripSeparator16 = New ToolStripSeparator()
         ToolStripSeparator17 = New ToolStripSeparator()
+        tsbtnRealOrSimulated = New ToolStripButton()
         tsbtnDebugRun = New ToolStripButton()
         tsbtnDebugPause = New ToolStripButton()
         tsbtnDebugStep = New ToolStripButton()
@@ -547,11 +548,11 @@ Partial Class Form1
         ' 
         ToolStrip2.Dock = DockStyle.None
         ToolStrip2.ImageScalingSize = New Size(25, 25)
-        ToolStrip2.Items.AddRange(New ToolStripItem() {tscmdNewProject, ToolStripSeparator14, tscmdOpenProjectFromFile, tscmdSaveProjectToFile, ToolStripSeparator15, tscmdOpenProgramFromDevice, tscmdSaveProgramToDevice, ToolStripSeparator16, ToolStripSeparator17, tsbtnDebugRun, tsbtnDebugPause, tsbtnDebugStep})
+        ToolStrip2.Items.AddRange(New ToolStripItem() {tscmdNewProject, ToolStripSeparator14, tscmdOpenProjectFromFile, tscmdSaveProjectToFile, ToolStripSeparator15, tscmdOpenProgramFromDevice, tscmdSaveProgramToDevice, ToolStripSeparator16, ToolStripSeparator17, tsbtnRealOrSimulated, tsbtnDebugRun, tsbtnDebugPause, tsbtnDebugStep})
         ToolStrip2.LayoutStyle = ToolStripLayoutStyle.Flow
         ToolStrip2.Location = New Point(3, 0)
         ToolStrip2.Name = "ToolStrip2"
-        ToolStrip2.Size = New Size(257, 32)
+        ToolStrip2.Size = New Size(388, 32)
         ToolStrip2.TabIndex = 0
         ToolStrip2.Text = "Project"
         ' 
@@ -624,6 +625,18 @@ Partial Class Form1
         ' 
         ToolStripSeparator17.Name = "ToolStripSeparator17"
         ToolStripSeparator17.Size = New Size(6, 23)
+        ' 
+        ' tsbtnRealOrSimulated
+        ' 
+        tsbtnRealOrSimulated.AutoSize = False
+        tsbtnRealOrSimulated.CheckOnClick = True
+        tsbtnRealOrSimulated.DisplayStyle = ToolStripItemDisplayStyle.Text
+        tsbtnRealOrSimulated.Image = CType(resources.GetObject("tsbtnRealOrSimulated.Image"), Image)
+        tsbtnRealOrSimulated.ImageTransparentColor = Color.Magenta
+        tsbtnRealOrSimulated.Name = "tsbtnRealOrSimulated"
+        tsbtnRealOrSimulated.Size = New Size(100, 29)
+        tsbtnRealOrSimulated.Text = "Enable Simulator"
+        tsbtnRealOrSimulated.ToolTipText = "Live Device or Simulator"
         ' 
         ' tsbtnDebugRun
         ' 
@@ -1458,7 +1471,7 @@ Partial Class Form1
         ' 
         ' Form1
         ' 
-        AutoScaleDimensions = New SizeF(7.0F, 15.0F)
+        AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(1314, 941)
         Controls.Add(SplitContainer9)
@@ -1685,5 +1698,6 @@ Partial Class Form1
     Friend WithEvents SplitContainerTimers As SplitContainer
     Friend WithEvents cboTimersChannel As ComboBox
     Friend WithEvents dgvTimers As DataGridView
+    Friend WithEvents tsbtnRealOrSimulated As ToolStripButton
 
 End Class

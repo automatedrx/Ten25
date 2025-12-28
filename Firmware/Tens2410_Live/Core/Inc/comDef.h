@@ -97,8 +97,11 @@ typedef enum {
 	commandType_SetFileData		= 'k',
 	commandType_GetFileData		= 'p',
 	commandType_Reset			= 'R',
-	commandType_DeleteTensProg	= 'X'
-
+	commandType_DeleteTensProg	= 'X',
+	commandType_DebugPause		= 's',
+	commandType_DebugResume		= 't',
+	commandType_DebugStep		= 'u',
+	commandType_DebugSetBreakpoint	= 'v'
 } commandTypeEnum;
 
 typedef enum {
@@ -147,7 +150,7 @@ typedef enum {
 	pArray_ChanStats	= '3',	//	pArray_3			= '3',
 //	pArray_SysStats		= '4',	//	pArray_4			= '4',
 	pArray_ProgLineData	= '5',	//	This contains info about a single line of program data.
-
+	pArray_ChanDebugData = '6',	//  This contains variable & timer values, etc
 	pArray_7			= '7',
 	pArray_8			= '8',
 	pArray_9			= '9',

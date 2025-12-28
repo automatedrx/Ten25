@@ -495,7 +495,7 @@ uint16_t StringToI32Array(char *src, uint16_t srcLen, const char *delim, int32_t
 void newMessageReceived(char* buff, uint8_t indx, comChanEnum comChannel, uint16_t sender);
 void sendAck(comChanEnum comChannel, uint16_t sender);
 void sendNack(comChanEnum comChannel, uint16_t sender);
-void dataSend(char* buff, uint8_t len, comChanEnum channel, uint16_t target, bool requestAck);
+void dataSend(char* buff, uint16_t len, comChanEnum channel, uint16_t target, bool requestAck);
 extern uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 
 bool setParameter(char* buff, uint8_t indx, comChanEnum comChannel, uint16_t sender);
@@ -1848,6 +1848,25 @@ void newMessageReceived(char* buff, uint8_t indx, comChanEnum comChannel, uint16
 			TensReadFileAllocationTable(&tens);
 		}
 		break;
+	case commandType_DebugPause:
+		tens.debugMode = 1;
+		tens.debugPendingStep = 0;
+		msgValid = true; //SendACK();
+		break;
+
+	case commandType_DebugResume:
+		tens.debugMode = 0;
+		tens.debugPendingStep = 0;
+		msgValid = true; //SendACK();
+		break;
+
+	case commandType_DebugStep:
+		if (tens.debugMode) {
+			tens.debugPendingStep = 1;  // Will execute one line on next tick
+		}
+		msgValid = true; //SendACK();
+		break;
+
 	default:
 		msgValid = false;
 	}
@@ -1893,7 +1912,7 @@ void sendNack(comChanEnum comChannel, uint16_t sender){
 	dataSend(dataBuff, len+2, comChannel, sender, false);
 }
 
-void dataSend(char* buff, uint8_t len, comChanEnum channel, uint16_t target, bool requestAck){
+void dataSend(char* buff, uint16_t len, comChanEnum channel, uint16_t target, bool requestAck){
 	switch(channel){
 	case comChan_Radio:
 		if(requestAck){
@@ -2867,10 +2886,10 @@ bool sendParameter(char* buff, uint8_t indx, comChanEnum comChannel, uint16_t se
 bool sendParameterArray(char* buff, uint8_t indx, comChanEnum comChannel, uint16_t sender){
 	bool retVal = false;
 	char Param = buff[1];
-	char dataBuff[156] = {0}; //char dataBuff[80] = {0};
+	char dataBuff[512] = {0}; //char dataBuff[156] = {0}; 12/28/25 had to increase the buffer to hold debug data
 	dataBuff[0] = commandType_SetParamArray;
 	dataBuff[1] = Param;
-	uint8_t len = 2;
+	uint16_t len = 2;
 	//uint8_t tmpStart = 2;
 #define MAX_MSG_INDEXES 5
 //	char tmpIndexString[MAX_MSG_INDEXES * 4] = {0};
@@ -2894,16 +2913,6 @@ bool sendParameterArray(char* buff, uint8_t indx, comChanEnum comChannel, uint16
 
 
 	switch(Param){
-//	case pArray_DeviceInfo:
-//		// RadioId, NumProgVars, NumProgTimers, NUM_CHANNELS, [chanType for each channel]
-//		len += sprintf(&dataBuff[len], "=%d,%d,%d,%d", radio.comm.myId, (uint8_t)NUM_VARIABLES, (uint8_t)NUM_TIMERS, NUM_CHANNELS);
-//		for(uint8_t n=0; n<NUM_CHANNELS; n++){
-//			len += sprintf(&dataBuff[len], ",%d", tens.tensChan[n].chanType);
-//		}
-//		dataBuff[len] = 10;
-//		len++;
-//		retVal = true;
-//		break;
 	case pArray_DeviceInfo:
 		// DeviceType, RadioId, NumberOfPrograms, DeviceName, SerialNumber
 		char tmpName[] = {"Proto E"};
@@ -2959,14 +2968,6 @@ bool sendParameterArray(char* buff, uint8_t indx, comChanEnum comChannel, uint16
 			}
 		}
 
-//		len += sprintf(&dataBuff[len], "%d=%d,%d,%d,%d,%d,%lu,%d,%d,%d,%d,%d,%d,%d,%d,%u,%u\n", (int16_t)msgIndex[0],
-//					(tens.tensChan[msgIndex[0]].chanEnabled == true ? 1 : 0), tens.tensChan[msgIndex[0]].chanSpeed,
-//					pCurStatus->curLineNum, tens.tensChan[msgIndex[0]].startVal,
-//					tens.tensChan[msgIndex[0]].endVal, tmpTotalDuration,
-//					(uint8_t)floor(tmpTotalPctComplete), tens.tensChan[msgIndex[0]].repeatCounter,
-//					(uint8_t)tens.tensChan[msgIndex[0]].curVal, tens.tensChan[msgIndex[0]].curIntensityPct,
-//					pCurStatus->progState, (tens.tensChan[msgIndex[0]].polaritySwapped == false ? 0 : 1),
-//					pCurLine->polarity, tens.curProgNum[msgIndex[0]], tmpMin, tmpMax);
 		len += sprintf(&dataBuff[len], "%d=%d,%d,%d,%d,%d,%lu,%d,%d,%d,%d,%d,%d,%d,%d,%u,%u,%u\n", (int16_t)msgIndex[0],
 					(tens.tensChan[msgIndex[0]].chanEnabled == true ? 1 : 0), tens.tensChan[msgIndex[0]].chanSpeed,
 					pCurStatus->curLineNum, tens.tensChan[msgIndex[0]].startVal,
@@ -3003,6 +3004,24 @@ bool sendParameterArray(char* buff, uint8_t indx, comChanEnum comChannel, uint16
 			}
 		}
 		break;
+	case pArray_ChanDebugData:
+		// 0 curProgNum, 1 curLineNum, 2 progState, 3 number of program variables, 4 number of program timers,
+		// 5 variable values,  5 + (number of program variables * 4) start of timer values
+		if( (msgIndex[0] < 0) || (msgIndex[0] >= NUM_CHANNELS) ) return false;
+		TensProgramStatus_HandleTypeDef* pCurStatusDebug = &tens.curProgStatus[msgIndex[0]];
+
+		len += sprintf(&dataBuff[len], "%d=%d,%d,%d,%d,%d", (int16_t)msgIndex[0],
+				tens.curProgNum[msgIndex[0]], pCurStatusDebug->curLineNum, pCurStatusDebug->progState, NUM_VARIABLES, NUM_TIMERS);
+
+		// Append variables
+		for (int v = 0; v < NUM_VARIABLES; v++) {
+			len += snprintf(&dataBuff[len], sizeof(dataBuff)-(len+1), ",%ld", pCurStatusDebug->variable[v]);
+		}
+		// Append timer values
+		for (int t = 0; t < NUM_TIMERS; t++) {
+			len += snprintf(&dataBuff[len], sizeof(dataBuff)-(len+1), ",%ld", pCurStatusDebug->timer[t]);
+		}
+
 	default:
 		retVal = false;
 		break;

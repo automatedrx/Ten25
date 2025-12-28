@@ -577,6 +577,12 @@ uint32_t randomAtMost(uint32_t max){
 void TensLoop(Tens_HandleTypeDef* dev){
 	TensProgramStatus_HandleTypeDef *curProgStatus;
 
+	//added for single-step:
+	if(dev->debugMode && !dev->debugPendingStep){
+		// Do nothing - waiting for step request or resume normal run mode
+		return;
+	}
+
 	for(uint8_t n=0; n<NUM_CHANNELS; n++){
 		curProgStatus = &dev->curProgStatus[n];
 
@@ -598,7 +604,9 @@ void TensLoop(Tens_HandleTypeDef* dev){
 		}
 	}
 
-//	TensTurnOffIdleMotors(dev);
+	if(dev->debugMode){
+		dev->debugPendingStep = 0;  // Clear the step flag
+	}
 }
 
 void TensStartProgLine(Tens_HandleTypeDef* dev, uint8_t chanNum, uint16_t lineToRun){
@@ -763,9 +771,6 @@ void TensStartTensOrPwmOutput(Tens_HandleTypeDef* dev, uint8_t chanNum, structPr
 	chan->origOutputDuration = TensGetValue(dev, curLine->pi321S, curLine->pi321V1, curLine->pi321V2, chanNum, 0);
 	chan->origDelayDuration = TensGetValue(dev, curLine->pi323S, curLine->pi323V1, curLine->pi323V2, chanNum, 0);
 	chan->repeatCounter = (uint16_t)TensGetValue(dev, curLine->pi322S, curLine->pi322V1, curLine->pi322V2, chanNum, 65535);
-
-	//TODO: implement Post-Delay!
-	//chan->postdelay = TensGetValue(dev, curLine->pi323S, curLine->pi323V2, curLine->pi323V2, chanNum, 0);
 
 	chan->startVal = (uint8_t)TensGetValue(dev, curLine->pi81S, curLine->pi81V1, curLine->pi81V2, chanNum, 100);
 	chan->endVal = (uint8_t)TensGetValue(dev, curLine->pi82S, curLine->pi82V1, curLine->pi82V2, chanNum, 100);
